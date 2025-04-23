@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ExpenseDialog } from '@/components/expenses/ExpenseDialog';
@@ -33,44 +32,61 @@ const Expenses = () => {
     }
   };
 
-  const handleAddExpense = (values: any) => {
-    if (editingExpense) {
-      const updatedExpenses = expenses.map(expense => 
-        expense.id === editingExpense.id 
-          ? {
-              ...expense,
-              name: values.name,
-              amount: values.amount,
-              category: values.category,
-              description: values.description || "",
-            }
-          : expense
-      );
-      setExpenses(updatedExpenses);
+  const handleAddExpense = async (values: any) => {
+    try {
+      if (editingExpense) {
+        const updatedExpenses = expenses.map(expense => 
+          expense.id === editingExpense.id 
+            ? {
+                ...expense,
+                name: values.name,
+                amount: values.amount,
+                category: values.category,
+                description: values.description || "",
+              }
+            : expense
+        );
+        setExpenses(updatedExpenses);
+        toast({
+          title: "Expense Updated",
+          description: "The expense has been updated successfully.",
+        });
+      } else {
+        const newExpense = {
+          name: values.name,
+          amount: values.amount,
+          category: {
+            id: parseInt(values.categoryId),
+            name: values.categoryId, // This should be replaced with actual category name
+            description: ""
+          },
+          yearMonth: currentYearMonth,
+          bank: "Default Bank",
+          paid: false,
+          description: values.description || "",
+          recurringId: null,
+          date: values.date.toISOString(),
+        };
+
+        // Call the API to create the expense
+        const createdExpense = await expenseService.createExpense(newExpense);
+        setExpenses([...expenses, createdExpense]);
+        
+        toast({
+          title: "Expense Added",
+          description: "New expense has been added successfully.",
+        });
+      }
+      setIsDialogOpen(false);
+      setEditingExpense(null);
+    } catch (error) {
+      console.error('Error adding expense:', error);
       toast({
-        title: "Expense Updated",
-        description: "The expense has been updated successfully.",
-      });
-    } else {
-      const newExpense: Expense = {
-        id: Math.floor(Math.random() * 1000),
-        name: values.name,
-        amount: values.amount,
-        category: values.category,
-        yearMonth: currentYearMonth,
-        bank: values.bank || "Default Bank",
-        paid: false,
-        description: values.description || "",
-        recurringId: null,
-      };
-      setExpenses([...expenses, newExpense]);
-      toast({
-        title: "Expense Added",
-        description: "New expense has been added successfully.",
+        title: "Error",
+        description: "Failed to add expense. Please try again.",
+        variant: "destructive",
       });
     }
-    setIsDialogOpen(false);
-    setEditingExpense(null);
   };
 
   const handleEdit = (expense: Expense) => {

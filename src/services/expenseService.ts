@@ -1,4 +1,3 @@
-
 import { authService } from './authService';
 
 export interface Category {
@@ -56,5 +55,24 @@ export const expenseService = {
       console.error('Error updating expense:', error);
       throw error;
     }
-  }
+  },
+
+  async createExpense(expense: Omit<Expense, 'id'>): Promise<Expense> {
+    try {
+      const response = await fetch('http://localhost:8080/api/v1/expenses', {
+        method: 'POST',
+        headers: authService.getAuthHeaders(),
+        body: JSON.stringify(expense),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create expense');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating expense:', error);
+      throw error;
+    }
+  },
 };
