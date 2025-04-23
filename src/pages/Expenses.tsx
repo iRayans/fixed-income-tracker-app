@@ -5,9 +5,10 @@ import { ExpenseForm } from '@/components/expenses/ExpenseForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, CheckCircle2, XCircle } from "lucide-react";
 import { formatDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 // Mock data
 const mockCategories = [
@@ -20,11 +21,66 @@ const mockCategories = [
 ];
 
 const mockExpenses = [
-  { id: "1", name: "Apartment Rent", amount: 1500, categoryId: "1", category: "Housing", date: "2025-04-01", description: "Monthly rent payment", recurring: true },
-  { id: "2", name: "Car Payment", amount: 400, categoryId: "2", category: "Transportation", date: "2025-04-05", description: "Car loan payment", recurring: true },
-  { id: "3", name: "Electric Bill", amount: 120, categoryId: "3", category: "Utilities", date: "2025-04-10", description: "Monthly electricity", recurring: false },
-  { id: "4", name: "Internet", amount: 80, categoryId: "3", category: "Utilities", date: "2025-04-15", description: "Broadband service", recurring: true },
-  { id: "5", name: "Health Insurance", amount: 200, categoryId: "4", category: "Insurance", date: "2025-04-20", description: "Health coverage", recurring: true },
+  { 
+    id: "1", 
+    name: "Apartment Rent", 
+    amount: 1500, 
+    categoryId: "1", 
+    category: { id: 1, name: "Housing", description: "" },
+    yearMonth: "2025-04",
+    bank: "STCBank",
+    paid: false,
+    description: "Monthly rent payment", 
+    recurringId: null 
+  },
+  { 
+    id: "2", 
+    name: "Car Payment", 
+    amount: 400, 
+    categoryId: "2", 
+    category: { id: 2, name: "Transportation", description: "" },
+    yearMonth: "2025-04",
+    bank: "Al Rajhi",
+    paid: true,
+    description: "Car loan payment", 
+    recurringId: null 
+  },
+  { 
+    id: "3", 
+    name: "Electric Bill", 
+    amount: 120, 
+    categoryId: "3", 
+    category: { id: 3, name: "Utilities", description: "" },
+    yearMonth: "2025-04",
+    bank: "Samba",
+    paid: false,
+    description: "Monthly electricity", 
+    recurringId: null 
+  },
+  { 
+    id: "4", 
+    name: "Internet", 
+    amount: 80, 
+    categoryId: "3", 
+    category: { id: 3, name: "Utilities", description: "" },
+    yearMonth: "2025-04",
+    bank: "ANB",
+    paid: true,
+    description: "Broadband service", 
+    recurringId: null 
+  },
+  { 
+    id: "5", 
+    name: "Health Insurance", 
+    amount: 200, 
+    categoryId: "4", 
+    category: { id: 4, name: "Insurance", description: "" },
+    yearMonth: "2025-04",
+    bank: "SNB",
+    paid: true,
+    description: "Health coverage", 
+    recurringId: null 
+  },
 ];
 
 const Expenses = () => {
@@ -113,7 +169,7 @@ const Expenses = () => {
                 categories={mockCategories}
                 initialValues={editingExpense ? {
                   ...editingExpense,
-                  date: new Date(editingExpense.date)
+                  date: new Date(editingExpense.yearMonth + "-01")
                 } : undefined}
               />
             </DialogContent>
@@ -126,7 +182,8 @@ const Expenses = () => {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Category</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead>Bank</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -136,16 +193,35 @@ const Expenses = () => {
                 <TableRow key={expense.id}>
                   <TableCell className="font-medium">
                     {expense.name}
-                    {expense.recurring && (
+                    {expense.recurringId && (
                       <Badge variant="outline" className="ml-2 bg-purple-500/10 text-purple-400 border-purple-500/20">
-                        <Calendar className="mr-1 h-3 w-3" />
                         Recurring
                       </Badge>
                     )}
                   </TableCell>
-                  <TableCell>{expense.category}</TableCell>
-                  <TableCell>{formatDate(expense.date)}</TableCell>
-                  <TableCell className="text-right">${expense.amount.toLocaleString()}</TableCell>
+                  <TableCell>{expense.category?.name || 'Uncategorized'}</TableCell>
+                  <TableCell>{expense.bank}</TableCell>
+                  <TableCell>
+                    <div className={cn(
+                      "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
+                      expense.paid
+                        ? "bg-green-500/15 text-green-500 border border-green-500/20"
+                        : "bg-red-500/15 text-red-500 border border-red-500/20"
+                    )}>
+                      {expense.paid ? (
+                        <>
+                          <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
+                          Paid
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="mr-1 h-3.5 w-3.5" />
+                          Unpaid
+                        </>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">${typeof expense.amount === 'number' ? expense.amount.toLocaleString() : '0'}</TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button
                       variant="ghost"
