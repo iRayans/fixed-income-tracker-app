@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from "@/components/ui/button";
 import { ExpenseForm } from '@/components/expenses/ExpenseForm';
@@ -6,88 +6,42 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, CheckCircle2, XCircle } from "lucide-react";
-import { formatDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-
-// Mock data
-const mockCategories = [
-  { id: "1", name: "Housing" },
-  { id: "2", name: "Transportation" },
-  { id: "3", name: "Utilities" },
-  { id: "4", name: "Insurance" },
-  { id: "5", name: "Groceries" },
-  { id: "6", name: "Other" },
-];
-
-const mockExpenses = [
-  { 
-    id: "1", 
-    name: "Apartment Rent", 
-    amount: 1500, 
-    categoryId: "1", 
-    category: { id: 1, name: "Housing", description: "" },
-    yearMonth: "2025-04",
-    bank: "STCBank",
-    paid: false,
-    description: "Monthly rent payment", 
-    recurringId: null 
-  },
-  { 
-    id: "2", 
-    name: "Car Payment", 
-    amount: 400, 
-    categoryId: "2", 
-    category: { id: 2, name: "Transportation", description: "" },
-    yearMonth: "2025-04",
-    bank: "Al Rajhi",
-    paid: true,
-    description: "Car loan payment", 
-    recurringId: null 
-  },
-  { 
-    id: "3", 
-    name: "Electric Bill", 
-    amount: 120, 
-    categoryId: "3", 
-    category: { id: 3, name: "Utilities", description: "" },
-    yearMonth: "2025-04",
-    bank: "Samba",
-    paid: false,
-    description: "Monthly electricity", 
-    recurringId: null 
-  },
-  { 
-    id: "4", 
-    name: "Internet", 
-    amount: 80, 
-    categoryId: "3", 
-    category: { id: 3, name: "Utilities", description: "" },
-    yearMonth: "2025-04",
-    bank: "ANB",
-    paid: true,
-    description: "Broadband service", 
-    recurringId: null 
-  },
-  { 
-    id: "5", 
-    name: "Health Insurance", 
-    amount: 200, 
-    categoryId: "4", 
-    category: { id: 4, name: "Insurance", description: "" },
-    yearMonth: "2025-04",
-    bank: "SNB",
-    paid: true,
-    description: "Health coverage", 
-    recurringId: null 
-  },
-];
+import { Expense } from '@/services/expenseService';
 
 const Expenses = () => {
-  const [expenses, setExpenses] = useState(mockExpenses);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingExpense, setEditingExpense] = useState<any>(null);
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const { toast } = useToast();
+  const currentDate = new Date();
+  const currentYearMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+
+  useEffect(() => {
+    fetchExpenses(currentYearMonth);
+  }, []);
+
+  const fetchExpenses = async (yearMonth: string) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/expenses/${yearMonth}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) throw new Error('Failed to fetch expenses');
+      const data = await response.json();
+      setExpenses(data);
+    } catch (error) {
+      console.error('Error fetching expenses:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load expenses. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleAddExpense = (values: any) => {
     if (editingExpense) {
@@ -98,8 +52,7 @@ const Expenses = () => {
               name: values.name,
               amount: values.amount,
               categoryId: values.categoryId,
-              category: mockCategories.find(c => c.id === values.categoryId)?.name || "",
-              date: values.date.toISOString().split('T')[0],
+              category: values.category,
               description: values.description || "",
             }
           : expense
@@ -110,15 +63,17 @@ const Expenses = () => {
         description: "The expense has been updated successfully.",
       });
     } else {
-      const newExpense = {
-        id: `${expenses.length + 1}`,
+      const newExpense: Expense = {
+        id: Math.floor(Math.random() * 1000),
         name: values.name,
         amount: values.amount,
         categoryId: values.categoryId,
-        category: mockCategories.find(c => c.id === values.categoryId)?.name || "",
-        date: values.date.toISOString().split('T')[0],
+        category: values.category,
+        yearMonth: currentYearMonth,
+        bank: values.bank || "Default Bank",
+        paid: false,
         description: values.description || "",
-        recurring: false,
+        recurringId: null,
       };
       setExpenses([...expenses, newExpense]);
       toast({
@@ -130,22 +85,17 @@ const Expenses = () => {
     setEditingExpense(null);
   };
 
-  const handleEdit = (expense: any) => {
+  const handleEdit = (expense: Expense) => {
     setEditingExpense(expense);
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     setExpenses(expenses.filter(expense => expense.id !== id));
     toast({
       title: "Expense Deleted",
       description: "The expense has been deleted successfully.",
     });
-  };
-
-  const handleOpenDialog = () => {
-    setEditingExpense(null);
-    setIsDialogOpen(true);
   };
 
   return (
@@ -158,7 +108,12 @@ const Expenses = () => {
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={handleOpenDialog}>Add Expense</Button>
+              <Button onClick={() => {
+                setEditingExpense(null);
+                setIsDialogOpen(true);
+              }}>
+                Add Expense
+              </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -166,11 +121,8 @@ const Expenses = () => {
               </DialogHeader>
               <ExpenseForm 
                 onSubmit={handleAddExpense} 
-                categories={mockCategories}
-                initialValues={editingExpense ? {
-                  ...editingExpense,
-                  date: new Date(editingExpense.yearMonth + "-01")
-                } : undefined}
+                categories={[]}
+                initialValues={editingExpense}
               />
             </DialogContent>
           </Dialog>
@@ -221,7 +173,7 @@ const Expenses = () => {
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="text-right">${typeof expense.amount === 'number' ? expense.amount.toLocaleString() : '0'}</TableCell>
+                  <TableCell className="text-right">${expense.amount.toLocaleString()}</TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button
                       variant="ghost"

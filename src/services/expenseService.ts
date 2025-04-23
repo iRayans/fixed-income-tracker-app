@@ -1,4 +1,3 @@
-
 import { authService } from './authService';
 
 export interface Category {
