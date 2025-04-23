@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from '@/lib/utils';
 import { Expense } from '@/services/expenseService';
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface RecentExpensesProps {
   expenses: Expense[];
@@ -25,6 +26,10 @@ export function RecentExpenses({ expenses, isLoading }: RecentExpensesProps) {
             {[1, 2, 3].map((i) => (
               <div key={i} className="h-12 bg-muted animate-pulse rounded-md" />
             ))}
+          </div>
+        ) : expenses.length === 0 ? (
+          <div className="text-center py-6 text-muted-foreground">
+            No recent expenses found
           </div>
         ) : (
           <Table>
@@ -49,7 +54,7 @@ export function RecentExpenses({ expenses, isLoading }: RecentExpensesProps) {
                   </TableCell>
                   <TableCell>{expense.category}</TableCell>
                   <TableCell>{formatDate(expense.date)}</TableCell>
-                  <TableCell className="text-right">${expense.amount.toLocaleString()}</TableCell>
+                  <TableCell className="text-right">${typeof expense.amount === 'number' ? expense.amount.toLocaleString() : '0'}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
