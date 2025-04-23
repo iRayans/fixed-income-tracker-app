@@ -1,3 +1,4 @@
+
 import { authService } from './authService';
 
 export interface Category {
@@ -37,4 +38,23 @@ export const expenseService = {
       throw error;
     }
   },
+
+  async updateExpensePaidStatus(id: number, paid: boolean): Promise<Expense> {
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/expenses/${id}`, {
+        method: 'PATCH',
+        headers: authService.getAuthHeaders(),
+        body: JSON.stringify({ paid }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update expense');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error updating expense:', error);
+      throw error;
+    }
+  }
 };

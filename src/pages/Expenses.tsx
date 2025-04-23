@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ExpenseDialog } from '@/components/expenses/ExpenseDialog';
@@ -85,6 +86,32 @@ const Expenses = () => {
     });
   };
 
+  const handleTogglePaid = async (id: number, paid: boolean) => {
+    try {
+      // Optimistically update UI
+      setExpenses(expenses.map(expense => 
+        expense.id === id ? { ...expense, paid } : expense
+      ));
+      
+      // Call API to update the expense
+      await expenseService.updateExpensePaidStatus(id, paid);
+      
+      toast({
+        title: paid ? "Marked as Paid" : "Marked as Unpaid",
+        description: `The expense has been marked as ${paid ? 'paid' : 'unpaid'}.`,
+      });
+    } catch (error) {
+      // Revert the change if the API call fails
+      setExpenses(expenses);
+      console.error('Error updating expense paid status:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update expense status. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <AppLayout>
       <div className="space-y-8">
@@ -108,6 +135,7 @@ const Expenses = () => {
           expenses={expenses}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onTogglePaid={handleTogglePaid}
         />
       </div>
     </AppLayout>

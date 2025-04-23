@@ -11,12 +11,14 @@ interface ExpenseListItemProps {
   expense: Expense;
   onEdit: (expense: Expense) => void;
   onDelete: (id: number) => void;
+  onTogglePaid: (id: number, paid: boolean) => void;
 }
 
 export const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
   expense,
   onEdit,
   onDelete,
+  onTogglePaid,
 }) => {
   return (
     <TableRow>
@@ -31,12 +33,14 @@ export const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
       <TableCell>{expense.category?.name || 'Uncategorized'}</TableCell>
       <TableCell>{expense.bank}</TableCell>
       <TableCell>
-        <div className={cn(
-          "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
-          expense.paid
-            ? "bg-green-500/15 text-green-500 border border-green-500/20"
-            : "bg-red-500/15 text-red-500 border border-red-500/20"
-        )}>
+        <button 
+          onClick={() => onTogglePaid(expense.id, !expense.paid)}
+          className={cn(
+            "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium cursor-pointer transition-colors",
+            expense.paid
+              ? "bg-green-500/15 text-green-500 border border-green-500/20 hover:bg-green-500/25"
+              : "bg-red-500/15 text-red-500 border border-red-500/20 hover:bg-red-500/25"
+          )}>
           {expense.paid ? (
             <>
               <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
@@ -48,7 +52,7 @@ export const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
               Unpaid
             </>
           )}
-        </div>
+        </button>
       </TableCell>
       <TableCell className="text-right">${expense.amount.toLocaleString()}</TableCell>
       <TableCell className="text-right space-x-2">

@@ -8,12 +8,14 @@ interface ExpenseListProps {
   expenses: Expense[];
   onEdit: (expense: Expense) => void;
   onDelete: (id: number) => void;
+  onTogglePaid: (id: number, paid: boolean) => void;
 }
 
 export const ExpenseList: React.FC<ExpenseListProps> = ({
   expenses,
   onEdit,
   onDelete,
+  onTogglePaid,
 }) => {
   return (
     <div className="rounded-lg border border-border/40 backdrop-blur-sm">
@@ -35,6 +37,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({
               expense={expense}
               onEdit={onEdit}
               onDelete={onDelete}
+              onTogglePaid={onTogglePaid}
             />
           ))}
         </TableBody>
