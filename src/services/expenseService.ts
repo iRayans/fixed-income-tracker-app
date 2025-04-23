@@ -42,7 +42,7 @@ export const expenseService = {
   async updateExpensePaidStatus(id: number, paid: boolean): Promise<Expense> {
     try {
       const response = await fetch(`http://localhost:8080/api/v1/expenses/${id}`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: authService.getAuthHeaders(),
         body: JSON.stringify({ paid }),
       });
