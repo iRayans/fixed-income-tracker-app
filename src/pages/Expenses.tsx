@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ExpenseDialog } from '@/components/expenses/ExpenseDialog';
 import { ExpenseList } from '@/components/expenses/ExpenseList';
 import { useToast } from '@/hooks/use-toast';
-import { Expense } from '@/services/expenseService';
+import { Expense, expenseService } from '@/services/expenseService';
 
 const Expenses = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -20,14 +19,8 @@ const Expenses = () => {
 
   const fetchExpenses = async (yearMonth: string) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/expenses/${yearMonth}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      if (!response.ok) throw new Error('Failed to fetch expenses');
-      const data = await response.json();
+      // Use the expenseService to fetch expenses
+      const data = await expenseService.getExpenses(yearMonth);
       setExpenses(data);
     } catch (error) {
       console.error('Error fetching expenses:', error);
