@@ -1,7 +1,7 @@
 
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { format, isValid } from "date-fns"
+import { format, isValid, parse } from "date-fns"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -10,9 +10,21 @@ export function cn(...inputs: ClassValue[]) {
 export function formatDate(dateString: string) {
   if (!dateString) return 'N/A';
   
+  // Handle yearMonth format (YYYY-MM)
+  if (/^\d{4}-\d{2}$/.test(dateString)) {
+    try {
+      const date = parse(dateString, 'yyyy-MM', new Date());
+      if (isValid(date)) {
+        return format(date, "MMMM yyyy");
+      }
+    } catch (error) {
+      console.error(`Error parsing year-month format: ${dateString}`, error);
+    }
+  }
+  
+  // Handle regular date format
   const date = new Date(dateString);
   
-  // Check if the date is valid before formatting
   if (!isValid(date)) {
     console.error(`Invalid date: ${dateString}`);
     return 'Invalid date';

@@ -37,7 +37,7 @@ export function RecentExpenses({ expenses, isLoading }: RecentExpensesProps) {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Category</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead>Month</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
               </TableRow>
             </TableHeader>
@@ -46,14 +46,14 @@ export function RecentExpenses({ expenses, isLoading }: RecentExpensesProps) {
                 <TableRow key={expense.id}>
                   <TableCell className="font-medium">
                     {expense.name}
-                    {expense.recurring && (
+                    {expense.recurringId && (
                       <Badge variant="outline" className="ml-2 bg-purple-500/10 text-purple-400 border-purple-500/20">
                         Recurring
                       </Badge>
                     )}
                   </TableCell>
-                  <TableCell>{expense.category}</TableCell>
-                  <TableCell>{formatDate(expense.date)}</TableCell>
+                  <TableCell>{expense.category?.name || 'Uncategorized'}</TableCell>
+                  <TableCell>{formatDate(expense.date || expense.yearMonth)}</TableCell>
                   <TableCell className="text-right">${typeof expense.amount === 'number' ? expense.amount.toLocaleString() : '0'}</TableCell>
                 </TableRow>
               ))}

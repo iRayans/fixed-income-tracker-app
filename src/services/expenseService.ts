@@ -1,13 +1,23 @@
 
 import { authService } from './authService';
 
-export interface Expense {
-  id: string;
+export interface Category {
+  id: number;
   name: string;
+  description: string;
+}
+
+export interface Expense {
+  id: number;
+  name: string;
+  description: string;
   amount: number;
-  category: string;
-  date: string;
-  recurring: boolean;
+  yearMonth: string;
+  bank: string;
+  category: Category;
+  recurringId: number | null;
+  paid: boolean;
+  date?: string; // Keep the old field for backward compatibility
 }
 
 export const expenseService = {
@@ -29,4 +39,3 @@ export const expenseService = {
     }
   },
 };
-
