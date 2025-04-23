@@ -1,13 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { Button } from "@/components/ui/button";
-import { ExpenseForm } from '@/components/expenses/ExpenseForm';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, CheckCircle2, XCircle } from "lucide-react";
+import { ExpenseDialog } from '@/components/expenses/ExpenseDialog';
+import { ExpenseList } from '@/components/expenses/ExpenseList';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
 import { Expense } from '@/services/expenseService';
 
 const Expenses = () => {
@@ -51,7 +47,6 @@ const Expenses = () => {
               ...expense,
               name: values.name,
               amount: values.amount,
-              categoryId: values.categoryId,
               category: values.category,
               description: values.description || "",
             }
@@ -67,7 +62,6 @@ const Expenses = () => {
         id: Math.floor(Math.random() * 1000),
         name: values.name,
         amount: values.amount,
-        categoryId: values.categoryId,
         category: values.category,
         yearMonth: currentYearMonth,
         bank: values.bank || "Default Bank",
@@ -106,95 +100,22 @@ const Expenses = () => {
             <h1 className="text-3xl font-bold tracking-tight">Expenses</h1>
             <p className="text-muted-foreground">Manage your monthly expenses</p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={() => {
-                setEditingExpense(null);
-                setIsDialogOpen(true);
-              }}>
-                Add Expense
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{editingExpense ? 'Edit Expense' : 'Add New Expense'}</DialogTitle>
-              </DialogHeader>
-              <ExpenseForm 
-                onSubmit={handleAddExpense} 
-                categories={[]}
-                initialValues={editingExpense}
-              />
-            </DialogContent>
-          </Dialog>
+          <ExpenseDialog
+            isOpen={isDialogOpen}
+            onOpenChange={(open) => {
+              setIsDialogOpen(open);
+              if (!open) setEditingExpense(null);
+            }}
+            onSubmit={handleAddExpense}
+            editingExpense={editingExpense}
+          />
         </header>
 
-        <div className="rounded-lg border border-border/40 backdrop-blur-sm">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Bank</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {expenses.map((expense) => (
-                <TableRow key={expense.id}>
-                  <TableCell className="font-medium">
-                    {expense.name}
-                    {expense.recurringId && (
-                      <Badge variant="outline" className="ml-2 bg-purple-500/10 text-purple-400 border-purple-500/20">
-                        Recurring
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell>{expense.category?.name || 'Uncategorized'}</TableCell>
-                  <TableCell>{expense.bank}</TableCell>
-                  <TableCell>
-                    <div className={cn(
-                      "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
-                      expense.paid
-                        ? "bg-green-500/15 text-green-500 border border-green-500/20"
-                        : "bg-red-500/15 text-red-500 border border-red-500/20"
-                    )}>
-                      {expense.paid ? (
-                        <>
-                          <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
-                          Paid
-                        </>
-                      ) : (
-                        <>
-                          <XCircle className="mr-1 h-3.5 w-3.5" />
-                          Unpaid
-                        </>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">${expense.amount.toLocaleString()}</TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEdit(expense)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(expense.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <ExpenseList
+          expenses={expenses}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
       </div>
     </AppLayout>
   );
