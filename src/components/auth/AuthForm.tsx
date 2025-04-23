@@ -11,11 +11,14 @@ import { AuthMode, LoginFormValues, RegisterFormValues } from '@/types/auth';
 
 export function AuthForm() {
   const [mode, setMode] = useState<AuthMode>('login');
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   const handleSubmit = async (values: LoginFormValues | RegisterFormValues) => {
     try {
+      setIsLoading(true);
+      
       if (mode === 'register') {
         const registerData = values as RegisterFormValues;
         const response = await authService.register({
@@ -34,17 +37,36 @@ export function AuthForm() {
         
         navigate('/dashboard');
       } else {
-        toast({
-          title: "Login functionality",
-          description: "Login endpoint needs to be implemented",
+        // Handle login
+        const loginData = values as LoginFormValues;
+        const response = await authService.login({
+          email: loginData.email,
+          password: loginData.password,
         });
+        
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('isAuthenticated', 'true');
+        
+        toast({
+          title: "Login successful",
+          description: "Welcome back!",
+        });
+        
+        navigate('/dashboard');
       }
     } catch (error) {
+      let errorMessage = "Something went wrong. Please try again.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: errorMessage,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -62,9 +84,9 @@ export function AuthForm() {
       </CardHeader>
       <CardContent className="space-y-4">
         {mode === 'login' ? (
-          <LoginForm onSubmit={handleSubmit} />
+          <LoginForm onSubmit={handleSubmit} isLoading={isLoading} />
         ) : (
-          <RegisterForm onSubmit={handleSubmit} />
+          <RegisterForm onSubmit={handleSubmit} isLoading={isLoading} />
         )}
       </CardContent>
       <CardFooter>
@@ -72,6 +94,7 @@ export function AuthForm() {
           variant="link" 
           onClick={() => setMode(mode === 'login' ? 'register' : 'login')} 
           className="w-full text-primary"
+          disabled={isLoading}
         >
           {mode === 'login' 
             ? "Don't have an account? Sign up" 

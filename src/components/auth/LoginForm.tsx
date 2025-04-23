@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { LoginFormValues, loginSchema } from "@/types/auth";
+import { Loader2 } from 'lucide-react';
 
 interface LoginFormProps {
   onSubmit: (values: LoginFormValues) => Promise<void>;
+  isLoading?: boolean;
 }
 
-export function LoginForm({ onSubmit }: LoginFormProps) {
+export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -30,7 +32,7 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="example@example.com" type="email" className="bg-secondary/50" {...field} />
+                <Input placeholder="example@example.com" type="email" className="bg-secondary/50" {...field} disabled={isLoading} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -43,13 +45,22 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input placeholder="••••••••" type="password" className="bg-secondary/50" {...field} />
+                <Input placeholder="••••••••" type="password" className="bg-secondary/50" {...field} disabled={isLoading} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">Sign In</Button>
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Signing in...
+            </>
+          ) : (
+            "Sign In"
+          )}
+        </Button>
       </form>
     </Form>
   );

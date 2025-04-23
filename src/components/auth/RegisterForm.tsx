@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { RegisterFormValues, registerSchema } from "@/types/auth";
+import { Loader2 } from 'lucide-react';
 
 interface RegisterFormProps {
   onSubmit: (values: RegisterFormValues) => Promise<void>;
+  isLoading?: boolean;
 }
 
-export function RegisterForm({ onSubmit }: RegisterFormProps) {
+export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps) {
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -32,7 +34,7 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="John Doe" className="bg-secondary/50" {...field} />
+                <Input placeholder="John Doe" className="bg-secondary/50" {...field} disabled={isLoading} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -45,7 +47,7 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="example@example.com" type="email" className="bg-secondary/50" {...field} />
+                <Input placeholder="example@example.com" type="email" className="bg-secondary/50" {...field} disabled={isLoading} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -58,7 +60,7 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input placeholder="••••••••" type="password" className="bg-secondary/50" {...field} />
+                <Input placeholder="••••••••" type="password" className="bg-secondary/50" {...field} disabled={isLoading} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -71,13 +73,22 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
             <FormItem>
               <FormLabel>Confirm Password</FormLabel>
               <FormControl>
-                <Input placeholder="••••••••" type="password" className="bg-secondary/50" {...field} />
+                <Input placeholder="••••••••" type="password" className="bg-secondary/50" {...field} disabled={isLoading} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">Create Account</Button>
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Creating account...
+            </>
+          ) : (
+            "Create Account"
+          )}
+        </Button>
       </form>
     </Form>
   );
