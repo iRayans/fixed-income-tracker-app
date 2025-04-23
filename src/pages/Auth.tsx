@@ -6,7 +6,6 @@ import { AuthForm } from '@/components/auth/AuthForm';
 const Auth = () => {
   const navigate = useNavigate();
 
-  // Check if user is already authenticated
   useEffect(() => {
     const isAuthenticated = localStorage.getItem('isAuthenticated');
     
@@ -16,9 +15,9 @@ const Auth = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-background/95 flex items-center justify-center p-4">
+    <div className="h-screen w-screen flex items-center justify-center bg-gradient-to-br from-background to-background/95">
       <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-background to-background pointer-events-none" />
-      <div className="relative z-10 max-w-md w-full">
+      <div className="relative z-10">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-purple-600">
             Salary Tracker

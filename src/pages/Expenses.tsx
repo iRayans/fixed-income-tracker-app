@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from "@/components/ui/button";
@@ -6,8 +5,9 @@ import { ExpenseForm } from '@/components/expenses/ExpenseForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Calendar } from "lucide-react";
+import { Calendar, Edit, Trash2 } from "lucide-react";
 import { formatDate } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 // Mock data
 const mockCategories = [
@@ -30,21 +30,66 @@ const mockExpenses = [
 const Expenses = () => {
   const [expenses, setExpenses] = useState(mockExpenses);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingExpense, setEditingExpense] = useState<any>(null);
+  const { toast } = useToast();
 
   const handleAddExpense = (values: any) => {
-    const newExpense = {
-      id: `${expenses.length + 1}`,
-      name: values.name,
-      amount: values.amount,
-      categoryId: values.categoryId,
-      category: mockCategories.find(c => c.id === values.categoryId)?.name || "",
-      date: values.date.toISOString().split('T')[0],
-      description: values.description || "",
-      recurring: false,
-    };
-
-    setExpenses([...expenses, newExpense]);
+    if (editingExpense) {
+      const updatedExpenses = expenses.map(expense => 
+        expense.id === editingExpense.id 
+          ? {
+              ...expense,
+              name: values.name,
+              amount: values.amount,
+              categoryId: values.categoryId,
+              category: mockCategories.find(c => c.id === values.categoryId)?.name || "",
+              date: values.date.toISOString().split('T')[0],
+              description: values.description || "",
+            }
+          : expense
+      );
+      setExpenses(updatedExpenses);
+      toast({
+        title: "Expense Updated",
+        description: "The expense has been updated successfully.",
+      });
+    } else {
+      const newExpense = {
+        id: `${expenses.length + 1}`,
+        name: values.name,
+        amount: values.amount,
+        categoryId: values.categoryId,
+        category: mockCategories.find(c => c.id === values.categoryId)?.name || "",
+        date: values.date.toISOString().split('T')[0],
+        description: values.description || "",
+        recurring: false,
+      };
+      setExpenses([...expenses, newExpense]);
+      toast({
+        title: "Expense Added",
+        description: "New expense has been added successfully.",
+      });
+    }
     setIsDialogOpen(false);
+    setEditingExpense(null);
+  };
+
+  const handleEdit = (expense: any) => {
+    setEditingExpense(expense);
+    setIsDialogOpen(true);
+  };
+
+  const handleDelete = (id: string) => {
+    setExpenses(expenses.filter(expense => expense.id !== id));
+    toast({
+      title: "Expense Deleted",
+      description: "The expense has been deleted successfully.",
+    });
+  };
+
+  const handleOpenDialog = () => {
+    setEditingExpense(null);
+    setIsDialogOpen(true);
   };
 
   return (
@@ -57,15 +102,19 @@ const Expenses = () => {
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button>Add Expense</Button>
+              <Button onClick={handleOpenDialog}>Add Expense</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Add New Expense</DialogTitle>
+                <DialogTitle>{editingExpense ? 'Edit Expense' : 'Add New Expense'}</DialogTitle>
               </DialogHeader>
               <ExpenseForm 
                 onSubmit={handleAddExpense} 
-                categories={mockCategories} 
+                categories={mockCategories}
+                initialValues={editingExpense ? {
+                  ...editingExpense,
+                  date: new Date(editingExpense.date)
+                } : undefined}
               />
             </DialogContent>
           </Dialog>
@@ -79,6 +128,7 @@ const Expenses = () => {
                 <TableHead>Category</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -96,6 +146,22 @@ const Expenses = () => {
                   <TableCell>{expense.category}</TableCell>
                   <TableCell>{formatDate(expense.date)}</TableCell>
                   <TableCell className="text-right">${expense.amount.toLocaleString()}</TableCell>
+                  <TableCell className="text-right space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(expense)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDelete(expense.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
