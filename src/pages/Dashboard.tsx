@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { AppLayout } from '@/components/layout/AppLayout';
@@ -9,15 +9,29 @@ import { RecentExpenses } from '@/components/dashboard/RecentExpenses';
 import { summaryService } from '@/services/summaryService';
 import { toast } from 'sonner';
 
+// Temporary mock data until we implement these endpoints
+const mockChartData = [
+  { name: "Rent", value: 1500, color: "#8b5cf6" },
+  { name: "Utilities", value: 300, color: "#3b82f6" },
+  { name: "Groceries", value: 500, color: "#f59e0b" },
+  { name: "Other", value: 300, color: "#6b7280" },
+];
+
+const mockExpenses = [
+  { id: "1", name: "Rent", amount: 1500, category: "Housing", date: "2025-04-01", recurring: true },
+  { id: "2", name: "Utilities", amount: 120, category: "Utilities", date: "2025-04-10", recurring: false },
+];
+
 const Dashboard = () => {
   const currentDate = format(new Date(), 'yyyy-MM');
   
-  const { data: summaryData, isLoading, error } = useQuery({
+  const { data: summaryData, isLoading } = useQuery({
     queryKey: ['summary', currentDate],
     queryFn: () => summaryService.getSummary(currentDate),
-    onError: (err) => {
-      toast.error('Failed to load summary data');
-      console.error('Error loading summary:', err);
+    meta: {
+      onError: () => {
+        toast.error('Failed to load summary data');
+      }
     }
   });
 
