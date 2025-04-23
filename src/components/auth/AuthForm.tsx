@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { LoginForm } from './LoginForm';
 import { RegisterForm } from './RegisterForm';
 import { authService } from "@/services/authService";
 import { AuthMode, LoginFormValues, RegisterFormValues } from '@/types/auth';
+import { setAuthToken } from '@/utils/auth';
 
 export function AuthForm() {
   const [mode, setMode] = useState<AuthMode>('login');
@@ -21,21 +21,18 @@ export function AuthForm() {
       
       if (mode === 'register') {
         const registerData = values as RegisterFormValues;
-        const response = await authService.register({
+        await authService.register({
           name: registerData.name,
           email: registerData.email,
           password: registerData.password,
         });
         
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('isAuthenticated', 'true');
-        
         toast({
           title: "Registration successful",
-          description: "Your account has been created.",
+          description: "Please login with your credentials.",
         });
         
-        navigate('/dashboard');
+        setMode('login');
       } else {
         // Handle login
         const loginData = values as LoginFormValues;
@@ -44,8 +41,7 @@ export function AuthForm() {
           password: loginData.password,
         });
         
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('isAuthenticated', 'true');
+        setAuthToken(response.token);
         
         toast({
           title: "Login successful",

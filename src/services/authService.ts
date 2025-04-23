@@ -1,4 +1,6 @@
 
+import { getAuthToken } from '@/utils/auth';
+
 interface RegisterData {
   name: string;
   email: string;
@@ -28,7 +30,7 @@ export const authService = {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-        credentials: 'include', // Include cookies if your backend uses them
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -52,7 +54,7 @@ export const authService = {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-        credentials: 'include', // Include cookies if your backend uses them
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -66,5 +68,13 @@ export const authService = {
       console.error('Login error:', error);
       throw error;
     }
+  },
+
+  getAuthHeaders() {
+    const token = getAuthToken();
+    return {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
   },
 };
