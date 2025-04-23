@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -7,7 +8,7 @@ import { Expense } from '@/services/expenseService';
 
 interface RecentExpensesProps {
   expenses: Expense[];
-  isLoading?: boolean;
+  isLoading: boolean;
 }
 
 export function RecentExpenses({ expenses, isLoading }: RecentExpensesProps) {
