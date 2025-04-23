@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -7,6 +6,7 @@ import { SalarySummary } from '@/components/dashboard/SalarySummary';
 import { ExpenseDistribution } from '@/components/dashboard/ExpenseDistribution';
 import { RecentExpenses } from '@/components/dashboard/RecentExpenses';
 import { summaryService } from '@/services/summaryService';
+import { expenseService } from '@/services/expenseService';
 import { toast } from 'sonner';
 
 // Temporary mock data until we implement these endpoints
@@ -25,12 +25,22 @@ const mockExpenses = [
 const Dashboard = () => {
   const currentDate = format(new Date(), 'yyyy-MM');
   
-  const { data: summaryData, isLoading } = useQuery({
+  const { data: summaryData, isLoading: isSummaryLoading } = useQuery({
     queryKey: ['summary', currentDate],
     queryFn: () => summaryService.getSummary(currentDate),
     meta: {
       onError: () => {
         toast.error('Failed to load summary data');
+      }
+    }
+  });
+
+  const { data: expenses, isLoading: isExpensesLoading } = useQuery({
+    queryKey: ['expenses', currentDate],
+    queryFn: () => expenseService.getExpenses(currentDate),
+    meta: {
+      onError: () => {
+        toast.error('Failed to load expenses');
       }
     }
   });
@@ -45,7 +55,7 @@ const Dashboard = () => {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div className="lg:col-span-1">
-            {isLoading ? (
+            {isSummaryLoading ? (
               <div className="animate-pulse bg-muted h-[300px] rounded-lg" />
             ) : (
               <SalarySummary 
@@ -59,10 +69,12 @@ const Dashboard = () => {
           <div className="md:col-span-2">
             <ExpenseDistribution data={mockChartData} />
           </div>
-        </div>
 
         <div className="mt-8">
-          <RecentExpenses expenses={mockExpenses} />
+          <RecentExpenses 
+            expenses={expenses || []} 
+            isLoading={isExpensesLoading} 
+          />
         </div>
       </div>
     </AppLayout>
