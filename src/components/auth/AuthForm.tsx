@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +6,9 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useToast } from "@/hooks/use-toast";
+import { authService } from "@/services/authService";
+import { useNavigate } from 'react-router-dom';
 
 type AuthMode = 'login' | 'register';
 
@@ -28,6 +30,8 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export function AuthForm() {
   const [mode, setMode] = useState<AuthMode>('login');
+  const { toast } = useToast();
+  const navigate = useNavigate();
   
   // Login form
   const loginForm = useForm<LoginFormValues>({
@@ -50,11 +54,40 @@ export function AuthForm() {
   });
 
   // Handle form submission
-  const onSubmit = (values: LoginFormValues | RegisterFormValues) => {
-    console.log(values);
-    // Mock successful login
-    localStorage.setItem("isAuthenticated", "true");
-    window.location.href = '/dashboard';
+  const onSubmit = async (values: LoginFormValues | RegisterFormValues) => {
+    try {
+      if (mode === 'register') {
+        const registerData = values as RegisterFormValues;
+        const response = await authService.register({
+          name: registerData.name,
+          email: registerData.email,
+          password: registerData.password,
+        });
+        
+        // Assuming your backend returns a JWT token
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('isAuthenticated', 'true');
+        
+        toast({
+          title: "Registration successful",
+          description: "Your account has been created.",
+        });
+        
+        navigate('/dashboard');
+      } else {
+        // TODO: Implement login endpoint when needed
+        toast({
+          title: "Login functionality",
+          description: "Login endpoint needs to be implemented",
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+    }
   };
 
   // Toggle between login and register
