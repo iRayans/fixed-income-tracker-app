@@ -16,8 +16,7 @@ interface CategoryFormProps {
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
-  description: z.string().optional(),
-  color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, { message: "Please enter a valid hex color code" })
+  description: z.string().min(2, { message: "Description must be at least 2 characters" }),
 });
 
 export function CategoryForm({
@@ -31,7 +30,6 @@ export function CategoryForm({
     defaultValues: initialValues || {
       name: "",
       description: "",
-      color: "#8b5cf6" // Default to purple
     },
   });
 
@@ -49,31 +47,9 @@ export function CategoryForm({
             <FormItem>
               <FormLabel>Category Name</FormLabel>
               <FormControl>
-                <Input placeholder="Rent, Car Payment, etc." {...field} className="bg-secondary/50" />
+                <Input placeholder="Fixed Responsibilities, Bills, etc." {...field} className="bg-secondary/50" />
               </FormControl>
               <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="color"
-          render={({ field }) => (
-            <FormItem className="grid grid-cols-[1fr_80px] gap-4">
-              <div>
-                <FormLabel>Color</FormLabel>
-                <FormControl>
-                  <Input placeholder="#8b5cf6" {...field} className="bg-secondary/50" />
-                </FormControl>
-                <FormMessage />
-              </div>
-              <div className="pt-8">
-                <div 
-                  className="h-10 w-20 rounded-md border" 
-                  style={{ backgroundColor: field.value }}
-                />
-              </div>
             </FormItem>
           )}
         />
@@ -83,9 +59,9 @@ export function CategoryForm({
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description (Optional)</FormLabel>
+              <FormLabel>Description</FormLabel>
               <FormControl>
-                <Input placeholder="For tracking..." {...field} className="bg-secondary/50" />
+                <Input placeholder="Bank Loan, Phone Bill, etc." {...field} className="bg-secondary/50" />
               </FormControl>
               <FormMessage />
             </FormItem>
