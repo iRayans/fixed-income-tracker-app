@@ -2,6 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { formatCurrency } from "@/lib/utils";
 
 interface SalarySummaryProps {
   salary: number;
@@ -22,16 +23,16 @@ export function SalarySummary({ salary, totalExpenses, date }: SalarySummaryProp
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Salary</span>
-            <span className="font-semibold">${salary.toLocaleString()}</span>
+            <span className="font-semibold">{formatCurrency(salary)}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Total Expenses</span>
-            <span className="font-semibold text-destructive">${totalExpenses.toLocaleString()}</span>
+            <span className="font-semibold text-destructive">{formatCurrency(totalExpenses)}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Remaining</span>
             <span className={`font-semibold ${remaining >= 0 ? 'text-green-500' : 'text-destructive'}`}>
-              ${remaining.toLocaleString()}
+              {formatCurrency(remaining)}
             </span>
           </div>
           <div className="pt-2">

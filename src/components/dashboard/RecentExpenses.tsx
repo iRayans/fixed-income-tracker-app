@@ -1,9 +1,9 @@
-
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { expenseService } from "@/services/expenseService";
 import { format } from 'date-fns';
+import { formatCurrency } from "@/lib/utils";
 
 interface Expense {
   id: number;
@@ -72,7 +72,7 @@ export function RecentExpenses({ expenses, isLoading }: RecentExpensesProps = {}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-medium leading-none">${expense.amount}</p>
+                  <p className="text-sm font-medium leading-none">{formatCurrency(expense.amount)}</p>
                   <p className="text-sm text-muted-foreground">
                     {expense.paid ? 'Paid' : 'Unpaid'}
                   </p>
