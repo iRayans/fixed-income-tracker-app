@@ -1,3 +1,4 @@
+
 import { authService } from './authService';
 
 export interface Category {
@@ -29,6 +30,16 @@ export interface CreateExpenseDto {
   paid: boolean;
 }
 
+export interface UpdateExpenseDto {
+  name?: string;
+  description?: string;
+  amount?: number;
+  yearMonth?: string;
+  bank?: string;
+  categoryId?: number;
+  paid?: boolean;
+}
+
 export const expenseService = {
   async getExpenses(date: string): Promise<Expense[]> {
     try {
@@ -54,6 +65,25 @@ export const expenseService = {
         method: 'PUT',
         headers: authService.getAuthHeaders(),
         body: JSON.stringify({ paid }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update expense');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error updating expense:', error);
+      throw error;
+    }
+  },
+
+  async updateExpense(id: number, expense: UpdateExpenseDto): Promise<Expense> {
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/expenses/${id}`, {
+        method: 'PUT',
+        headers: authService.getAuthHeaders(),
+        body: JSON.stringify(expense),
       });
 
       if (!response.ok) {

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ExpenseDialog } from '@/components/expenses/ExpenseDialog';
@@ -36,18 +37,19 @@ const Expenses = () => {
   const handleAddExpense = async (values: any) => {
     try {
       if (editingExpense?.id) {
-        const updatedExpenses = expenses.map(expense => 
-          expense.id === editingExpense.id 
-            ? {
-                ...expense,
-                name: values.name,
-                amount: values.amount,
-                categoryId: parseInt(values.categoryId),
-                description: values.description || "",
-              }
-            : expense
-        );
-        setExpenses(updatedExpenses);
+        // Call API to update the expense
+        const updatedExpense = await expenseService.updateExpense(editingExpense.id, {
+          name: values.name,
+          amount: values.amount,
+          categoryId: parseInt(values.categoryId),
+          description: values.description || "",
+        });
+        
+        // Update the expenses state with the returned data from the API
+        setExpenses(expenses.map(expense => 
+          expense.id === editingExpense.id ? updatedExpense : expense
+        ));
+        
         toast({
           title: "Expense Updated",
           description: "The expense has been updated successfully.",
