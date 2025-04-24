@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { AppLayout } from '@/components/layout/AppLayout';
@@ -9,14 +9,6 @@ import { RecentExpenses } from '@/components/dashboard/RecentExpenses';
 import { summaryService } from '@/services/summaryService';
 import { expenseService } from '@/services/expenseService';
 import { toast } from 'sonner';
-
-// Temporary mock data for the chart until we implement the endpoint
-const mockChartData = [
-  { name: "Rent", value: 1500, color: "#8b5cf6" },
-  { name: "Utilities", value: 300, color: "#3b82f6" },
-  { name: "Groceries", value: 500, color: "#f59e0b" },
-  { name: "Other", value: 300, color: "#6b7280" },
-];
 
 const Dashboard = () => {
   const currentDate = format(new Date(), 'yyyy-MM');
@@ -41,6 +33,42 @@ const Dashboard = () => {
     }
   });
 
+  // Process expense data for the pie chart
+  const expenseDistributionData = useMemo(() => {
+    if (!expenses || expenses.length === 0) return [];
+    
+    // Create a map to group expenses by category
+    const categoryMap = new Map();
+    
+    expenses.forEach(expense => {
+      const categoryName = expense.category?.name || 'Uncategorized';
+      const currentAmount = categoryMap.get(categoryName) || 0;
+      categoryMap.set(categoryName, currentAmount + expense.amount);
+    });
+    
+    // Generate colors for each category
+    const colors = [
+      "#8b5cf6", // Purple
+      "#3b82f6", // Blue
+      "#f59e0b", // Amber
+      "#10b981", // Emerald
+      "#ef4444", // Red
+      "#ec4899", // Pink
+      "#6366f1", // Indigo
+      "#14b8a6", // Teal
+      "#f97316", // Orange
+      "#6b7280", // Gray
+    ];
+    
+    // Convert map to array format needed for the chart
+    let index = 0;
+    return Array.from(categoryMap.entries()).map(([name, value]) => ({
+      name,
+      value,
+      color: colors[index++ % colors.length]
+    }));
+  }, [expenses]);
+
   return (
     <AppLayout>
       <div className="space-y-8">
@@ -63,7 +91,10 @@ const Dashboard = () => {
           </div>
 
           <div className="md:col-span-2">
-            <ExpenseDistribution data={mockChartData} />
+            <ExpenseDistribution 
+              data={expenseDistributionData}
+              isLoading={isExpensesLoading}
+            />
           </div>
         </div>
 
