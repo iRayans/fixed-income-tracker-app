@@ -1,4 +1,3 @@
-
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { format, isValid, parse } from "date-fns"
@@ -8,12 +7,14 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCurrency(amount: number, currency: string = 'SAR') {
+  // Create a custom formatter for Saudi Riyal with the new symbol
   return new Intl.NumberFormat('ar-SA', {
     style: 'currency',
     currency: currency,
+    currencyDisplay: 'symbol',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
-  }).format(amount);
+  }).format(amount).replace('SAR', '﷼');
 }
 
 export function formatDate(dateString: string) {
