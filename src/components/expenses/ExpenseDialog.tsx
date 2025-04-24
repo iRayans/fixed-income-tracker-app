@@ -6,7 +6,7 @@ import { ExpenseForm } from '@/components/expenses/ExpenseForm';
 import { Plus } from 'lucide-react';
 import { Expense } from '@/services/expenseService';
 import { useQuery } from '@tanstack/react-query';
-import { categoryService } from '@/services/categoryService';
+import { categoryService, Category } from '@/services/categoryService';
 
 interface ExpenseDialogProps {
   isOpen: boolean;
@@ -26,6 +26,12 @@ export const ExpenseDialog: React.FC<ExpenseDialogProps> = ({
     queryFn: categoryService.getCategories,
   });
 
+  // Convert categories to match the expected format in ExpenseForm
+  const formattedCategories = categories.map(category => ({
+    id: String(category.id), // Convert number to string
+    name: category.name
+  }));
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
@@ -39,7 +45,7 @@ export const ExpenseDialog: React.FC<ExpenseDialogProps> = ({
         </DialogHeader>
         <ExpenseForm 
           onSubmit={onSubmit} 
-          categories={categories}
+          categories={formattedCategories}
           initialValues={editingExpense}
         />
       </DialogContent>
