@@ -17,7 +17,7 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: "",
+      username: "",
       email: "",
       password: "",
     },
@@ -28,12 +28,12 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
-          name="name"
+          name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input placeholder="John Doe" className="bg-secondary/50" {...field} disabled={isLoading} />
+                <Input placeholder="johndoe" className="bg-secondary/50" {...field} disabled={isLoading} />
               </FormControl>
               <FormMessage />
             </FormItem>

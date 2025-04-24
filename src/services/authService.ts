@@ -2,7 +2,7 @@
 import { getAuthToken } from '@/utils/auth';
 
 interface RegisterData {
-  name: string;
+  username: string;
   email: string;
   password: string;
 }
@@ -16,7 +16,7 @@ interface AuthResponse {
   token: string;
   user?: {
     id: string;
-    name: string;
+    username: string;
     email: string;
   };
 }
