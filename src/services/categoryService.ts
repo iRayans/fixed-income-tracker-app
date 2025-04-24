@@ -1,4 +1,3 @@
-
 import { authService } from './authService';
 
 export interface Category {
@@ -41,6 +40,22 @@ export const categoryService = {
       return await response.json();
     } catch (error) {
       console.error('Error creating category:', error);
+      throw error;
+    }
+  },
+
+  async deleteCategory(id: number): Promise<void> {
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/categories/${id}`, {
+        method: 'DELETE',
+        headers: authService.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete category');
+      }
+    } catch (error) {
+      console.error('Error deleting category:', error);
       throw error;
     }
   },

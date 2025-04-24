@@ -1,65 +1,42 @@
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { expenseService } from "@/services/expenseService";
+import { format } from 'date-fns';
+import React from "react";
 
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { formatDate } from '@/lib/utils';
-import { Expense } from '@/services/expenseService';
-import { Skeleton } from "@/components/ui/skeleton";
+export function RecentExpenses() {
+  const today = new Date();
+  const yearMonth = format(today, 'yyyy-MM');
+  const { data: expenses = [] } = useQuery({
+    queryKey: ['expenses', yearMonth],
+    queryFn: () => expenseService.getExpenses(yearMonth),
+  });
 
-interface RecentExpensesProps {
-  expenses: Expense[];
-  isLoading: boolean;
-}
-
-export function RecentExpenses({ expenses, isLoading }: RecentExpensesProps) {
   return (
-    <Card className="bg-gradient-to-br from-card to-card/70 border-purple-900/20">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-medium text-muted-foreground">
-          Recent Expenses
-        </CardTitle>
+    <Card>
+      <CardHeader>
+        <CardTitle>Recent Expenses</CardTitle>
+        <CardDescription>Your latest expenses</CardDescription>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
-          <div className="space-y-2">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-12 bg-muted animate-pulse rounded-md" />
-            ))}
-          </div>
-        ) : expenses.length === 0 ? (
-          <div className="text-center py-6 text-muted-foreground">
-            No recent expenses found
-          </div>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Month</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {expenses.map((expense) => (
-                <TableRow key={expense.id}>
-                  <TableCell className="font-medium">
-                    {expense.name}
-                    {expense.recurringId && (
-                      <Badge variant="outline" className="ml-2 bg-purple-500/10 text-purple-400 border-purple-500/20">
-                        Recurring
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell>{expense.category?.name || 'Uncategorized'}</TableCell>
-                  <TableCell>{formatDate(expense.date || expense.yearMonth)}</TableCell>
-                  <TableCell className="text-right">${typeof expense.amount === 'number' ? expense.amount.toLocaleString() : '0'}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
+        <div className="space-y-4">
+          {expenses.map((expense) => (
+            <div key={expense.id} className="flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-sm font-medium leading-none">{expense.name}</p>
+                <p className="text-sm text-muted-foreground">
+                  {expense.category?.name || 'Uncategorized'}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-medium leading-none">${expense.amount}</p>
+                <p className="text-sm text-muted-foreground">
+                  {expense.paid ? 'Paid' : 'Unpaid'}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
       </CardContent>
     </Card>
   );
