@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,10 +8,9 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { salaryService, Salary } from '@/services/salaryService';
-import { useTheme } from '@/components/theme-provider';
 
 const Settings = () => {
-  const { theme, setTheme } = useTheme();
+  const [darkMode, setDarkMode] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [salary, setSalary] = useState<Salary>({
     id: undefined,
@@ -81,11 +81,12 @@ const Settings = () => {
   };
 
   const handleToggleDarkMode = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
+    const newDarkMode = !darkMode;
+    setDarkMode(newDarkMode);
+    document.documentElement.classList.toggle('dark', newDarkMode);
     toast({
-      title: newTheme === 'dark' ? "Dark Mode Enabled" : "Light Mode Enabled",
-      description: `The application theme has been switched to ${newTheme} mode.`,
+      title: newDarkMode ? "Dark Mode Enabled" : "Light Mode Enabled",
+      description: `The application theme has been switched to ${newDarkMode ? 'dark' : 'light'} mode.`,
     });
   };
 
@@ -99,7 +100,9 @@ const Settings = () => {
   };
 
   const handleResetSettings = () => {
+    setDarkMode(false);
     setNotificationsEnabled(true);
+    document.documentElement.classList.remove('dark');
     toast({
       title: "Settings Reset",
       description: "All settings have been reset to their default values.",
@@ -117,6 +120,25 @@ const Settings = () => {
         <div className="grid gap-8">
           <Card>
             <CardHeader className="pb-3">
+              <CardTitle>Salary Information</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <p>Loading salary information...</p>
+              ) : (
+                <SalaryForm 
+                  initialValues={{
+                    amount: salary.amount,
+                    description: salary.description
+                  }}
+                  onSubmit={handleUpdateSalary} 
+                />
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
               <CardTitle>Appearance</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -129,7 +151,7 @@ const Settings = () => {
                 </div>
                 <Switch
                   id="dark-mode"
-                  checked={theme === 'dark'}
+                  checked={darkMode}
                   onCheckedChange={handleToggleDarkMode}
                 />
               </div>
