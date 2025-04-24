@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,7 @@ export function AuthForm() {
       if (mode === 'register') {
         const registerData = values as RegisterFormValues;
         await authService.register({
-          name: registerData.name,
+          username: registerData.username,
           email: registerData.email,
           password: registerData.password,
         });
