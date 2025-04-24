@@ -21,7 +21,6 @@ const Expenses = () => {
 
   const fetchExpenses = async (yearMonth: string) => {
     try {
-      // Use the expenseService to fetch expenses
       const data = await expenseService.getExpenses(yearMonth);
       setExpenses(data);
     } catch (error) {
@@ -36,7 +35,7 @@ const Expenses = () => {
 
   const handleAddExpense = async (values: any) => {
     try {
-      if (editingExpense) {
+      if (editingExpense?.id) {
         const updatedExpenses = expenses.map(expense => 
           expense.id === editingExpense.id 
             ? {
@@ -62,7 +61,6 @@ const Expenses = () => {
           bank: "Default Bank",
           paid: false,
           description: values.description || "",
-          date: values.date.toISOString(),
         };
 
         // Call the API to create the expense

@@ -17,7 +17,6 @@ export interface Expense {
   category?: Category;
   recurringId: number | null;
   paid: boolean;
-  date?: string;
 }
 
 export interface CreateExpenseDto {
@@ -28,7 +27,6 @@ export interface CreateExpenseDto {
   bank: string;
   categoryId: number;
   paid: boolean;
-  date?: string;
 }
 
 export const expenseService = {
