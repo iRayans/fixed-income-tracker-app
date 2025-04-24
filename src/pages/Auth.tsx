@@ -2,7 +2,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthForm } from '@/components/auth/AuthForm';
-import { translations } from '@/utils/translations';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -21,10 +20,10 @@ const Auth = () => {
       <div className="relative z-10">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-purple-600">
-            متتبع الراتب
+            Salary Tracker
           </h1>
           <p className="text-muted-foreground mt-2">
-            تتبع وإدارة مصروفاتك الشهرية الثابتة
+            Track and manage your fixed monthly expenses
           </p>
         </div>
         <AuthForm />
