@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { RecurringExpenseForm } from '@/components/expenses/RecurringExpenseForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Calendar, Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -15,6 +15,7 @@ import { recurringExpenseService, RecurringExpense } from '@/services/recurringE
 const RecurringExpenses = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<RecurringExpense | null>(null);
+  const [deletingExpenseId, setDeletingExpenseId] = useState<number | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -105,6 +106,17 @@ const RecurringExpenses = () => {
       });
     },
   });
+
+  const handleConfirmDelete = () => {
+    if (deletingExpenseId) {
+      deleteRecurringExpenseMutation.mutate(deletingExpenseId);
+      setDeletingExpenseId(null);
+    }
+  };
+
+  const handleDeleteClick = (id: number) => {
+    setDeletingExpenseId(id);
+  };
 
   const handleSubmit = (values: any) => {
     const expenseData = {
@@ -233,7 +245,7 @@ const RecurringExpenses = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => expense.id && handleDelete(expense.id)}
+                      onClick={() => expense.id && handleDeleteClick(expense.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -244,6 +256,23 @@ const RecurringExpenses = () => {
           </Table>
         </div>
       </div>
+
+      <AlertDialog open={!!deletingExpenseId} onOpenChange={(open) => !open && setDeletingExpenseId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the recurring expense. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 };

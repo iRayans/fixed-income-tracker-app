@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ExpenseDialog } from '@/components/expenses/ExpenseDialog';
 import { ExpenseList } from '@/components/expenses/ExpenseList';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from '@/hooks/use-toast';
 import { Expense, expenseService } from '@/services/expenseService';
 
@@ -9,6 +10,7 @@ const Expenses = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [deletingExpenseId, setDeletingExpenseId] = useState<number | null>(null);
   const { toast } = useToast();
   const currentDate = new Date();
   const currentYearMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
@@ -123,6 +125,17 @@ const Expenses = () => {
     }
   };
 
+  const handleDeleteClick = (id: number) => {
+    setDeletingExpenseId(id);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deletingExpenseId) {
+      handleDelete(deletingExpenseId);
+      setDeletingExpenseId(null);
+    }
+  };
+
   return (
     <AppLayout>
       <div className="space-y-8">
@@ -145,10 +158,27 @@ const Expenses = () => {
         <ExpenseList
           expenses={expenses}
           onEdit={handleEdit}
-          onDelete={handleDelete}
+          onDelete={handleDeleteClick}
           onTogglePaid={handleTogglePaid}
         />
       </div>
+
+      <AlertDialog open={!!deletingExpenseId} onOpenChange={(open) => !open && setDeletingExpenseId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the expense. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 };
