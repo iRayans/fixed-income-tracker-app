@@ -13,10 +13,22 @@ export interface Expense {
   amount: number;
   yearMonth: string;
   bank: string;
-  category: Category;
+  categoryId: number;
+  category?: Category;
   recurringId: number | null;
   paid: boolean;
-  date?: string; // Keep the old field for backward compatibility
+  date?: string;
+}
+
+export interface CreateExpenseDto {
+  name: string;
+  description: string;
+  amount: number;
+  yearMonth: string;
+  bank: string;
+  categoryId: number;
+  paid: boolean;
+  date?: string;
 }
 
 export const expenseService = {
@@ -57,7 +69,7 @@ export const expenseService = {
     }
   },
 
-  async createExpense(expense: Omit<Expense, 'id'>): Promise<Expense> {
+  async createExpense(expense: CreateExpenseDto): Promise<Expense> {
     try {
       const response = await fetch('http://localhost:8080/api/v1/expenses', {
         method: 'POST',

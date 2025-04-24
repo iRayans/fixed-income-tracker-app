@@ -41,7 +41,7 @@ const Expenses = () => {
                 ...expense,
                 name: values.name,
                 amount: values.amount,
-                category: values.category,
+                categoryId: parseInt(values.categoryId),
                 description: values.description || "",
               }
             : expense
@@ -55,16 +55,11 @@ const Expenses = () => {
         const newExpense = {
           name: values.name,
           amount: values.amount,
-          category: {
-            id: parseInt(values.categoryId),
-            name: values.categoryId, // This should be replaced with actual category name
-            description: ""
-          },
+          categoryId: parseInt(values.categoryId),
           yearMonth: currentYearMonth,
           bank: "Default Bank",
           paid: false,
           description: values.description || "",
-          recurringId: null,
           date: values.date.toISOString(),
         };
 
