@@ -91,12 +91,26 @@ const Expenses = () => {
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id: number) => {
-    setExpenses(expenses.filter(expense => expense.id !== id));
-    toast({
-      title: "Expense Deleted",
-      description: "The expense has been deleted successfully.",
-    });
+  const handleDelete = async (id: number) => {
+    try {
+      // Call API to delete the expense
+      await expenseService.deleteExpense(id);
+      
+      // Update the UI by removing the deleted expense
+      setExpenses(expenses.filter(expense => expense.id !== id));
+      
+      toast({
+        title: "Expense Deleted",
+        description: "The expense has been deleted successfully.",
+      });
+    } catch (error) {
+      console.error('Error deleting expense:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete expense. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleTogglePaid = async (id: number, paid: boolean) => {

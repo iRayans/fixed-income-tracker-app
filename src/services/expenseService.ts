@@ -97,6 +97,22 @@ export const expenseService = {
     }
   },
 
+  async deleteExpense(id: number): Promise<void> {
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/expenses/${id}`, {
+        method: 'DELETE',
+        headers: authService.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete expense');
+      }
+    } catch (error) {
+      console.error('Error deleting expense:', error);
+      throw error;
+    }
+  },
+
   async createExpense(expense: CreateExpenseDto): Promise<Expense> {
     try {
       const response = await fetch('http://localhost:8080/api/v1/expenses', {
