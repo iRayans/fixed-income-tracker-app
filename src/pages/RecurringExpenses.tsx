@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from "@/components/ui/button";
@@ -166,31 +167,31 @@ const RecurringExpenses = () => {
             <p className="text-muted-foreground">Manage your recurring monthly expenses</p>
           </div>
           
-        <Dialog open={isDialogOpen} onOpenChange={(open) => {
-          setIsDialogOpen(open);
-          if (!open) setEditingExpense(null);
-        }}>
-          <DialogTrigger asChild>
-            <Button onClick={() => setIsDialogOpen(true)}>Add Recurring Expense</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{editingExpense ? 'Edit Recurring Expense' : 'Add New Recurring Expense'}</DialogTitle>
-            </DialogHeader>
-            <RecurringExpenseForm 
-              onSubmit={handleSubmit} 
-              categories={formattedCategories}
-              initialValues={editingExpense ? {
-                name: editingExpense.name,
-                amount: editingExpense.amount,
-                categoryId: String(editingExpense.categoryId),
-                dueDay: editingExpense.dueDayOfMonth,
-                description: editingExpense.description,
-              } : undefined}
-              buttonText={editingExpense ? "Update Expense" : "Add Expense"}
-            />
-          </DialogContent>
-        </Dialog>
+          <Dialog open={isDialogOpen} onOpenChange={(open) => {
+            setIsDialogOpen(open);
+            if (!open) setEditingExpense(null);
+          }}>
+            <DialogTrigger asChild>
+              <Button onClick={() => setIsDialogOpen(true)}>Add Recurring Expense</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{editingExpense ? 'Edit Recurring Expense' : 'Add New Recurring Expense'}</DialogTitle>
+              </DialogHeader>
+              <RecurringExpenseForm 
+                onSubmit={handleSubmit} 
+                categories={formattedCategories}
+                initialValues={editingExpense ? {
+                  name: editingExpense.name,
+                  amount: editingExpense.amount,
+                  categoryId: String(editingExpense.categoryId),
+                  dueDay: editingExpense.dueDayOfMonth,
+                  description: editingExpense.description,
+                } : undefined}
+                buttonText={editingExpense ? "Update Expense" : "Add Expense"}
+              />
+            </DialogContent>
+          </Dialog>
         </header>
 
         <div className="rounded-lg border border-border/40 backdrop-blur-sm">
@@ -221,26 +222,27 @@ const RecurringExpenses = () => {
                       onCheckedChange={() => expense.id && handleToggleStatus(expense.id, expense.isActive)}
                     />
                   </TableCell>
-                <TableCell className="text-right space-x-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleEdit(expense)}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => expense.id && handleDelete(expense.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                  <TableCell className="text-right space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(expense)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => expense.id && handleDelete(expense.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </AppLayout>
   );
