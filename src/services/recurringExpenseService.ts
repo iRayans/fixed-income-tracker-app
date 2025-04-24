@@ -75,4 +75,39 @@ export const recurringExpenseService = {
       throw error;
     }
   },
+
+  async deleteRecurringExpense(id: number): Promise<void> {
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/recurringExpenses/${id}`, {
+        method: 'DELETE',
+        headers: authService.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete recurring expense');
+      }
+    } catch (error) {
+      console.error('Error deleting recurring expense:', error);
+      throw error;
+    }
+  },
+
+  async updateRecurringExpense(id: number, expense: Partial<RecurringExpense>): Promise<RecurringExpense> {
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/recurringExpenses/${id}`, {
+        method: 'PUT',
+        headers: authService.getAuthHeaders(),
+        body: JSON.stringify(expense),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update recurring expense');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error updating recurring expense:', error);
+      throw error;
+    }
+  },
 };
