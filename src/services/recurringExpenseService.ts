@@ -56,4 +56,23 @@ export const recurringExpenseService = {
       throw error;
     }
   },
+
+  async toggleRecurringExpenseStatus(id: number, isActive: boolean): Promise<RecurringExpense> {
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/recurringExpenses/${id}`, {
+        method: 'PUT',
+        headers: authService.getAuthHeaders(),
+        body: JSON.stringify({ isActive }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update recurring expense status');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error updating recurring expense status:', error);
+      throw error;
+    }
+  },
 };

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { RecurringExpenseForm } from '@/components/expenses/RecurringExpenseForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -88,6 +89,31 @@ const RecurringExpenses = () => {
     );
   }
 
+  const toggleStatusMutation = useMutation({
+    mutationFn: ({ id, isActive }: { id: number; isActive: boolean }) => 
+      recurringExpenseService.toggleRecurringExpenseStatus(id, isActive),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recurringExpenses'] });
+      toast({
+        title: "Status Updated",
+        description: "Recurring expense status has been updated successfully.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update recurring expense status. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleToggleStatus = (id: number, currentStatus: boolean) => {
+    if (id) {
+      toggleStatusMutation.mutate({ id, isActive: !currentStatus });
+    }
+  };
+
   return (
     <AppLayout>
       <div className="space-y-8">
@@ -136,9 +162,10 @@ const RecurringExpenses = () => {
                   <TableCell>{expense.dueDayOfMonth}<sup>th</sup> of each month</TableCell>
                   <TableCell className="text-right">${expense.amount.toLocaleString()}</TableCell>
                   <TableCell className="text-center">
-                    <span className={`px-2 py-1 rounded-full text-xs ${expense.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                      {expense.isActive ? 'Active' : 'Inactive'}
-                    </span>
+                    <Switch
+                      checked={expense.isActive}
+                      onCheckedChange={() => expense.id && handleToggleStatus(expense.id, expense.isActive)}
+                    />
                   </TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button
