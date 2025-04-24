@@ -12,9 +12,11 @@ const formSchema = z.object({
   description: z.string().min(1, { message: "Description is required" }),
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 interface SalaryFormProps {
-  onSubmit: (values: z.infer<typeof formSchema>) => void;
-  initialValues?: Partial<Salary>;
+  onSubmit: (values: FormValues) => void;
+  initialValues?: Partial<FormValues>;
   buttonText?: string;
   isLoading?: boolean;
 }
@@ -25,11 +27,11 @@ export function SalaryForm({
   buttonText = "Save Salary",
   isLoading = false,
 }: SalaryFormProps) {
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialValues || {
-      amount: undefined,
-      description: "",
+    defaultValues: {
+      amount: initialValues?.amount || 0,
+      description: initialValues?.description || "",
     },
   });
 

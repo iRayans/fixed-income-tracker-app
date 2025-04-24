@@ -48,7 +48,7 @@ export const salaryService = {
     }
   },
 
-  async updateSalary(id: number, salary: Partial<Salary>): Promise<Salary> {
+  async updateSalary(id: number, salary: Omit<Partial<Salary>, 'id'>): Promise<Salary> {
     try {
       const response = await fetch(`http://localhost:8080/api/v1/salaries/${id}`, {
         method: 'PUT',
