@@ -3,8 +3,10 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ExpenseForm } from '@/components/expenses/ExpenseForm';
-import { Expense } from '@/services/expenseService';
 import { Plus } from 'lucide-react';
+import { Expense } from '@/services/expenseService';
+import { useQuery } from '@tanstack/react-query';
+import { categoryService } from '@/services/categoryService';
 
 interface ExpenseDialogProps {
   isOpen: boolean;
@@ -19,13 +21,10 @@ export const ExpenseDialog: React.FC<ExpenseDialogProps> = ({
   onSubmit,
   editingExpense
 }) => {
-  const mockCategories = [
-    { id: "1", name: "Food" },
-    { id: "2", name: "Transportation" },
-    { id: "3", name: "Entertainment" },
-    { id: "4", name: "Bills" },
-    { id: "5", name: "Other" }
-  ];
+  const { data: categories = [] } = useQuery({
+    queryKey: ['categories'],
+    queryFn: categoryService.getCategories,
+  });
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -40,10 +39,11 @@ export const ExpenseDialog: React.FC<ExpenseDialogProps> = ({
         </DialogHeader>
         <ExpenseForm 
           onSubmit={onSubmit} 
-          categories={mockCategories}
+          categories={categories}
           initialValues={editingExpense}
         />
       </DialogContent>
     </Dialog>
   );
 };
+
