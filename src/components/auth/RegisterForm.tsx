@@ -20,7 +20,6 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
       name: "",
       email: "",
       password: "",
-      confirmPassword: "",
     },
   });
 
@@ -59,19 +58,6 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
           render={({ field }) => (
             <FormItem>
               <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input placeholder="••••••••" type="password" className="bg-secondary/50" {...field} disabled={isLoading} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="confirmPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Confirm Password</FormLabel>
               <FormControl>
                 <Input placeholder="••••••••" type="password" className="bg-secondary/50" {...field} disabled={isLoading} />
               </FormControl>
