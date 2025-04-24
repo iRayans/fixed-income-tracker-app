@@ -10,24 +10,20 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { categoryService } from '@/services/categoryService';
 import { recurringExpenseService, RecurringExpense } from '@/services/recurringExpenseService';
 
-// Mock data
-const mockRecurringExpenses = [
-  { id: "1", name: "Apartment Rent", amount: 1500, categoryId: "1", category: "Housing", dueDay: 1, description: "Monthly rent payment" },
-  { id: "2", name: "Car Payment", amount: 400, categoryId: "2", category: "Transportation", dueDay: 5, description: "Car loan payment" },
-  { id: "3", name: "Internet", amount: 80, categoryId: "3", category: "Utilities", dueDay: 15, description: "Broadband service" },
-  { id: "4", name: "Health Insurance", amount: 200, categoryId: "4", category: "Insurance", dueDay: 20, description: "Health coverage" },
-];
-
 const RecurringExpenses = () => {
-  const [recurringExpenses, setRecurringExpenses] = useState(mockRecurringExpenses);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingExpense, setEditingExpense] = useState<any>(null);
+  const [editingExpense, setEditingExpense] = useState<RecurringExpense | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
     queryFn: categoryService.getCategories,
+  });
+
+  const { data: recurringExpenses = [], isLoading } = useQuery({
+    queryKey: ['recurringExpenses'],
+    queryFn: recurringExpenseService.getRecurringExpenses,
   });
 
   const createRecurringExpenseMutation = useMutation({
@@ -68,23 +64,29 @@ const RecurringExpenses = () => {
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    setRecurringExpenses(expenses => expenses.filter(expense => expense.id !== id));
+  const handleDelete = (id: number) => {
     toast({
       title: "Recurring Expense Deleted",
       description: "The recurring expense has been deleted successfully.",
     });
   };
 
-  const handleOpenDialog = () => {
-    setEditingExpense(null);
-    setIsDialogOpen(true);
-  };
-
   const formattedCategories = categories.map(category => ({
     id: String(category.id),
     name: category.name
   }));
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <div className="space-y-8">
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
@@ -116,9 +118,10 @@ const RecurringExpenses = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
-                <TableHead>Category</TableHead>
+                <TableHead>Description</TableHead>
                 <TableHead>Due Day</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
+                <TableHead className="text-center">Active</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -129,9 +132,14 @@ const RecurringExpenses = () => {
                     <Calendar className="mr-2 h-4 w-4 text-purple-500" />
                     {expense.name}
                   </TableCell>
-                  <TableCell>{expense.category}</TableCell>
-                  <TableCell>{expense.dueDay}<sup>th</sup> of each month</TableCell>
+                  <TableCell>{expense.description}</TableCell>
+                  <TableCell>{expense.dueDayOfMonth}<sup>th</sup> of each month</TableCell>
                   <TableCell className="text-right">${expense.amount.toLocaleString()}</TableCell>
+                  <TableCell className="text-center">
+                    <span className={`px-2 py-1 rounded-full text-xs ${expense.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                      {expense.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button
                       variant="ghost"
@@ -143,7 +151,7 @@ const RecurringExpenses = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleDelete(expense.id)}
+                      onClick={() => expense.id && handleDelete(expense.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

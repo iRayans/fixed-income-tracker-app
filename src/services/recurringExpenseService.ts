@@ -1,4 +1,3 @@
-
 import { authService } from './authService';
 
 export interface RecurringExpense {
@@ -39,5 +38,22 @@ export const recurringExpenseService = {
       throw error;
     }
   },
-};
 
+  async getRecurringExpenses(): Promise<RecurringExpense[]> {
+    try {
+      const response = await fetch('http://localhost:8080/api/v1/recurringExpenses', {
+        method: 'GET',
+        headers: authService.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch recurring expenses');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching recurring expenses:', error);
+      throw error;
+    }
+  },
+};
