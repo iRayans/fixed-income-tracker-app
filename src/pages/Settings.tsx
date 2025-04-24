@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +9,7 @@ import { toast } from 'sonner';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
+import { formatCurrency } from '@/lib/utils';
 
 const Settings = () => {
   const queryClient = useQueryClient();
@@ -108,7 +108,7 @@ const Settings = () => {
                     {salaries.map((salary) => (
                       <div key={salary.id} className="flex items-center justify-between p-4 rounded-lg bg-secondary/50">
                         <div>
-                          <p className="font-medium">${salary.amount.toLocaleString()}</p>
+                          <p className="font-medium">{formatCurrency(salary.amount)}</p>
                           <p className="text-sm text-muted-foreground">{salary.description}</p>
                         </div>
                         <div className="flex items-center gap-2">

@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCurrency(amount: number, currency: string = 'SAR') {
-  // Create a formatter that uses the Saudi Riyal symbol (﷼)
+  // Create a formatter that uses the new Saudi Riyal symbol (﷼)
   return new Intl.NumberFormat('ar-SA', {
     style: 'currency',
     currency: currency,

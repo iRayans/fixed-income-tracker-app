@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { formatCurrency } from '@/lib/utils';
 
 // Mock data
 const mockMonthlyData = [
@@ -74,6 +74,7 @@ const Reports = () => {
                         backgroundColor: 'hsl(var(--card))', 
                         borderColor: 'hsl(var(--border))' 
                       }}
+                      formatter={(value: any) => [formatCurrency(Number(value))]}
                     />
                     <Legend />
                     <Bar dataKey="expenses" name="Total Expenses" fill="hsl(var(--primary))" />
@@ -92,7 +93,7 @@ const Reports = () => {
                         backgroundColor: 'hsl(var(--card))', 
                         borderColor: 'hsl(var(--border))' 
                       }}
-                      formatter={(value: any) => [`$${Number(value).toLocaleString()}`]}
+                      formatter={(value: any) => [formatCurrency(Number(value))]}
                     />
                     <Legend />
                     <Bar dataKey="amount" name="Annual Amount" fill="hsl(var(--primary))" />
