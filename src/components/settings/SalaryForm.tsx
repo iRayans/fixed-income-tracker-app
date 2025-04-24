@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Salary } from "@/services/salaryService";
 
 const formSchema = z.object({
   amount: z.coerce.number().positive({ message: "Salary must be positive" }),

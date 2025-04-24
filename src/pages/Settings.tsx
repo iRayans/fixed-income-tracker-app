@@ -7,15 +7,16 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { salaryService } from '@/services/salaryService';
+import { salaryService, Salary } from '@/services/salaryService';
 
-// Fix the error by making sure we pass the correct types to updateSalary
 const Settings = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [salary, setSalary] = useState({
+  const [salary, setSalary] = useState<Salary>({
+    id: undefined,
     amount: 0,
-    description: ''
+    description: '',
+    isActive: true
   });
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -24,10 +25,7 @@ const Settings = () => {
     const fetchSalary = async () => {
       try {
         const data = await salaryService.getSalary();
-        setSalary({
-          amount: data.amount,
-          description: data.description
-        });
+        setSalary(data);
       } catch (error) {
         console.error('Error fetching salary:', error);
         toast({
@@ -45,15 +43,28 @@ const Settings = () => {
 
   const handleUpdateSalary = async (values: { amount: number; description: string }) => {
     try {
-      await salaryService.updateSalary({
-        amount: values.amount,
-        description: values.description
-      });
+      if (salary.id) {
+        // Update existing salary
+        await salaryService.updateSalary(salary.id, {
+          amount: values.amount,
+          description: values.description
+        });
+      } else {
+        // Create new salary
+        const newSalary = await salaryService.createSalary({
+          amount: values.amount,
+          description: values.description,
+          isActive: true
+        });
+        setSalary(newSalary);
+      }
       
-      setSalary({
+      // Update local state
+      setSalary(prev => ({
+        ...prev,
         amount: values.amount,
         description: values.description
-      });
+      }));
       
       toast({
         title: "Salary Updated",
@@ -116,7 +127,10 @@ const Settings = () => {
                 <p>Loading salary information...</p>
               ) : (
                 <SalaryForm 
-                  initialData={salary} 
+                  initialValues={{
+                    amount: salary.amount,
+                    description: salary.description
+                  }}
                   onSubmit={handleUpdateSalary} 
                 />
               )}

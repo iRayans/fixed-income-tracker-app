@@ -26,6 +26,27 @@ export const salaryService = {
     }
   },
 
+  async getSalary(): Promise<Salary> {
+    try {
+      const salaries = await this.getSalaries();
+      // Return the first active salary or a default one if none exists
+      const activeSalary = salaries.find(salary => salary.isActive) || salaries[0];
+      
+      if (!activeSalary) {
+        return {
+          amount: 0,
+          description: '',
+          isActive: true
+        };
+      }
+      
+      return activeSalary;
+    } catch (error) {
+      console.error('Error fetching active salary:', error);
+      throw error;
+    }
+  },
+
   async createSalary(salary: Omit<Salary, 'id'>): Promise<Salary> {
     try {
       const response = await fetch('http://localhost:8080/api/v1/salaries', {
