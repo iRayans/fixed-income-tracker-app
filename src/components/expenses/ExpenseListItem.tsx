@@ -3,7 +3,7 @@ import React from 'react';
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, CheckCircle2, XCircle } from "lucide-react";
+import { Edit, Trash2, CheckCircle2, XCircle, Calendar } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
 import { Expense } from '@/services/expenseService';
 
@@ -26,6 +26,7 @@ export const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
         {expense.name}
         {expense.recurringId && (
           <Badge variant="outline" className="ml-2 bg-purple-500/10 text-purple-400 border-purple-500/20">
+            <Calendar className="mr-1 h-3 w-3" />
             Recurring
           </Badge>
         )}
