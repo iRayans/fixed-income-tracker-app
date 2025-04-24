@@ -177,17 +177,18 @@ const ChartTooltipContent = React.forwardRef<
       <div
         ref={ref}
         className={cn(
-          "grid min-w-[8rem] items-start gap-1.5 rounded-lg border border-border/50 bg-white dark:bg-black/70 px-2.5 py-1.5 text-xs shadow-xl", // Modified background for better visibility
+          "grid min-w-[8rem] items-start gap-1.5 rounded-lg border border-border/50 bg-white/90 dark:bg-black/80 px-2.5 py-1.5 text-xs shadow-xl", // Enhanced background
           className
         )}
         style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.9)', // Light background with transparency
-          color: 'hsl(var(--foreground))', // Ensure text is readable
-          borderColor: 'rgba(0, 0, 0, 0.1)' // Softer border
+          backgroundColor: 'rgba(255, 255, 255, 0.95)', // Very light, slightly opaque background
+          color: 'hsl(var(--foreground))', // Ensures text is readable
+          borderColor: 'rgba(0, 0, 0, 0.1)', // Soft border
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' // Subtle shadow for depth
         }}
       >
         {!nestLabel ? tooltipLabel : null}
-        <div className="grid gap-1.5 text-foreground"> {/* Ensure text is readable */}
+        <div className="grid gap-1.5 text-foreground"> 
           {payload.map((item, index) => {
             const key = `${nameKey || item.name || item.dataKey || "value"}`
             const itemConfig = getPayloadConfigFromPayload(config, item, key)
@@ -197,7 +198,7 @@ const ChartTooltipContent = React.forwardRef<
               <div
                 key={item.dataKey}
                 className={cn(
-                  "flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-foreground", // Adjusted text color
+                  "flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-foreground", 
                   indicator === "dot" && "items-center"
                 )}
               >
@@ -233,12 +234,12 @@ const ChartTooltipContent = React.forwardRef<
                 >
                   <div className="grid gap-1.5">
                     {nestLabel ? tooltipLabel : null}
-                    <span className="text-foreground/80"> {/* Slightly softer foreground */}
+                    <span className="text-foreground/90 font-medium"> 
                       {itemConfig?.label || item.name}
                     </span>
                   </div>
                   {item.value && (
-                    <span className="font-mono font-medium tabular-nums text-foreground">
+                    <span className="font-mono font-semibold tabular-nums text-foreground">
                       {item.value.toLocaleString()}
                     </span>
                   )}
