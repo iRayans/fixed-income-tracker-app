@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,6 +13,7 @@ import { formatCurrency } from '@/lib/utils';
 
 const Settings = () => {
   const queryClient = useQueryClient();
+  const [editingSalary, setEditingSalary] = useState<{id: number, amount: number, description: string} | null>(null);
 
   const { data: salaries = [] } = useQuery({
     queryKey: ['salaries'],
@@ -37,6 +38,7 @@ const Settings = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['salaries'] });
       toast.success('Salary updated successfully');
+      setEditingSalary(null);
     },
     onError: () => {
       toast.error('Failed to update salary');
@@ -65,6 +67,22 @@ const Settings = () => {
     updateSalary.mutate({ id, data: { isActive: true } });
   };
 
+  const handleEditSalary = (salary: { id: number, amount: number, description: string }) => {
+    setEditingSalary(salary);
+  };
+
+  const handleSaveEdit = (values: { amount: number, description: string }) => {
+    if (editingSalary?.id) {
+      updateSalary.mutate({ 
+        id: editingSalary.id, 
+        data: { 
+          amount: values.amount,
+          description: values.description 
+        } 
+      });
+    }
+  };
+
   return (
     <AppLayout>
       <div className="space-y-8">
@@ -81,20 +99,49 @@ const Settings = () => {
           
           <TabsContent value="salary">
             <div className="grid gap-6">
-              <Card className="bg-gradient-to-br from-card to-card/70 border-purple-900/20">
-                <CardHeader>
-                  <CardTitle>Add New Salary</CardTitle>
-                  <CardDescription>
-                    Set up a new salary record
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <SalaryForm 
-                    onSubmit={(values) => createSalary.mutate(values)}
-                    isLoading={createSalary.isPending}
-                  />
-                </CardContent>
-              </Card>
+              {editingSalary ? (
+                <Card className="bg-gradient-to-br from-card to-card/70 border-purple-900/20">
+                  <CardHeader>
+                    <CardTitle>Edit Salary</CardTitle>
+                    <CardDescription>
+                      Update your salary information
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <SalaryForm 
+                      onSubmit={handleSaveEdit}
+                      initialValues={{
+                        amount: editingSalary.amount,
+                        description: editingSalary.description
+                      }}
+                      buttonText="Update Salary"
+                      isLoading={updateSalary.isPending}
+                    />
+                    <Button 
+                      variant="outline" 
+                      className="w-full mt-2"
+                      onClick={() => setEditingSalary(null)}
+                    >
+                      Cancel
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card className="bg-gradient-to-br from-card to-card/70 border-purple-900/20">
+                  <CardHeader>
+                    <CardTitle>Add New Salary</CardTitle>
+                    <CardDescription>
+                      Set up a new salary record
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <SalaryForm 
+                      onSubmit={(values) => createSalary.mutate(values)}
+                      isLoading={createSalary.isPending}
+                    />
+                  </CardContent>
+                </Card>
+              )}
 
               <Card className="bg-gradient-to-br from-card to-card/70 border-purple-900/20">
                 <CardHeader>
@@ -133,17 +180,11 @@ const Settings = () => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => {
-                              if (salary.id) {
-                                updateSalary.mutate({
-                                  id: salary.id,
-                                  data: {
-                                    amount: salary.amount,
-                                    description: salary.description,
-                                  },
-                                });
-                              }
-                            }}
+                            onClick={() => salary.id && handleEditSalary({
+                              id: salary.id,
+                              amount: salary.amount,
+                              description: salary.description
+                            })}
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
