@@ -1,32 +1,51 @@
 
-import React, { useState } from 'react';
+import React from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from "@/components/ui/button";
 import { CategoryForm } from '@/components/categories/CategoryForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-
-// Mock data with the new structure
-const mockCategories = [
-  { id: "1", name: "🔒 Fixed Responsibilities", description: "Bank Loan, Visa Installment, Phone Bill, Internet Bill" },
-  { id: "2", name: "🏠 Housing", description: "Rent, Utilities, Maintenance" },
-  { id: "3", name: "🚗 Transportation", description: "Gas, Car Maintenance, Public Transit" },
-];
+import { categoryService } from '@/services/categoryService';
+import { toast } from '@/components/ui/sonner';
 
 const Categories = () => {
-  const [categories, setCategories] = useState(mockCategories);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const queryClient = useQueryClient();
+
+  const { data: categories = [], isLoading } = useQuery({
+    queryKey: ['categories'],
+    queryFn: categoryService.getCategories,
+  });
+
+  const createCategory = useMutation({
+    mutationFn: categoryService.createCategory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      setIsDialogOpen(false);
+      toast("Category created successfully");
+    },
+    onError: (error) => {
+      toast("Failed to create category", {
+        description: error instanceof Error ? error.message : "Unknown error occurred",
+      });
+    },
+  });
 
   const handleAddCategory = (values: any) => {
-    const newCategory = {
-      id: `${categories.length + 1}`,
+    createCategory.mutate({
       name: values.name,
       description: values.description,
-    };
-
-    setCategories([...categories, newCategory]);
-    setIsDialogOpen(false);
+    });
   };
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <div>Loading categories...</div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
@@ -44,7 +63,10 @@ const Categories = () => {
               <DialogHeader>
                 <DialogTitle>Add New Category</DialogTitle>
               </DialogHeader>
-              <CategoryForm onSubmit={handleAddCategory} />
+              <CategoryForm 
+                onSubmit={handleAddCategory} 
+                isLoading={createCategory.isPending}
+              />
             </DialogContent>
           </Dialog>
         </header>
