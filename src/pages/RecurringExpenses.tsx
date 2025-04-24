@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from "@/components/ui/button";
@@ -47,6 +48,25 @@ const RecurringExpenses = () => {
     },
   });
 
+  const toggleStatusMutation = useMutation({
+    mutationFn: ({ id, isActive }: { id: number; isActive: boolean }) => 
+      recurringExpenseService.toggleRecurringExpenseStatus(id, isActive),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recurringExpenses'] });
+      toast({
+        title: "Status Updated",
+        description: "Recurring expense status has been updated successfully.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update recurring expense status. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleAddRecurringExpense = (values: any) => {
     const newRecurringExpense = {
       name: values.name,
@@ -72,6 +92,12 @@ const RecurringExpenses = () => {
     });
   };
 
+  const handleToggleStatus = (id: number, currentStatus: boolean) => {
+    if (id) {
+      toggleStatusMutation.mutate({ id, isActive: !currentStatus });
+    }
+  };
+
   const formattedCategories = categories.map(category => ({
     id: String(category.id),
     name: category.name
@@ -88,31 +114,6 @@ const RecurringExpenses = () => {
       </AppLayout>
     );
   }
-
-  const toggleStatusMutation = useMutation({
-    mutationFn: ({ id, isActive }: { id: number; isActive: boolean }) => 
-      recurringExpenseService.toggleRecurringExpenseStatus(id, isActive),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['recurringExpenses'] });
-      toast({
-        title: "Status Updated",
-        description: "Recurring expense status has been updated successfully.",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to update recurring expense status. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleToggleStatus = (id: number, currentStatus: boolean) => {
-    if (id) {
-      toggleStatusMutation.mutate({ id, isActive: !currentStatus });
-    }
-  };
 
   return (
     <AppLayout>
