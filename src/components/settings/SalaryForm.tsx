@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { EuroIcon } from "lucide-react";
 
 const formSchema = z.object({
   amount: z.coerce.number().positive({ message: "Salary must be positive" }),
@@ -42,16 +43,19 @@ export function SalaryForm({
           name="amount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Salary Amount</FormLabel>
+              <FormLabel className="text-base font-semibold">Salary Amount</FormLabel>
               <FormControl>
-                <Input 
-                  type="number" 
-                  placeholder="0.00" 
-                  {...field} 
-                  className="bg-secondary/50"
-                />
+                <div className="relative">
+                  <EuroIcon className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                  <Input 
+                    type="number" 
+                    placeholder="0.00" 
+                    {...field} 
+                    className="pl-10 bg-background border-border hover:border-primary/50 transition-colors"
+                  />
+                </div>
               </FormControl>
-              <FormDescription>
+              <FormDescription className="text-sm text-muted-foreground">
                 Enter your monthly salary amount
               </FormDescription>
               <FormMessage />
@@ -64,24 +68,28 @@ export function SalaryForm({
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel className="text-base font-semibold">Description</FormLabel>
               <FormControl>
                 <Input 
                   type="text" 
-                  placeholder="Enter description" 
+                  placeholder="E.g., Monthly Base Salary" 
                   {...field} 
-                  className="bg-secondary/50"
+                  className="bg-background border-border hover:border-primary/50 transition-colors"
                 />
               </FormControl>
-              <FormDescription>
-                Description for this salary (e.g., "Monthly Salary", "Base Salary")
+              <FormDescription className="text-sm text-muted-foreground">
+                Add a description for this salary entry
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
         
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button 
+          type="submit" 
+          className="w-full font-medium hover:bg-primary/90 transition-colors"
+          disabled={isLoading}
+        >
           {isLoading ? "Saving..." : buttonText}
         </Button>
       </form>
