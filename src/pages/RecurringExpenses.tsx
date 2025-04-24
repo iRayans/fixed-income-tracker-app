@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { categoryService } from '@/services/categoryService';
 import { recurringExpenseService, RecurringExpense } from '@/services/recurringExpenseService';
+import { formatCurrency } from '@/lib/utils';
 
 const RecurringExpenses = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -227,7 +228,7 @@ const RecurringExpenses = () => {
                   </TableCell>
                   <TableCell>{expense.description}</TableCell>
                   <TableCell>{expense.dueDayOfMonth}<sup>th</sup> of each month</TableCell>
-                  <TableCell className="text-right">${expense.amount.toLocaleString()}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(expense.amount)}</TableCell>
                   <TableCell className="text-center">
                     <Switch
                       checked={expense.isActive}

@@ -4,7 +4,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, CheckCircle2, XCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 import { Expense } from '@/services/expenseService';
 
 interface ExpenseListItemProps {
@@ -54,7 +54,7 @@ export const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
           )}
         </button>
       </TableCell>
-      <TableCell className="text-right">${expense.amount.toLocaleString()}</TableCell>
+      <TableCell className="text-right">{formatCurrency(expense.amount)}</TableCell>
       <TableCell className="text-right space-x-2">
         <Button
           variant="ghost"
