@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, CheckCircle2, XCircle, Calendar } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
+import { translations } from '@/utils/translations';
 import { Expense } from '@/services/expenseService';
 
 interface ExpenseListItemProps {
@@ -25,13 +26,13 @@ export const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
       <TableCell className="font-medium">
         {expense.name}
         {expense.recurringId && (
-          <Badge variant="outline" className="ml-2 bg-purple-500/10 text-purple-400 border-purple-500/20">
-            <Calendar className="mr-1 h-3 w-3" />
-            Recurring
+          <Badge variant="outline" className="mr-2 bg-purple-500/10 text-purple-400 border-purple-500/20">
+            <Calendar className="ml-1 h-3 w-3" />
+            {translations.recurring}
           </Badge>
         )}
       </TableCell>
-      <TableCell>{expense.category?.name || 'Uncategorized'}</TableCell>
+      <TableCell>{expense.category?.name || translations.uncategorized}</TableCell>
       <TableCell>{expense.bank}</TableCell>
       <TableCell>
         <button 
@@ -44,13 +45,13 @@ export const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
           )}>
           {expense.paid ? (
             <>
-              <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
-              Paid
+              <CheckCircle2 className="ml-1 h-3.5 w-3.5" />
+              {translations.paid}
             </>
           ) : (
             <>
-              <XCircle className="mr-1 h-3.5 w-3.5" />
-              Unpaid
+              <XCircle className="ml-1 h-3.5 w-3.5" />
+              {translations.unpaid}
             </>
           )}
         </button>
@@ -61,6 +62,7 @@ export const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
           variant="ghost"
           size="icon"
           onClick={() => onEdit(expense)}
+          title={translations.edit}
         >
           <Edit className="h-4 w-4" />
         </Button>
@@ -68,6 +70,7 @@ export const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
           variant="ghost"
           size="icon"
           onClick={() => onDelete(expense.id)}
+          title={translations.delete}
         >
           <Trash2 className="h-4 w-4" />
         </Button>
