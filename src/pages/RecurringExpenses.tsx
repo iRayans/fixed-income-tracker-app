@@ -6,17 +6,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Calendar, Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { categoryService } from '@/services/categoryService';
+import { recurringExpenseService, RecurringExpense } from '@/services/recurringExpenseService';
 
 // Mock data
-const mockCategories = [
-  { id: "1", name: "Housing" },
-  { id: "2", name: "Transportation" },
-  { id: "3", name: "Utilities" },
-  { id: "4", name: "Insurance" },
-  { id: "5", name: "Groceries" },
-  { id: "6", name: "Other" },
-];
-
 const mockRecurringExpenses = [
   { id: "1", name: "Apartment Rent", amount: 1500, categoryId: "1", category: "Housing", dueDay: 1, description: "Monthly rent payment" },
   { id: "2", name: "Car Payment", amount: 400, categoryId: "2", category: "Transportation", dueDay: 5, description: "Car loan payment" },
@@ -29,45 +23,44 @@ const RecurringExpenses = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<any>(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const handleAddRecurringExpense = (values: any) => {
-    if (editingExpense) {
-      const updatedExpenses = recurringExpenses.map(expense => 
-        expense.id === editingExpense.id 
-          ? {
-              ...expense,
-              name: values.name,
-              amount: values.amount,
-              categoryId: values.categoryId,
-              category: mockCategories.find(c => c.id === values.categoryId)?.name || "",
-              dueDay: values.dueDay,
-              description: values.description || "",
-            }
-          : expense
-      );
-      setRecurringExpenses(updatedExpenses);
-      toast({
-        title: "Recurring Expense Updated",
-        description: "The recurring expense has been updated successfully.",
-      });
-    } else {
-      const newRecurringExpense = {
-        id: `${recurringExpenses.length + 1}`,
-        name: values.name,
-        amount: values.amount,
-        categoryId: values.categoryId,
-        category: mockCategories.find(c => c.id === values.categoryId)?.name || "",
-        dueDay: values.dueDay,
-        description: values.description || "",
-      };
-      setRecurringExpenses([...recurringExpenses, newRecurringExpense]);
+  const { data: categories = [] } = useQuery({
+    queryKey: ['categories'],
+    queryFn: categoryService.getCategories,
+  });
+
+  const createRecurringExpenseMutation = useMutation({
+    mutationFn: recurringExpenseService.createRecurringExpense,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recurringExpenses'] });
       toast({
         title: "Recurring Expense Added",
         description: "New recurring expense has been added successfully.",
       });
-    }
-    setIsDialogOpen(false);
-    setEditingExpense(null);
+      setIsDialogOpen(false);
+      setEditingExpense(null);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to add recurring expense. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleAddRecurringExpense = (values: any) => {
+    const newRecurringExpense = {
+      name: values.name,
+      amount: values.amount,
+      categoryId: parseInt(values.categoryId),
+      dueDayOfMonth: values.dueDay,
+      description: values.description || "",
+      isActive: true,
+    };
+
+    createRecurringExpenseMutation.mutate(newRecurringExpense);
   };
 
   const handleEdit = (expense: any) => {
@@ -88,6 +81,11 @@ const RecurringExpenses = () => {
     setIsDialogOpen(true);
   };
 
+  const formattedCategories = categories.map(category => ({
+    id: String(category.id),
+    name: category.name
+  }));
+
   return (
     <AppLayout>
       <div className="space-y-8">
@@ -98,7 +96,7 @@ const RecurringExpenses = () => {
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={handleOpenDialog}>Add Recurring Expense</Button>
+              <Button onClick={() => setIsDialogOpen(true)}>Add Recurring Expense</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -106,7 +104,7 @@ const RecurringExpenses = () => {
               </DialogHeader>
               <RecurringExpenseForm 
                 onSubmit={handleAddRecurringExpense} 
-                categories={mockCategories}
+                categories={formattedCategories}
                 initialValues={editingExpense}
               />
             </DialogContent>
