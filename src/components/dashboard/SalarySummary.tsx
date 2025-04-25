@@ -42,7 +42,7 @@ export function SalarySummary({ salary, totalExpenses, date }: SalarySummaryProp
             </div>
             <Progress 
               value={Math.min(100, percentSpent)} 
-              className="h-2" 
+              className="h-2 bg-secondary/50"
             />
           </div>
         </div>
