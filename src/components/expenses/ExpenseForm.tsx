@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   Select,
   SelectContent,
@@ -120,9 +121,13 @@ export function ExpenseForm({
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description (Optional)</FormLabel>
+              <FormLabel>Description</FormLabel>
               <FormControl>
-                <Input placeholder="Additional details..." {...field} className="bg-secondary/50" />
+                <Textarea 
+                  placeholder="Add more details about this expense..." 
+                  className="bg-secondary/50 min-h-[100px]" 
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
