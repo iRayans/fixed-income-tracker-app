@@ -31,6 +31,8 @@ export const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
           </Badge>
         )}
       </TableCell>
+      
+      <TableCell>{expense.description || 'No Description'}</TableCell>
       <TableCell>{expense.category?.name || 'Uncategorized'}</TableCell>
       <TableCell>{expense.bank}</TableCell>
       <TableCell>

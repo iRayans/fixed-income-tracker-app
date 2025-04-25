@@ -23,6 +23,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
+            <TableHead>Description</TableHead>
             <TableHead>Category</TableHead>
             <TableHead>Bank</TableHead>
             <TableHead>Status</TableHead>
