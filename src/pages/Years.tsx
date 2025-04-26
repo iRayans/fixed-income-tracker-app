@@ -50,7 +50,7 @@ const Years = () => {
   }, [currentYear]);
 
   const handleYearSelect = (year: number) => {
-    navigate(`/reports/${year}`);
+    navigate(`/dashboard?year=${year}`);
   };
 
   return (

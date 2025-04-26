@@ -1,5 +1,5 @@
-
 import React, { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { format, addMonths, subMonths } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +16,9 @@ import { toast } from 'sonner';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [searchParams] = useSearchParams();
+  const yearFromUrl = searchParams.get('year') || new Date().getFullYear().toString();
+  const [selectedDate, setSelectedDate] = useState(new Date(parseInt(yearFromUrl), 0, 1));
   const currentDate = format(selectedDate, 'yyyy-MM');
   
   const { data: summaryData, isLoading: isSummaryLoading } = useQuery({
@@ -40,11 +42,21 @@ const Dashboard = () => {
   });
 
   const handlePreviousMonth = () => {
-    setSelectedDate(prev => subMonths(prev, 1));
+    const newDate = new Date(selectedDate);
+    newDate.setMonth(newDate.getMonth() - 1);
+    // Only allow months within the selected year
+    if (newDate.getFullYear().toString() === yearFromUrl) {
+      setSelectedDate(newDate);
+    }
   };
 
   const handleNextMonth = () => {
-    setSelectedDate(prev => addMonths(prev, 1));
+    const newDate = new Date(selectedDate);
+    newDate.setMonth(newDate.getMonth() + 1);
+    // Only allow months within the selected year
+    if (newDate.getFullYear().toString() === yearFromUrl) {
+      setSelectedDate(newDate);
+    }
   };
 
   // Process expense data for the pie chart
