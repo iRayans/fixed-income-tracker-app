@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { format, addMonths, subMonths } from 'date-fns';
 import { useSearchParams, useNavigate } from 'react-router-dom';
@@ -189,28 +190,42 @@ const Expenses = () => {
 
   return (
     <AppLayout>
-      <div className="space-y-8">
-
+      <div className="space-y-6 animate-fade-in">
+        <div className="flex items-center mb-8">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="gap-1 text-muted-foreground hover:text-foreground"
+            onClick={() => navigate(`/years?redirect=expenses`)}
+          >
+            <ChevronLeft size={16} />
+            <span>All Years</span>
+          </Button>
+        </div>
         
-        <ExpenseHeader
-          selectedDate={selectedDate}
-          onPreviousMonth={handlePreviousMonth}
-          onNextMonth={handleNextMonth}
-          isDialogOpen={isDialogOpen}
-          onDialogOpenChange={(open) => {
-            setIsDialogOpen(open);
-            if (!open) setEditingExpense(null);
-          }}
-          onAddExpense={handleAddExpense}
-          editingExpense={editingExpense}
-        />
+        <div className="glass-morphism rounded-lg p-6 shadow-lg animate-scale-in">
+          <ExpenseHeader
+            selectedDate={selectedDate}
+            onPreviousMonth={handlePreviousMonth}
+            onNextMonth={handleNextMonth}
+            isDialogOpen={isDialogOpen}
+            onDialogOpenChange={(open) => {
+              setIsDialogOpen(open);
+              if (!open) setEditingExpense(null);
+            }}
+            onAddExpense={handleAddExpense}
+            editingExpense={editingExpense}
+          />
+        </div>
 
-        <ExpenseList
-          expenses={expenses}
-          onEdit={handleEdit}
-          onDelete={handleDeleteClick}
-          onTogglePaid={handleTogglePaid}
-        />
+        <div className="card-hover bg-card rounded-lg shadow border border-border/40 p-1 animate-slide-up">
+          <ExpenseList
+            expenses={expenses}
+            onEdit={handleEdit}
+            onDelete={handleDeleteClick}
+            onTogglePaid={handleTogglePaid}
+          />
+        </div>
 
         <ExpenseDeleteDialog
           isOpen={!!deletingExpenseId}

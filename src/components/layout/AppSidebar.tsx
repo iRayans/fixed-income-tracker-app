@@ -38,17 +38,17 @@ export function AppSidebar() {
   };
 
   return (
-    <div className="h-screen border-r border-border/40 w-64 bg-sidebar-background flex flex-col">
+    <div className="h-screen border-r border-sidebar-border w-64 bg-sidebar-background flex flex-col">
       <div className="p-6">
-        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-purple-600">Salary Tracker</h1>
+        <h1 className="text-2xl font-bold text-gradient">Salary Tracker</h1>
       </div>
-      <ScrollArea className="flex-1 p-4">
-        <nav className="space-y-2">
+      <ScrollArea className="flex-1 px-3">
+        <nav className="space-y-1.5 py-3">
           <Button 
             variant={isActive("/dashboard") ? "secondary" : "ghost"} 
             className={cn(
-              "w-full justify-start gap-2", 
-              isActive("/dashboard") && "bg-sidebar-accent text-sidebar-accent-foreground"
+              "w-full justify-start gap-3 mb-1 font-medium", 
+              isActive("/dashboard") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
             )}
             onClick={() => navigateWithYear('/dashboard')}
           >
@@ -59,8 +59,8 @@ export function AppSidebar() {
           <Button 
             variant={isActive("/expenses") ? "secondary" : "ghost"} 
             className={cn(
-              "w-full justify-start gap-2", 
-              isActive("/expenses") && "bg-sidebar-accent text-sidebar-accent-foreground"
+              "w-full justify-start gap-3 mb-1 font-medium", 
+              isActive("/expenses") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
             )}
             onClick={() => navigateWithYear('/expenses')}
           >
@@ -71,8 +71,8 @@ export function AppSidebar() {
           <Button 
             variant={isActive("/recurring") ? "secondary" : "ghost"} 
             className={cn(
-              "w-full justify-start gap-2", 
-              isActive("/recurring") && "bg-sidebar-accent text-sidebar-accent-foreground"
+              "w-full justify-start gap-3 mb-1 font-medium", 
+              isActive("/recurring") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
             )}
             onClick={() => navigateWithYear('/recurring')}
           >
@@ -83,8 +83,8 @@ export function AppSidebar() {
           <Button 
             variant={isActive("/categories") ? "secondary" : "ghost"} 
             className={cn(
-              "w-full justify-start gap-2", 
-              isActive("/categories") && "bg-sidebar-accent text-sidebar-accent-foreground"
+              "w-full justify-start gap-3 mb-1 font-medium", 
+              isActive("/categories") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
             )}
             onClick={() => navigateWithYear('/categories')}
           >
@@ -95,8 +95,8 @@ export function AppSidebar() {
           <Button 
             variant={isActive("/reports") || isActive("/years") ? "secondary" : "ghost"} 
             className={cn(
-              "w-full justify-start gap-2", 
-              (isActive("/years") || isActive("/reports")) && "bg-sidebar-accent text-sidebar-accent-foreground"
+              "w-full justify-start gap-3 mb-1 font-medium", 
+              (isActive("/years") || isActive("/reports")) ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
             )}
             onClick={() => isActive("/reports") ? navigate('/years') : navigate(`/reports?year=${yearParam}`)}
           >
@@ -105,12 +105,13 @@ export function AppSidebar() {
           </Button>
         </nav>
       </ScrollArea>
-      <div className="p-4 border-t border-border/40 space-y-2">
+      
+      <div className="p-3 border-t border-sidebar-border/40 space-y-1.5 pt-3 pb-4">
         <Button 
           variant={isActive("/settings") ? "secondary" : "ghost"} 
           className={cn(
-            "w-full justify-start gap-2", 
-            isActive("/settings") && "bg-sidebar-accent text-sidebar-accent-foreground"
+            "w-full justify-start gap-3 font-medium", 
+            isActive("/settings") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
           )}
           onClick={() => navigateWithYear('/settings')}
         >
@@ -119,7 +120,7 @@ export function AppSidebar() {
         </Button>
         <Button 
           variant="ghost" 
-          className="w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+          className="w-full justify-start gap-3 font-medium text-sidebar-foreground/80 hover:text-destructive hover:bg-destructive/10"
           onClick={handleLogout}
         >
           <LogOut size={18} />
