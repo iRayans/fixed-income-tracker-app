@@ -9,11 +9,11 @@ import { RegisterForm } from './RegisterForm';
 import { authService } from "@/services/authService";
 import { AuthMode, LoginFormValues, RegisterFormValues } from '@/types/auth';
 import { setAuthToken } from '@/utils/auth';
+import { toast } from "@/components/ui/sonner";
 
 export function AuthForm() {
   const [mode, setMode] = useState<AuthMode>('login');
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
   const navigate = useNavigate();
 
   const handleSubmit = async (values: LoginFormValues | RegisterFormValues) => {
@@ -28,10 +28,7 @@ export function AuthForm() {
           password: registerData.password,
         });
         
-        toast({
-          title: "Registration successful",
-          description: "Please login with your credentials.",
-        });
+        toast.success("Registration successful. Please login.");
         
         setMode('login');
       } else {
@@ -44,10 +41,12 @@ export function AuthForm() {
         
         setAuthToken(response.token);
         
-        toast({
-          title: "Login successful",
-          description: "Welcome back!",
-        });
+        // Display welcome back toast with username
+        if (response.user?.username) {
+          toast.success(`Welcome back, ${response.user.username}!`);
+        } else {
+          toast.success("Welcome back!");
+        }
         
         navigate('/dashboard');
       }
@@ -57,11 +56,7 @@ export function AuthForm() {
         errorMessage = error.message;
       }
       
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: errorMessage,
-      });
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
