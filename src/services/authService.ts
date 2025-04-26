@@ -1,5 +1,5 @@
-
-import { getAuthToken } from '@/utils/auth';
+import { getAuthToken, handleAuthError } from '@/utils/auth';
+import { toast } from "@/components/ui/sonner";
 
 interface RegisterData {
   username: string;
@@ -59,6 +59,9 @@ export const authService = {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
+        if (response.status === 401) {
+          toast.error("Session expired. Please login again.");
+        }
         throw new Error(errorData?.message || 'Login failed');
       }
 
