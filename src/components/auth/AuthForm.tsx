@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from 'react-router-dom';
 import { LoginForm } from './LoginForm';
 import { RegisterForm } from './RegisterForm';
@@ -56,6 +55,7 @@ export function AuthForm() {
         errorMessage = error.message;
       }
       
+      // Use error toast for destructive/red variant
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
