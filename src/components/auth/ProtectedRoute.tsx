@@ -24,7 +24,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     // Verify token is valid by making a simple request to an API endpoint
     const verifyToken = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/v1/auth/verify', {
+        const response = await fetch('http://localhost:8080/api/v1/auth', {
           headers: {
             'Authorization': `Bearer ${token}`
           }

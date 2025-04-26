@@ -16,7 +16,7 @@ const Auth = () => {
       const checkTokenValidity = async () => {
         try {
           // Make a lightweight API call to any protected endpoint
-          const response = await fetch('http://localhost:8080/api/v1/summary/current', {
+          const response = await fetch('http://localhost:8080/api/v1/auth', {
             headers: {
               'Authorization': `Bearer ${token}`
             }
