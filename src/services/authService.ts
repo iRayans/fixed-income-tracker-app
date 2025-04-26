@@ -128,7 +128,7 @@ export const authService = {
   async getCurrentUser(): Promise<UserData | null> {
     try {
       // Get the current user data from the server
-      const response = await fetch('http://localhost:8080/api/v1/auth/me', {
+      const response = await fetch('http://localhost:8080/api/v1/auth', {
         method: 'GET',
         headers: this.getAuthHeaders(),
       });
