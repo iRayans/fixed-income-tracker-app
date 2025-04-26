@@ -1,4 +1,4 @@
-import { getAuthToken, handleAuthError } from '@/utils/auth';
+import { getAuthToken, clearAuth } from '@/utils/auth';
 import { toast } from "@/components/ui/sonner";
 
 interface RegisterData {
@@ -79,5 +79,40 @@ export const authService = {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
     };
+  },
+
+  async validateToken() {
+    const token = getAuthToken();
+    
+    if (!token) {
+      return false;
+    }
+
+    try {
+      // Use any protected endpoint for token validation
+      const response = await fetch('http://localhost:8080/api/v1/expenses', {
+        method: 'GET',
+        headers: this.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          this.handleTokenExpiration();
+          return false;
+        }
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Token validation error:', error);
+      this.handleTokenExpiration();
+      return false;
+    }
+  },
+
+  handleTokenExpiration() {
+    clearAuth();
+    toast.error("Your session has expired. Please log in again.");
+    window.location.href = '/auth';
   },
 };

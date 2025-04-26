@@ -1,43 +1,21 @@
-
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthForm } from '@/components/auth/AuthForm';
-import { getAuthToken, isTokenExpired } from '@/utils/auth';
-import { toast } from "@/components/ui/sonner";
+import { authService } from '@/services/authService';
 
 const Auth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = getAuthToken();
-    
-    if (token) {
-      // If there's a token, make a simple API call to test its validity
-      const checkTokenValidity = async () => {
-        try {
-          // Make a lightweight API call to any protected endpoint
-          const response = await fetch('http://localhost:8080/api/v1/auth', {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-          
-          if (response.ok) {
-            // Token is valid, redirect to dashboard
-            navigate('/dashboard');
-          } else if (response.status === 401) {
-            // Token is invalid or expired
-            toast.error("Session expired. Please login again.");
-          }
-        } catch (error) {
-          console.error('API request error:', error);
-          // We don't show a toast here as it might just be a network error
-          // and we want to let the user try logging in
-        }
-      };
+    const checkTokenValidity = async () => {
+      const isValid = await authService.validateToken();
       
-      checkTokenValidity();
-    }
+      if (isValid) {
+        navigate('/dashboard');
+      }
+    };
+
+    checkTokenValidity();
   }, [navigate]);
 
   return (
