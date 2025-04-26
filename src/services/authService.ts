@@ -90,7 +90,7 @@ export const authService = {
 
     try {
       // Use any protected endpoint for token validation
-      const response = await fetch('http://localhost:8080/api/v1/expenses', {
+      const response = await fetch('http://localhost:8080/api/v1/auth', {
         method: 'GET',
         headers: this.getAuthHeaders(),
       });
