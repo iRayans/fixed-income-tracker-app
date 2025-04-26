@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -18,7 +19,12 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const yearFromUrl = searchParams.get('year') || new Date().getFullYear().toString();
-  const [selectedDate, setSelectedDate] = useState(new Date(parseInt(yearFromUrl), 0, 1));
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const currentDate = new Date();
+    const year = parseInt(yearFromUrl);
+    // Use current month but with the selected year
+    return new Date(year, currentDate.getMonth(), 1);
+  });
   const currentDate = format(selectedDate, 'yyyy-MM');
   
   const { data: summaryData, isLoading: isSummaryLoading } = useQuery({
@@ -42,8 +48,7 @@ const Dashboard = () => {
   });
 
   const handlePreviousMonth = () => {
-    const newDate = new Date(selectedDate);
-    newDate.setMonth(newDate.getMonth() - 1);
+    const newDate = subMonths(selectedDate, 1);
     // Only allow months within the selected year
     if (newDate.getFullYear().toString() === yearFromUrl) {
       setSelectedDate(newDate);
@@ -51,8 +56,7 @@ const Dashboard = () => {
   };
 
   const handleNextMonth = () => {
-    const newDate = new Date(selectedDate);
-    newDate.setMonth(newDate.getMonth() + 1);
+    const newDate = addMonths(selectedDate, 1);
     // Only allow months within the selected year
     if (newDate.getFullYear().toString() === yearFromUrl) {
       setSelectedDate(newDate);
