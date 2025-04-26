@@ -2,7 +2,8 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthForm } from '@/components/auth/AuthForm';
-import { getAuthToken } from '@/utils/auth';
+import { getAuthToken, isTokenExpired } from '@/utils/auth';
+import { toast } from "@/components/ui/sonner";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -11,24 +12,31 @@ const Auth = () => {
     const token = getAuthToken();
     
     if (token) {
-      // If there's a token, verify it before redirecting
-      const verifyToken = async () => {
+      // If there's a token, make a simple API call to test its validity
+      const checkTokenValidity = async () => {
         try {
-          const response = await fetch('http://localhost:8080/api/v1/auth/verify', {
+          // Make a lightweight API call to any protected endpoint
+          const response = await fetch('http://localhost:8080/api/v1/summary/current', {
             headers: {
               'Authorization': `Bearer ${token}`
             }
           });
           
           if (response.ok) {
+            // Token is valid, redirect to dashboard
             navigate('/dashboard');
+          } else if (response.status === 401) {
+            // Token is invalid or expired
+            toast.error("Session expired. Please login again.");
           }
         } catch (error) {
-          console.error('Token verification error:', error);
+          console.error('API request error:', error);
+          // We don't show a toast here as it might just be a network error
+          // and we want to let the user try logging in
         }
       };
       
-      verifyToken();
+      checkTokenValidity();
     }
   }, [navigate]);
 

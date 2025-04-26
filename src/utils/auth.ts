@@ -14,9 +14,15 @@ export const handleAuthError = (error: any) => {
   }
 };
 
+// Check if the error response indicates an expired token
 export const isTokenExpired = (error: any) => {
   return error.response?.status === 401 && 
          error.response?.data?.Error === "Invalid or expired JWT token";
+};
+
+// Check if a response indicates token expiration or invalid authentication
+export const isAuthError = (response: Response) => {
+  return response.status === 401;
 };
 
 export const clearAuth = () => {
