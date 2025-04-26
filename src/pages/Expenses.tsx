@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { format, addMonths, subMonths } from 'date-fns';
 import { useSearchParams, useNavigate } from 'react-router-dom';
@@ -15,7 +14,12 @@ const Expenses = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const yearFromUrl = searchParams.get('year') || new Date().getFullYear().toString();
-  const [selectedDate, setSelectedDate] = useState(new Date(parseInt(yearFromUrl), 0, 1));
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const currentDate = new Date();
+    const year = parseInt(yearFromUrl);
+    // Use current month but with the selected year
+    return new Date(year, currentDate.getMonth(), 1);
+  });
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
