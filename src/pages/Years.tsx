@@ -1,33 +1,29 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from '@/hooks/use-toast';
 import { expenseService } from '@/services/expenseService';
+import { format } from 'date-fns';
 
 const Years = () => {
   const [years, setYears] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
     const fetchAvailableYears = async () => {
       setLoading(true);
       try {
-        // Call the API to get all years with expenses
         const availableYears = await expenseService.getAvailableYears();
-        
-        // Make sure the current year is always included
         if (!availableYears.includes(currentYear)) {
           availableYears.push(currentYear);
         }
-        
-        // Sort years in descending order (most recent first)
         availableYears.sort((a, b) => b - a);
-        
         setYears(availableYears);
       } catch (error) {
         console.error('Error fetching years data:', error);
@@ -36,8 +32,6 @@ const Years = () => {
           description: "Failed to load years data. Please try again.",
           variant: "destructive",
         });
-        
-        // If we fail to fetch, at least show the current year
         setYears([currentYear]);
       } finally {
         setLoading(false);
@@ -47,12 +41,17 @@ const Years = () => {
     fetchAvailableYears();
   }, [toast, currentYear]);
 
+  const handleMonthSelect = (year: number) => {
+    const date = new Date(year, new Date().getMonth());
+    navigate('/dashboard', { state: { selectedDate: date.toISOString() } });
+  };
+
   return (
     <AppLayout>
       <div className="space-y-8">
         <header>
-          <h1 className="text-3xl font-bold tracking-tight">Expense Years</h1>
-          <p className="text-muted-foreground">Select a year to view expense reports</p>
+          <h1 className="text-3xl font-bold tracking-tight">Select Year</h1>
+          <p className="text-muted-foreground">View expenses and summary by year</p>
         </header>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -65,33 +64,27 @@ const Years = () => {
               </Card>
             ))
           ) : (
-            years.length === 0 ? (
-              <Card className="col-span-full bg-gradient-to-br from-card to-card/70 border-purple-900/20">
-                <CardContent className="flex items-center justify-center h-40">
-                  <p className="text-muted-foreground">No expense data found for any year</p>
+            years.map(year => (
+              <Card 
+                key={year}
+                className="h-40 bg-gradient-to-br from-card to-card/70 border-purple-900/20 hover:bg-card/80 transition-colors cursor-pointer"
+                onClick={() => handleMonthSelect(year)}
+              >
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-2xl font-bold">{year}</CardTitle>
+                  {year === currentYear && (
+                    <Button variant="outline" size="sm" disabled className="pointer-events-none">
+                      Current
+                    </Button>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    View monthly expenses for {year}
+                  </p>
                 </CardContent>
               </Card>
-            ) : (
-              years.map(year => (
-                <Link to={`/reports/${year}`} key={year}>
-                  <Card className="h-40 bg-gradient-to-br from-card to-card/70 border-purple-900/20 hover:bg-card/80 transition-colors cursor-pointer">
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                      <CardTitle className="text-2xl font-bold">{year}</CardTitle>
-                      {year === currentYear && (
-                        <Button variant="outline" size="sm" disabled className="pointer-events-none">
-                          Current
-                        </Button>
-                      )}
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-muted-foreground">
-                        View expense reports for {year}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))
-            )
+            ))
           )}
         </div>
       </div>

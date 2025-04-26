@@ -1,16 +1,21 @@
+
 import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format, addMonths, subMonths } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { SalarySummary } from '@/components/dashboard/SalarySummary';
 import { ExpenseDistribution } from '@/components/dashboard/ExpenseDistribution';
 import { RecentExpenses } from '@/components/dashboard/RecentExpenses';
 import { ExpenseMonthSelector } from '@/components/expenses/ExpenseMonthSelector';
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from 'lucide-react';
 import { summaryService } from '@/services/summaryService';
 import { expenseService } from '@/services/expenseService';
 import { toast } from 'sonner';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const currentDate = format(selectedDate, 'yyyy-MM');
   
@@ -81,9 +86,21 @@ const Dashboard = () => {
   return (
     <AppLayout>
       <div className="space-y-8">
-        <header>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">Overview of your salary and expenses</p>
+        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={() => navigate('/years')}
+              className="h-9 w-9"
+            >
+              <ChevronLeft size={18} />
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+              <p className="text-muted-foreground">Overview of your salary and expenses</p>
+            </div>
+          </div>
         </header>
 
         <ExpenseMonthSelector
