@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from "@/lib/utils";
@@ -20,7 +21,7 @@ export function AppSidebar() {
   const navigate = useNavigate();
 
   const isActive = (path: string) => {
-    return location.pathname === path;
+    return location.pathname === path || location.pathname.startsWith(`${path}/`);
   };
 
   const handleLogout = () => {
@@ -85,12 +86,12 @@ export function AppSidebar() {
               <span>Categories</span>
             </Button>
           </Link>
-          <Link to="/reports">
+          <Link to="/years">
             <Button 
-              variant={isActive("/reports") ? "secondary" : "ghost"} 
+              variant={isActive("/years") ? "secondary" : "ghost"} 
               className={cn(
                 "w-full justify-start gap-2", 
-                isActive("/reports") && "bg-sidebar-accent text-sidebar-accent-foreground"
+                (isActive("/years") || isActive("/reports")) && "bg-sidebar-accent text-sidebar-accent-foreground"
               )}
             >
               <BarChart2 size={18} />

@@ -1,25 +1,29 @@
 
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { expenseService, Expense } from '@/services/expenseService';
 import { useToast } from '@/hooks/use-toast';
 
 const Reports = () => {
+  const { year: yearParam } = useParams<{ year?: string }>();
+  const navigate = useNavigate();
   const [reportType, setReportType] = useState('monthly');
   const [monthlyData, setMonthlyData] = useState<Array<{ name: string; expenses: number }>>([]);
   const [categoryData, setCategoryData] = useState<Array<{ name: string; amount: number }>>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  
+  // Use the year from URL params or the current year
+  const selectedYear = yearParam ? parseInt(yearParam) : new Date().getFullYear();
 
   useEffect(() => {
-    // Current year
-    const currentYear = new Date().getFullYear();
-    
-    // Fetch data for each month of the current year
     const fetchAllMonthsData = async () => {
       setLoading(true);
       try {
@@ -30,7 +34,7 @@ const Reports = () => {
         // Fetch data for each month and process it
         for (let month = 1; month <= 12; month++) {
           const monthString = month.toString().padStart(2, '0');
-          const dateString = `${currentYear}-${monthString}`;
+          const dateString = `${selectedYear}-${monthString}`;
           
           try {
             const expensesForMonth = await expenseService.getExpenses(dateString);
@@ -84,15 +88,25 @@ const Reports = () => {
     };
     
     fetchAllMonthsData();
-  }, [toast]);
+  }, [selectedYear, toast]);
 
   return (
     <AppLayout>
       <div className="space-y-8">
         <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Reports</h1>
-            <p className="text-muted-foreground">View expense reports and trends</p>
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={() => navigate('/years')}
+              className="h-9 w-9"
+            >
+              <ChevronLeft size={18} />
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Reports for {selectedYear}</h1>
+              <p className="text-muted-foreground">View expense reports and trends</p>
+            </div>
           </div>
           <Select value={reportType} onValueChange={setReportType}>
             <SelectTrigger className="w-[180px]">

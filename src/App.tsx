@@ -11,6 +11,7 @@ import Expenses from "./pages/Expenses";
 import RecurringExpenses from "./pages/RecurringExpenses";
 import Categories from "./pages/Categories";
 import Reports from "./pages/Reports";
+import Years from "./pages/Years";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -58,7 +59,23 @@ const App = () => (
             }
           />
           <Route
+            path="/years"
+            element={
+              <ProtectedRoute>
+                <Years />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/reports"
+            element={
+              <ProtectedRoute>
+                <Reports />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/:year"
             element={
               <ProtectedRoute>
                 <Reports />

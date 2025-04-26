@@ -1,4 +1,3 @@
-
 import { authService } from './authService';
 
 export interface Category {
@@ -128,6 +127,24 @@ export const expenseService = {
       return await response.json();
     } catch (error) {
       console.error('Error creating expense:', error);
+      throw error;
+    }
+  },
+  
+  async getAvailableYears(): Promise<number[]> {
+    try {
+      const response = await fetch('http://localhost:8080/api/v1/expenses/years', {
+        method: 'GET',
+        headers: authService.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch available years');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching available years:', error);
       throw error;
     }
   },
