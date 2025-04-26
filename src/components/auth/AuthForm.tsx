@@ -9,11 +9,14 @@ import { authService } from "@/services/authService";
 import { AuthMode, LoginFormValues, RegisterFormValues } from '@/types/auth';
 import { setAuthToken } from '@/utils/auth';
 import { toast } from "@/components/ui/sonner";
+import { useToast } from '@/hooks/use-toast';
 
 export function AuthForm() {
   const [mode, setMode] = useState<AuthMode>('login');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+    const { toast } = useToast();
+  
 
   const handleSubmit = async (values: LoginFormValues | RegisterFormValues) => {
     try {
@@ -27,7 +30,10 @@ export function AuthForm() {
           password: registerData.password,
         });
         
-        toast.success("Registration successful. Please login.");
+
+        toast({
+            description: "Registration successful. Please login.",
+          });
         
         setMode('login');
       } else {
@@ -42,9 +48,9 @@ export function AuthForm() {
         
         // Display welcome back toast with username
         if (response.user?.username) {
-          toast.success(`Welcome back, ${response.user.username}!`);
-        } else {
-          toast.success("Welcome back!");
+            toast({
+                description: `Welcome back, ${response.user.username}!`,
+              });
         }
         
         navigate('/dashboard');
@@ -55,10 +61,10 @@ export function AuthForm() {
         errorMessage = error.message;
       }
       
-      // Use destructive variant for error toast (red)
-      toast.error(errorMessage, {
-        // Optional: add more styling or description
-        description: "Please check your credentials and try again."
+      // Use error toast for destructive/red variant
+      toast({
+        description: errorMessage,
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
