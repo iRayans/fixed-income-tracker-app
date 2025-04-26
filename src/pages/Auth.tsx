@@ -2,15 +2,33 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthForm } from '@/components/auth/AuthForm';
+import { getAuthToken } from '@/utils/auth';
 
 const Auth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
+    const token = getAuthToken();
     
-    if (isAuthenticated === 'true') {
-      navigate('/dashboard');
+    if (token) {
+      // If there's a token, verify it before redirecting
+      const verifyToken = async () => {
+        try {
+          const response = await fetch('http://localhost:8080/api/v1/auth/verify', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          
+          if (response.ok) {
+            navigate('/dashboard');
+          }
+        } catch (error) {
+          console.error('Token verification error:', error);
+        }
+      };
+      
+      verifyToken();
     }
   }, [navigate]);
 
