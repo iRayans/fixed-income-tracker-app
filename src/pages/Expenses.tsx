@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { format, addMonths, subMonths } from 'date-fns';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { ExpenseDialog } from '@/components/expenses/ExpenseDialog';
 import { ExpenseList } from '@/components/expenses/ExpenseList';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+import { ExpenseHeader } from '@/components/expenses/ExpenseHeader';
+import { ExpenseDeleteDialog } from '@/components/expenses/ExpenseDeleteDialog';
 import { useToast } from '@/hooks/use-toast';
 import { Expense, expenseService } from '@/services/expenseService';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Expenses = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -164,35 +162,18 @@ const Expenses = () => {
   return (
     <AppLayout>
       <div className="space-y-8">
-        <header className="flex flex-col space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Expenses</h1>
-              <p className="text-muted-foreground">Manage your monthly expenses</p>
-            </div>
-            <ExpenseDialog
-              isOpen={isDialogOpen}
-              onOpenChange={(open) => {
-                setIsDialogOpen(open);
-                if (!open) setEditingExpense(null);
-              }}
-              onSubmit={handleAddExpense}
-              editingExpense={editingExpense}
-            />
-          </div>
-          
-          <div className="flex items-center justify-between bg-muted/40 p-4 rounded-lg">
-            <Button variant="ghost" size="icon" onClick={handlePreviousMonth}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <h2 className="text-xl font-semibold">
-              {format(selectedDate, 'MMMM yyyy')}
-            </h2>
-            <Button variant="ghost" size="icon" onClick={handleNextMonth}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </header>
+        <ExpenseHeader
+          selectedDate={selectedDate}
+          onPreviousMonth={handlePreviousMonth}
+          onNextMonth={handleNextMonth}
+          isDialogOpen={isDialogOpen}
+          onDialogOpenChange={(open) => {
+            setIsDialogOpen(open);
+            if (!open) setEditingExpense(null);
+          }}
+          onAddExpense={handleAddExpense}
+          editingExpense={editingExpense}
+        />
 
         <ExpenseList
           expenses={expenses}
@@ -200,24 +181,13 @@ const Expenses = () => {
           onDelete={handleDeleteClick}
           onTogglePaid={handleTogglePaid}
         />
-      </div>
 
-      <AlertDialog open={!!deletingExpenseId} onOpenChange={(open) => !open && setDeletingExpenseId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently delete the expense. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        <ExpenseDeleteDialog
+          isOpen={!!deletingExpenseId}
+          onOpenChange={(open) => !open && setDeletingExpenseId(null)}
+          onConfirm={handleConfirmDelete}
+        />
+      </div>
     </AppLayout>
   );
 };
