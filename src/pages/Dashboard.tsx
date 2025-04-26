@@ -1,17 +1,18 @@
-
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { format } from 'date-fns';
+import { format, addMonths, subMonths } from 'date-fns';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { SalarySummary } from '@/components/dashboard/SalarySummary';
 import { ExpenseDistribution } from '@/components/dashboard/ExpenseDistribution';
 import { RecentExpenses } from '@/components/dashboard/RecentExpenses';
+import { ExpenseMonthSelector } from '@/components/expenses/ExpenseMonthSelector';
 import { summaryService } from '@/services/summaryService';
 import { expenseService } from '@/services/expenseService';
 import { toast } from 'sonner';
 
 const Dashboard = () => {
-  const currentDate = format(new Date(), 'yyyy-MM');
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const currentDate = format(selectedDate, 'yyyy-MM');
   
   const { data: summaryData, isLoading: isSummaryLoading } = useQuery({
     queryKey: ['summary', currentDate],
@@ -32,6 +33,14 @@ const Dashboard = () => {
       }
     }
   });
+
+  const handlePreviousMonth = () => {
+    setSelectedDate(prev => subMonths(prev, 1));
+  };
+
+  const handleNextMonth = () => {
+    setSelectedDate(prev => addMonths(prev, 1));
+  };
 
   // Process expense data for the pie chart
   const expenseDistributionData = useMemo(() => {
@@ -77,6 +86,12 @@ const Dashboard = () => {
           <p className="text-muted-foreground">Overview of your salary and expenses</p>
         </header>
 
+        <ExpenseMonthSelector
+          selectedDate={selectedDate}
+          onPreviousMonth={handlePreviousMonth}
+          onNextMonth={handleNextMonth}
+        />
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div className="lg:col-span-1">
             {isSummaryLoading ? (
@@ -85,7 +100,7 @@ const Dashboard = () => {
               <SalarySummary 
                 salary={summaryData?.salary ?? 0}
                 totalExpenses={summaryData?.totalExpenses ?? 0}
-                date={format(new Date(), 'MMMM yyyy')}
+                date={format(selectedDate, 'MMMM yyyy')}
               />
             )}
           </div>
