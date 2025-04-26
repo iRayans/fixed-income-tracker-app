@@ -190,22 +190,7 @@ const Expenses = () => {
   return (
     <AppLayout>
       <div className="space-y-8">
-        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Button 
-              variant="outline" 
-              size="icon" 
-              onClick={() => navigate(`/years`)}
-              className="h-9 w-9"
-            >
-              <ChevronLeft size={18} />
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Expenses</h1>
-              <p className="text-muted-foreground">Manage your monthly expenses for {yearFromUrl}</p>
-            </div>
-          </div>
-        </header>
+
         
         <ExpenseHeader
           selectedDate={selectedDate}
