@@ -1,6 +1,6 @@
+
 export const setAuthToken = (token: string) => {
   localStorage.setItem('token', token);
-  localStorage.setItem('isAuthenticated', 'true');
 };
 
 export const getAuthToken = () => {
@@ -19,11 +19,6 @@ export const isTokenExpired = (error: any) => {
          error.response?.data?.Error === "Invalid or expired JWT token";
 };
 
-export const isAuthenticated = () => {
-  return localStorage.getItem('isAuthenticated') === 'true';
-};
-
 export const clearAuth = () => {
   localStorage.removeItem('token');
-  localStorage.removeItem('isAuthenticated');
 };
