@@ -1,3 +1,4 @@
+
 import { getAuthToken, clearAuth } from '@/utils/auth';
 import { toast } from "@/components/ui/sonner";
 
@@ -71,6 +72,11 @@ export const authService = {
       console.error('Login error:', error);
       throw error;
     }
+  },
+
+  logout() {
+    clearAuth();
+    return true;
   },
 
   getAuthHeaders() {

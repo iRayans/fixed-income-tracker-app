@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -13,20 +12,25 @@ import {
   Tag, 
   BarChart2
 } from "lucide-react";
+import { clearAuth } from '@/utils/auth';
+import { toast } from "@/components/ui/sonner";
 
 export function AppSidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isActive = (path: string) => {
     return location.pathname === path;
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
-    window.location.href = '/auth';
+    clearAuth();
+    toast.success("You have been logged out successfully.");
+    navigate('/auth');
   };
 
   return (
+    
     <div className="h-screen border-r border-border/40 w-64 bg-sidebar-background flex flex-col">
       <div className="p-6">
         <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-purple-600">Salary Tracker</h1>
