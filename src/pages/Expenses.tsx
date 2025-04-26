@@ -1,14 +1,18 @@
+
 import React, { useState, useEffect } from 'react';
 import { format, addMonths, subMonths } from 'date-fns';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ExpenseList } from '@/components/expenses/ExpenseList';
 import { ExpenseHeader } from '@/components/expenses/ExpenseHeader';
 import { ExpenseDeleteDialog } from '@/components/expenses/ExpenseDeleteDialog';
 import { useToast } from '@/hooks/use-toast';
 import { Expense, expenseService } from '@/services/expenseService';
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from 'lucide-react';
 
 const Expenses = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const yearFromUrl = searchParams.get('year') || new Date().getFullYear().toString();
   const [selectedDate, setSelectedDate] = useState(new Date(parseInt(yearFromUrl), 0, 1));
@@ -173,6 +177,23 @@ const Expenses = () => {
   return (
     <AppLayout>
       <div className="space-y-8">
+        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={() => navigate('/years')}
+              className="h-9 w-9"
+            >
+              <ChevronLeft size={18} />
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Expenses</h1>
+              <p className="text-muted-foreground">Manage your monthly expenses for {yearFromUrl}</p>
+            </div>
+          </div>
+        </header>
+        
         <ExpenseHeader
           selectedDate={selectedDate}
           onPreviousMonth={handlePreviousMonth}
