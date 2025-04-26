@@ -27,3 +27,4 @@ export const isAuthenticated = () => {
 export const clearAuth = () => {
   localStorage.removeItem('token');
 };
+
