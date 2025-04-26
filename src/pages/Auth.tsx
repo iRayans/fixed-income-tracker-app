@@ -20,7 +20,7 @@ const Auth = () => {
   }, [navigate]);
 
   return (
-    <div className="h-screen w-screen flex flex-col items-center justify-center bg-gradient-to-br from-background via-background to-background/95 p-6">
+    <div className="h-screen w-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-background/95 p-6">
       {/* Abstract background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 -left-10 w-40 h-40 rounded-full bg-purple-700/10 blur-3xl"></div>
@@ -28,7 +28,7 @@ const Auth = () => {
         <div className="absolute bottom-10 left-1/3 w-80 h-80 rounded-full bg-purple-800/10 blur-3xl"></div>
       </div>
       
-      <div className="relative z-10 w-full max-w-md flex flex-col items-center justify-center animate-fade-in">
+      <div className="relative z-10 w-full max-w-md animate-fade-in">
         <div className="text-center mb-8 animate-slide-up">
           <h1 className="text-5xl font-bold text-gradient mb-2">
             Salary Tracker
