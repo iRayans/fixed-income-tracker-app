@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -13,14 +13,16 @@ import { toast } from 'sonner';
 
 const Reports = () => {
   const { year: yearParam } = useParams<{ year?: string }>();
+  const [searchParams] = useSearchParams();
+  const yearFromUrl = yearParam || searchParams.get('year') || new Date().getFullYear().toString();
   const navigate = useNavigate();
   const [reportType, setReportType] = useState('monthly');
   const [monthlyData, setMonthlyData] = useState<Array<{ name: string; expenses: number }>>([]);
   const [categoryData, setCategoryData] = useState<Array<{ name: string; amount: number }>>([]);
   const [loading, setLoading] = useState(true);
   
-  // Use the year from URL params or the current year
-  const selectedYear = yearParam ? parseInt(yearParam) : new Date().getFullYear();
+  // Convert year to number for processing
+  const selectedYear = parseInt(yearFromUrl);
 
   useEffect(() => {
     const fetchAllMonthsData = async () => {

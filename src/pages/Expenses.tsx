@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { format, addMonths, subMonths } from 'date-fns';
+import { useSearchParams } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ExpenseList } from '@/components/expenses/ExpenseList';
 import { ExpenseHeader } from '@/components/expenses/ExpenseHeader';
@@ -8,8 +9,10 @@ import { useToast } from '@/hooks/use-toast';
 import { Expense, expenseService } from '@/services/expenseService';
 
 const Expenses = () => {
+  const [searchParams] = useSearchParams();
+  const yearFromUrl = searchParams.get('year') || new Date().getFullYear().toString();
+  const [selectedDate, setSelectedDate] = useState(new Date(parseInt(yearFromUrl), 0, 1));
   const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deletingExpenseId, setDeletingExpenseId] = useState<number | null>(null);
@@ -36,11 +39,19 @@ const Expenses = () => {
   };
 
   const handlePreviousMonth = () => {
-    setSelectedDate(subMonths(selectedDate, 1));
+    const newDate = subMonths(selectedDate, 1);
+    // Only allow months within the selected year
+    if (newDate.getFullYear().toString() === yearFromUrl) {
+      setSelectedDate(newDate);
+    }
   };
 
   const handleNextMonth = () => {
-    setSelectedDate(addMonths(selectedDate, 1));
+    const newDate = addMonths(selectedDate, 1);
+    // Only allow months within the selected year
+    if (newDate.getFullYear().toString() === yearFromUrl) {
+      setSelectedDate(newDate);
+    }
   };
 
   const handleAddExpense = async (values: any) => {
