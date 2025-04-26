@@ -1,6 +1,6 @@
 
 import { getAuthToken, clearAuth } from '@/utils/auth';
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 interface RegisterData {
   username: string;
@@ -20,6 +20,15 @@ interface AuthResponse {
     username: string;
     email: string;
   };
+}
+
+interface UserData {
+  id: number;
+  username: string;
+  email: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export const authService = {
@@ -113,6 +122,29 @@ export const authService = {
       console.error('Token validation error:', error);
       this.handleTokenExpiration();
       return false;
+    }
+  },
+
+  async getCurrentUser(): Promise<UserData | null> {
+    try {
+      // Get the current user data from the server
+      const response = await fetch('http://localhost:8080/api/v1/auth/me', {
+        method: 'GET',
+        headers: this.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          this.handleTokenExpiration();
+        }
+        return null;
+      }
+
+      const userData = await response.json();
+      return userData;
+    } catch (error) {
+      console.error('Get current user error:', error);
+      return null;
     }
   },
 
