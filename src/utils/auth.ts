@@ -16,8 +16,7 @@ export const handleAuthError = (error: any) => {
 
 export const isTokenExpired = (error: any) => {
   return error.response?.status === 401 && 
-         (error.response?.data?.Error === "Invalid or expired JWT token" ||
-          error.response?.data?.message === "Invalid or expired JWT token");
+         error.response?.data?.Error === "Invalid or expired JWT token";
 };
 
 export const isAuthenticated = () => {

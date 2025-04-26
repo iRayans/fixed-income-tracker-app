@@ -1,5 +1,4 @@
-
-import { getAuthToken, handleAuthError, clearAuth } from '@/utils/auth';
+import { getAuthToken, handleAuthError } from '@/utils/auth';
 import { toast } from "@/components/ui/sonner";
 
 interface RegisterData {
@@ -60,6 +59,9 @@ export const authService = {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
+        if (response.status === 401) {
+          toast.error("Session expired. Please login again.");
+        }
         throw new Error(errorData?.message || 'Login failed');
       }
 
@@ -68,25 +70,6 @@ export const authService = {
     } catch (error) {
       console.error('Login error:', error);
       throw error;
-    }
-  },
-
-  async checkTokenStatus() {
-    const token = getAuthToken();
-    if (!token) return false;
-    
-    try {
-      // This could be a lightweight endpoint just to validate the token
-      // For now, simulating with a timeout
-      await new Promise(resolve => setTimeout(resolve, 100));
-      return true;
-    } catch (error: any) {
-      if (error?.response?.status === 401) {
-        toast.error("Your session has expired. Please login again.");
-        clearAuth();
-        return false;
-      }
-      return false;
     }
   },
 
