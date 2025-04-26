@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppSidebar } from './AppSidebar';
+import { isAuthenticated } from '@/utils/auth';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -12,9 +13,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   // Check if user is authenticated
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
-    
-    if (isAuthenticated !== 'true') {
+    if (!isAuthenticated()) {
       navigate('/auth');
     }
   }, [navigate]);

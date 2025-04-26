@@ -1,6 +1,6 @@
+
 export const setAuthToken = (token: string) => {
   localStorage.setItem('token', token);
-  localStorage.setItem('isAuthenticated', 'true');
 };
 
 export const getAuthToken = () => {
@@ -20,10 +20,10 @@ export const isTokenExpired = (error: any) => {
 };
 
 export const isAuthenticated = () => {
-  return localStorage.getItem('isAuthenticated') === 'true';
+  const token = getAuthToken();
+  return token !== null && token !== '';
 };
 
 export const clearAuth = () => {
   localStorage.removeItem('token');
-  localStorage.removeItem('isAuthenticated');
 };
