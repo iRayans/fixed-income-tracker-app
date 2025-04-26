@@ -72,15 +72,15 @@ export function AuthForm() {
   };
 
   return (
-    <Card className="w-[400px] bg-black/20 backdrop-blur-xl border-purple-500/10 shadow-[0_8px_16px_rgb(0_0_0/0.4)]">
-      <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
-          {mode === 'login' ? 'Welcome Back' : 'Create Account'}
+    <Card className="w-[350px] bg-gradient-to-b from-card to-background border-purple-900/20">
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-2xl text-center font-bold">
+          {mode === 'login' ? 'Sign In' : 'Create Account'}
         </CardTitle>
-        <CardDescription className="text-muted-foreground/70">
+        <CardDescription className="text-center">
           {mode === 'login' 
-            ? 'Enter your credentials to access your account' 
-            : 'Fill in your information to get started'}
+            ? 'Enter your email and password to sign in' 
+            : 'Enter your information to create an account'}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -92,9 +92,9 @@ export function AuthForm() {
       </CardContent>
       <CardFooter>
         <Button 
-          variant="ghost" 
+          variant="link" 
           onClick={() => setMode(mode === 'login' ? 'register' : 'login')} 
-          className="w-full text-muted-foreground/70 hover:text-purple-400 hover:bg-purple-400/10"
+          className="w-full text-primary"
           disabled={isLoading}
         >
           {mode === 'login' 

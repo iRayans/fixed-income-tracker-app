@@ -31,16 +31,11 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-muted-foreground/70">Username</FormLabel>
+              <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input 
-                  placeholder="johndoe" 
-                  className="bg-black/20 border-purple-500/20 focus-visible:ring-purple-500/30 placeholder:text-muted-foreground/50" 
-                  {...field} 
-                  disabled={isLoading} 
-                />
+                <Input placeholder="johndoe" className="bg-secondary/50" {...field} disabled={isLoading} />
               </FormControl>
-              <FormMessage className="text-destructive/70" />
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -49,17 +44,11 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-muted-foreground/70">Email</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input 
-                  placeholder="hello@example.com" 
-                  type="email" 
-                  className="bg-black/20 border-purple-500/20 focus-visible:ring-purple-500/30 placeholder:text-muted-foreground/50" 
-                  {...field} 
-                  disabled={isLoading} 
-                />
+                <Input placeholder="example@example.com" type="email" className="bg-secondary/50" {...field} disabled={isLoading} />
               </FormControl>
-              <FormMessage className="text-destructive/70" />
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -68,25 +57,15 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-muted-foreground/70">Password</FormLabel>
+              <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input 
-                  placeholder="••••••••" 
-                  type="password" 
-                  className="bg-black/20 border-purple-500/20 focus-visible:ring-purple-500/30 placeholder:text-muted-foreground/50" 
-                  {...field} 
-                  disabled={isLoading} 
-                />
+                <Input placeholder="••••••••" type="password" className="bg-secondary/50" {...field} disabled={isLoading} />
               </FormControl>
-              <FormMessage className="text-destructive/70" />
+              <FormMessage />
             </FormItem>
           )}
         />
-        <Button 
-          type="submit" 
-          className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white" 
-          disabled={isLoading}
-        >
+        <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
