@@ -55,8 +55,11 @@ export function AuthForm() {
         errorMessage = error.message;
       }
       
-      // Use error toast for destructive/red variant
-      toast.error(errorMessage);
+      // Use destructive variant for error toast (red)
+      toast.error(errorMessage, {
+        // Optional: add more styling or description
+        description: "Please check your credentials and try again."
+      });
     } finally {
       setIsLoading(false);
     }
