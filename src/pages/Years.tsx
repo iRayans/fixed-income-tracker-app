@@ -4,44 +4,52 @@ import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useToast } from '@/hooks/use-toast';
-import { expenseService } from '@/services/expenseService';
+import { toast } from "sonner";
+import { authService } from '@/services/authService';
 
 const Years = () => {
   const [years, setYears] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
-    const fetchAvailableYears = async () => {
+    const generateAvailableYears = async () => {
       setLoading(true);
       try {
-        const availableYears = await expenseService.getAvailableYears();
-        if (!availableYears.includes(currentYear)) {
-          availableYears.push(currentYear);
+        // Get user data which includes creation date
+        const userData = await authService.getCurrentUser();
+        
+        if (!userData) {
+          throw new Error('Could not fetch user data');
         }
+
+        // Get the year from user's creation date
+        const creationYear = new Date(userData.createdAt).getFullYear();
+        
+        // Generate array of years from creation year to current year
+        const availableYears = [];
+        for (let year = creationYear; year <= currentYear; year++) {
+          availableYears.push(year);
+        }
+        
+        // Sort years in descending order (newest first)
         availableYears.sort((a, b) => b - a);
         setYears(availableYears);
       } catch (error) {
-        console.error('Error fetching years data:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load years data. Please try again.",
-          variant: "destructive",
-        });
+        console.error('Error generating years:', error);
+        toast.error("Failed to load years data. Please try again.");
+        // Fallback to just showing current year
         setYears([currentYear]);
       } finally {
         setLoading(false);
       }
     };
     
-    fetchAvailableYears();
-  }, [toast, currentYear]);
+    generateAvailableYears();
+  }, [currentYear]);
 
   const handleYearSelect = (year: number) => {
-    // Changed to navigate to reports for the selected year
     navigate(`/reports/${year}`);
   };
 
