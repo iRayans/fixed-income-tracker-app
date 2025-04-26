@@ -75,14 +75,6 @@ const App = () => (
             }
           />
           <Route
-            path="/reports/:year"
-            element={
-              <ProtectedRoute>
-                <Reports />
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path="/settings"
             element={
               <ProtectedRoute>

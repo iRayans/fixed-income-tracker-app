@@ -95,7 +95,7 @@ const Reports = () => {
             <Button 
               variant="outline" 
               size="icon" 
-              onClick={() => navigate('/years')}
+              onClick={() => navigate(`/years`)}
               className="h-9 w-9"
             >
               <ChevronLeft size={18} />

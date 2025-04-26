@@ -28,6 +28,15 @@ const Expenses = () => {
     fetchExpenses(selectedYearMonth);
   }, [selectedYearMonth]);
 
+  // Effect to update selectedDate when year parameter changes
+  useEffect(() => {
+    const year = parseInt(yearFromUrl);
+    setSelectedDate(prevDate => {
+      // Preserve the month but update the year
+      return new Date(year, prevDate.getMonth(), 1);
+    });
+  }, [yearFromUrl]);
+
   const fetchExpenses = async (yearMonth: string) => {
     try {
       const data = await expenseService.getExpenses(yearMonth);
@@ -182,7 +191,7 @@ const Expenses = () => {
             <Button 
               variant="outline" 
               size="icon" 
-              onClick={() => navigate('/years')}
+              onClick={() => navigate(`/years`)}
               className="h-9 w-9"
             >
               <ChevronLeft size={18} />

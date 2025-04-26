@@ -98,7 +98,7 @@ export function AppSidebar() {
               "w-full justify-start gap-2", 
               (isActive("/years") || isActive("/reports")) && "bg-sidebar-accent text-sidebar-accent-foreground"
             )}
-            onClick={() => navigate('/years')}
+            onClick={() => isActive("/reports") ? navigate('/years') : navigate(`/reports?year=${yearParam}`)}
           >
             <BarChart2 size={18} />
             <span>Reports</span>
