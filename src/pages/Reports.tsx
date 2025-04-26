@@ -8,8 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
-import { expenseService, Expense } from '@/services/expenseService';
-import { useToast } from '@/hooks/use-toast';
+import { expenseService } from '@/services/expenseService';
+import { toast } from 'sonner';
 
 const Reports = () => {
   const { year: yearParam } = useParams<{ year?: string }>();
@@ -18,7 +18,6 @@ const Reports = () => {
   const [monthlyData, setMonthlyData] = useState<Array<{ name: string; expenses: number }>>([]);
   const [categoryData, setCategoryData] = useState<Array<{ name: string; amount: number }>>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
   
   // Use the year from URL params or the current year
   const selectedYear = yearParam ? parseInt(yearParam) : new Date().getFullYear();
@@ -77,18 +76,14 @@ const Reports = () => {
         setCategoryData(categoryChartData);
       } catch (error) {
         console.error('Error fetching report data:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load report data. Please try again.",
-          variant: "destructive",
-        });
+        toast.error("Failed to load report data. Please try again.");
       } finally {
         setLoading(false);
       }
     };
     
     fetchAllMonthsData();
-  }, [selectedYear, toast]);
+  }, [selectedYear]);
 
   return (
     <AppLayout>

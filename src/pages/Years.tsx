@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from '@/hooks/use-toast';
 import { expenseService } from '@/services/expenseService';
-import { format } from 'date-fns';
 
 const Years = () => {
   const [years, setYears] = useState<number[]>([]);
@@ -41,9 +40,9 @@ const Years = () => {
     fetchAvailableYears();
   }, [toast, currentYear]);
 
-  const handleMonthSelect = (year: number) => {
-    const date = new Date(year, new Date().getMonth());
-    navigate('/dashboard', { state: { selectedDate: date.toISOString() } });
+  const handleYearSelect = (year: number) => {
+    // Changed to navigate to reports for the selected year
+    navigate(`/reports/${year}`);
   };
 
   return (
@@ -68,7 +67,7 @@ const Years = () => {
               <Card 
                 key={year}
                 className="h-40 bg-gradient-to-br from-card to-card/70 border-purple-900/20 hover:bg-card/80 transition-colors cursor-pointer"
-                onClick={() => handleMonthSelect(year)}
+                onClick={() => handleYearSelect(year)}
               >
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-2xl font-bold">{year}</CardTitle>
@@ -80,7 +79,7 @@ const Years = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    View monthly expenses for {year}
+                    View annual report for {year}
                   </p>
                 </CardContent>
               </Card>
