@@ -44,15 +44,6 @@
   }
 }
 
-/* Handle RTL and LTR specific styles */
-html[dir="rtl"] .reverse-dir {
-  flex-direction: row-reverse;
-}
-
-html[dir="rtl"] .mirror-icons {
-  transform: scaleX(-1);
-}
-
 /* Add support for gradient text */
 .text-gradient {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-indigo-600;
