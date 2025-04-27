@@ -3,9 +3,11 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthForm } from '@/components/auth/AuthForm';
 import { authService } from '@/services/authService';
+import { useTranslation } from '@/utils/translations';
 
 const Auth = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const checkTokenValidity = async () => {
@@ -30,10 +32,10 @@ const Auth = () => {
         
         <div className="relative z-10 animate-fade-in">
           <h1 className="text-6xl font-bold text-gradient mb-6">
-            Salary <span className="text-primary">Tracker</span>
+            {t('auth.salaryTracker')} <span className="text-primary">Tracker</span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-md">
-            Take control of your finances with our comprehensive salary and expense tracking solution.
+            {t('auth.takeControl')}
           </p>
           <div className="space-y-4">
             <div className="flex items-center">
@@ -41,7 +43,7 @@ const Auth = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M12 22V8"/><path d="m5 12 7-4 7 4"/><path d="M19 21v-6"/><path d="M5 21v-6"/><path d="M3 7V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2"/></svg>
               </div>
               <div>
-                <h3 className="font-medium">Track Your Income</h3>
+                <h3 className="font-medium">{t('auth.trackIncome')}</h3>
                 <p className="text-muted-foreground text-sm">Monitor your salary and income sources</p>
               </div>
             </div>
@@ -50,7 +52,7 @@ const Auth = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
               </div>
               <div>
-                <h3 className="font-medium">Manage Expenses</h3>
+                <h3 className="font-medium">{t('auth.manageExpenses')}</h3>
                 <p className="text-muted-foreground text-sm">Categorize and track all your spending</p>
               </div>
             </div>
@@ -59,7 +61,7 @@ const Auth = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
               </div>
               <div>
-                <h3 className="font-medium">Visualize Progress</h3>
+                <h3 className="font-medium">{t('auth.visualizeProgress')}</h3>
                 <p className="text-muted-foreground text-sm">Get insights with comprehensive reports</p>
               </div>
             </div>
@@ -79,7 +81,7 @@ const Auth = () => {
         <div className="relative z-10 w-full max-w-md animate-fade-in">
           <div className="text-center mb-8 animate-slide-up md:hidden">
             <h1 className="text-5xl font-bold text-gradient mb-2">
-              Salary Tracker
+              {t('auth.salaryTracker')}
             </h1>
             <p className="text-muted-foreground text-lg">
               Track and manage your monthly expenses with ease

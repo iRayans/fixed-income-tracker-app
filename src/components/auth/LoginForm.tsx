@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { LoginFormValues, loginSchema } from "@/types/auth";
 import { Loader2, Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { useTranslation } from '@/utils/translations';
 
 interface LoginFormProps {
   onSubmit: (values: LoginFormValues) => Promise<void>;
@@ -15,6 +16,7 @@ interface LoginFormProps {
 
 export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
+  const { t } = useTranslation();
   
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -32,7 +34,7 @@ export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t('auth.email')}</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
@@ -54,7 +56,7 @@ export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t('auth.password')}</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
@@ -84,10 +86,10 @@ export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Signing in...
+              {t('auth.signInLoading')}
             </>
           ) : (
-            "Sign In"
+            t('auth.signIn')
           )}
         </Button>
       </form>

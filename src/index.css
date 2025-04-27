@@ -5,84 +5,69 @@
 
 @layer base {
   :root {
-    /* Dark theme by default (no light theme toggle) */
-    --background: 240 10% 3.9%; /* Dark background */
-    --foreground: 0 0% 98%; /* Light text */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
 
-    --card: 240 10% 6.9%; /* Slightly lighter than background for cards */
+    --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 240 10% 8%; /* Slightly lighter for popovers */
+    --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 265 84% 61%; /* Purple as primary */
-    --primary-foreground: 0 0% 100%;
+    --primary: 263.4 70% 50.4%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 240 5.9% 13%; /* Dark gray for secondary */
+    --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 240 5.9% 15%;
+    --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
 
-    --accent: 265 84% 61%; /* Purple for accent too */
+    --accent: 240 3.7% 15.9%;
     --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 62.8% 50.6%;
+    --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 3.7% 20%;
+    --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 265 84% 61%; /* Purple for focus rings */
+    --ring: 240 4.9% 83.9%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 240 10% 5.9%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 265 84% 61%; /* Purple */
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 10% 10%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 240 10% 12%;
-    --sidebar-ring: 265 84% 61%;
+    --sidebar-width: 260px;
+    --sidebar-background: 240 10% 3.9%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-accent: 263.4 70% 50.4%;
+    --sidebar-accent-foreground: 210 40% 98%;
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-  }
+/* Handle RTL and LTR specific styles */
+html[dir="rtl"] .reverse-dir {
+  flex-direction: row-reverse;
 }
 
-@layer utilities {
-  .glass-morphism {
-    @apply backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.3)];
-  }
-  
-  .text-gradient {
-    @apply bg-gradient-to-br from-purple-400 via-purple-500 to-purple-600 bg-clip-text text-transparent;
-  }
-  
-  .animate-fade-in {
-    animation: fadeIn 0.4s ease-out forwards;
-  }
-  
-  .animate-slide-up {
-    animation: slideUp 0.5s ease-out forwards;
-  }
-  
-  .animate-scale-in {
-    animation: scaleIn 0.3s ease-out forwards;
-  }
-  
-  .card-hover {
-    @apply transition-all duration-200 hover:shadow-lg hover:border-purple-500/30;
-  }
+html[dir="rtl"] .mirror-icons {
+  transform: scaleX(-1);
 }
 
+/* Add support for gradient text */
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-indigo-600;
+}
+
+body {
+  @apply bg-background text-foreground;
+}
+
+/* Add glass morphism support */
+.glass-morphism {
+  @apply bg-white/5 backdrop-blur-lg border border-white/10;
+}
+
+/* Add animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -96,4 +81,24 @@
 @keyframes scaleIn {
   from { transform: scale(0.95); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s ease-out forwards;
+}
+
+.card-hover {
+  @apply transition-all duration-300;
+}
+
+.card-hover:hover {
+  @apply shadow-md bg-card/80 border-purple-800/30;
 }

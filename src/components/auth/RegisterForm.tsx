@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { RegisterFormValues, registerSchema } from "@/types/auth";
 import { Loader2, Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
+import { useTranslation } from '@/utils/translations';
 
 interface RegisterFormProps {
   onSubmit: (values: RegisterFormValues) => Promise<void>;
@@ -15,6 +16,7 @@ interface RegisterFormProps {
 
 export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps) {
   const [showPassword, setShowPassword] = useState(false);
+  const { t } = useTranslation();
   
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -33,7 +35,7 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>{t('auth.username')}</FormLabel>
               <FormControl>
                 <div className="relative">
                   <User className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
@@ -54,7 +56,7 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t('auth.email')}</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
@@ -76,7 +78,7 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t('auth.password')}</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
@@ -106,10 +108,10 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Creating account...
+              {t('auth.createAccountLoading')}
             </>
           ) : (
-            "Create Account"
+            t('auth.createAccountButton')
           )}
         </Button>
       </form>
