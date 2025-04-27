@@ -15,9 +15,8 @@ export function AuthForm() {
   const [mode, setMode] = useState<AuthMode>('login');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-    const { toast } = useToast();
+  const { toast } = useToast();
   
-
   const handleSubmit = async (values: LoginFormValues | RegisterFormValues) => {
     try {
       setIsLoading(true);
@@ -30,7 +29,6 @@ export function AuthForm() {
           password: registerData.password,
         });
         
-
         toast({
             description: "Registration successful. Please login.",
           });
@@ -72,18 +70,18 @@ export function AuthForm() {
   };
 
   return (
-    <Card className="w-[350px] bg-gradient-to-b from-card to-background border-purple-900/20">
-      <CardHeader className="space-y-1">
+    <Card className="w-full bg-gradient-to-b from-card/80 to-background/90 border-purple-900/20 shadow-lg backdrop-blur-sm">
+      <CardHeader className="space-y-1 pb-2">
         <CardTitle className="text-2xl text-center font-bold">
-          {mode === 'login' ? 'Sign In' : 'Create Account'}
+          {mode === 'login' ? 'Welcome Back' : 'Create Account'}
         </CardTitle>
         <CardDescription className="text-center">
           {mode === 'login' 
-            ? 'Enter your email and password to sign in' 
-            : 'Enter your information to create an account'}
+            ? 'Enter your credentials to access your account' 
+            : 'Fill in your details to create a new account'}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 pt-2">
         {mode === 'login' ? (
           <LoginForm onSubmit={handleSubmit} isLoading={isLoading} />
         ) : (
@@ -98,7 +96,7 @@ export function AuthForm() {
           disabled={isLoading}
         >
           {mode === 'login' 
-            ? "Don't have an account? Sign up" 
+            ? "Don't have an account? Create one" 
             : "Already have an account? Sign in"}
         </Button>
       </CardFooter>

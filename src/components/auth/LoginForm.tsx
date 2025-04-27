@@ -1,12 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { LoginFormValues, loginSchema } from "@/types/auth";
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff, Mail, Lock } from 'lucide-react';
 
 interface LoginFormProps {
   onSubmit: (values: LoginFormValues) => Promise<void>;
@@ -14,6 +14,8 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
+  const [showPassword, setShowPassword] = useState(false);
+  
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -32,7 +34,16 @@ export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="example@example.com" type="email" className="bg-secondary/50" {...field} disabled={isLoading} />
+                <div className="relative">
+                  <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                  <Input 
+                    placeholder="example@example.com" 
+                    type="email" 
+                    className="pl-10 bg-secondary/30 border-secondary/50 focus:border-primary/50" 
+                    {...field} 
+                    disabled={isLoading} 
+                  />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -45,7 +56,25 @@ export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input placeholder="••••••••" type="password" className="bg-secondary/50" {...field} disabled={isLoading} />
+                <div className="relative">
+                  <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                  <Input 
+                    placeholder="••••••••" 
+                    type={showPassword ? "text" : "password"} 
+                    className="pl-10 pr-10 bg-secondary/30 border-secondary/50 focus:border-primary/50" 
+                    {...field} 
+                    disabled={isLoading} 
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-1 top-1 h-8 w-8 p-0 text-muted-foreground"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
