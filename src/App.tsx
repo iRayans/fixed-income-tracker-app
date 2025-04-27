@@ -9,7 +9,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Expenses from "./pages/Expenses";
-import Recurring from "./pages/Recurring";
+import RecurringExpenses from "./pages/RecurringExpenses";
 import Categories from "./pages/Categories";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
@@ -36,7 +36,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/recurring",
-    element: <Recurring />,
+    element: <RecurringExpenses />,
   },
   {
     path: "/categories",
