@@ -149,9 +149,9 @@ export const expenseService = {
     }
   },
 
-  async generateRecurringExpenses(): Promise<void> {
+  async generateRecurringExpenses(yearMonth: string): Promise<void> {
     try {
-      const response = await fetch('http://localhost:8080/api/v1/expenses/generate', {
+      const response = await fetch(`http://localhost:8080/api/v1/expenses/generate/${yearMonth}`, {
         method: 'POST',
         headers: authService.getAuthHeaders(),
       });

@@ -189,7 +189,7 @@ const Expenses = () => {
 
   const handleGenerateRecurring = async () => {
     try {
-      await expenseService.generateRecurringExpenses();
+      await expenseService.generateRecurringExpenses(selectedYearMonth);
       // Refresh the expenses list after generating
       await fetchExpenses(selectedYearMonth);
       toast({
