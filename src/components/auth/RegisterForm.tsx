@@ -1,13 +1,12 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { RegisterFormValues, registerSchema } from "@/types/auth";
-import { Loader2, Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
-import { useTranslation } from '@/utils/translations';
+import { Loader2 } from 'lucide-react';
 
 interface RegisterFormProps {
   onSubmit: (values: RegisterFormValues) => Promise<void>;
@@ -15,9 +14,6 @@ interface RegisterFormProps {
 }
 
 export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps) {
-  const [showPassword, setShowPassword] = useState(false);
-  const { t } = useTranslation();
-  
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -35,17 +31,9 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('auth.username')}</FormLabel>
+              <FormLabel>Username</FormLabel>
               <FormControl>
-                <div className="relative">
-                  <User className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                  <Input 
-                    placeholder="johndoe" 
-                    className="pl-10 bg-secondary/30 border-secondary/50 focus:border-primary/50" 
-                    {...field} 
-                    disabled={isLoading} 
-                  />
-                </div>
+                <Input placeholder="johndoe" className="bg-secondary/50" {...field} disabled={isLoading} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -56,18 +44,9 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('auth.email')}</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                  <Input 
-                    placeholder="example@example.com" 
-                    type="email" 
-                    className="pl-10 bg-secondary/30 border-secondary/50 focus:border-primary/50" 
-                    {...field} 
-                    disabled={isLoading} 
-                  />
-                </div>
+                <Input placeholder="example@example.com" type="email" className="bg-secondary/50" {...field} disabled={isLoading} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -78,27 +57,9 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('auth.password')}</FormLabel>
+              <FormLabel>Password</FormLabel>
               <FormControl>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                  <Input 
-                    placeholder="••••••••" 
-                    type={showPassword ? "text" : "password"} 
-                    className="pl-10 pr-10 bg-secondary/30 border-secondary/50 focus:border-primary/50" 
-                    {...field} 
-                    disabled={isLoading} 
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-1 top-1 h-8 w-8 p-0 text-muted-foreground"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
-                </div>
+                <Input placeholder="••••••••" type="password" className="bg-secondary/50" {...field} disabled={isLoading} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -108,10 +69,10 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {t('auth.createAccountLoading')}
+              Creating account...
             </>
           ) : (
-            t('auth.createAccountButton')
+            "Create Account"
           )}
         </Button>
       </form>

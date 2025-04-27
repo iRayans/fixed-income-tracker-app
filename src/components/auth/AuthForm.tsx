@@ -10,15 +10,14 @@ import { AuthMode, LoginFormValues, RegisterFormValues } from '@/types/auth';
 import { setAuthToken } from '@/utils/auth';
 import { toast } from "@/components/ui/sonner";
 import { useToast } from '@/hooks/use-toast';
-import { useTranslation } from '@/utils/translations';
 
 export function AuthForm() {
   const [mode, setMode] = useState<AuthMode>('login');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { t } = useTranslation();
+    const { toast } = useToast();
   
+
   const handleSubmit = async (values: LoginFormValues | RegisterFormValues) => {
     try {
       setIsLoading(true);
@@ -31,8 +30,9 @@ export function AuthForm() {
           password: registerData.password,
         });
         
+
         toast({
-            description: "تم التسجيل بنجاح. الرجاء تسجيل الدخول.",
+            description: "Registration successful. Please login.",
           });
         
         setMode('login');
@@ -49,14 +49,14 @@ export function AuthForm() {
         // Display welcome back toast with username
         if (response.user?.username) {
             toast({
-                description: `أهلاً بعودتك، ${response.user.username}!`,
+                description: `Welcome back, ${response.user.username}!`,
               });
         }
         
         navigate('/dashboard');
       }
     } catch (error) {
-      let errorMessage = "حدث خطأ ما. يرجى المحاولة مرة أخرى.";
+      let errorMessage = "Something went wrong. Please try again.";
       if (error instanceof Error) {
         errorMessage = error.message;
       }
@@ -72,18 +72,18 @@ export function AuthForm() {
   };
 
   return (
-    <Card className="w-full bg-gradient-to-b from-card/80 to-background/90 border-purple-900/20 shadow-lg backdrop-blur-sm">
-      <CardHeader className="space-y-1 pb-2">
+    <Card className="w-[350px] bg-gradient-to-b from-card to-background border-purple-900/20">
+      <CardHeader className="space-y-1">
         <CardTitle className="text-2xl text-center font-bold">
-          {mode === 'login' ? t('auth.welcomeBack') : t('auth.createAccount')}
+          {mode === 'login' ? 'Sign In' : 'Create Account'}
         </CardTitle>
         <CardDescription className="text-center">
           {mode === 'login' 
-            ? t('auth.enterCredentials')
-            : t('auth.createAccountDescription')}
+            ? 'Enter your email and password to sign in' 
+            : 'Enter your information to create an account'}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4 pt-2">
+      <CardContent className="space-y-4">
         {mode === 'login' ? (
           <LoginForm onSubmit={handleSubmit} isLoading={isLoading} />
         ) : (
@@ -98,8 +98,8 @@ export function AuthForm() {
           disabled={isLoading}
         >
           {mode === 'login' 
-            ? t('auth.noAccount')
-            : t('auth.haveAccount')}
+            ? "Don't have an account? Sign up" 
+            : "Already have an account? Sign in"}
         </Button>
       </CardFooter>
     </Card>
