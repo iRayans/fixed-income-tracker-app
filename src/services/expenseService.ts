@@ -148,4 +148,20 @@ export const expenseService = {
       throw error;
     }
   },
+
+  async generateRecurringExpenses(): Promise<void> {
+    try {
+      const response = await fetch('http://localhost:8080/api/v1/expenses/generate', {
+        method: 'POST',
+        headers: authService.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate recurring expenses');
+      }
+    } catch (error) {
+      console.error('Error generating recurring expenses:', error);
+      throw error;
+    }
+  },
 };

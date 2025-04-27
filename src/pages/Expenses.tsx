@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { format, addMonths, subMonths } from 'date-fns';
 import { useSearchParams, useNavigate } from 'react-router-dom';
@@ -188,6 +187,25 @@ const Expenses = () => {
     }
   };
 
+  const handleGenerateRecurring = async () => {
+    try {
+      await expenseService.generateRecurringExpenses();
+      // Refresh the expenses list after generating
+      await fetchExpenses(selectedYearMonth);
+      toast({
+        title: "Success",
+        description: "Recurring expenses generated successfully.",
+      });
+    } catch (error) {
+      console.error('Error generating recurring expenses:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate recurring expenses. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <AppLayout>
       <div className="space-y-6 animate-fade-in">
@@ -214,6 +232,7 @@ const Expenses = () => {
               if (!open) setEditingExpense(null);
             }}
             onAddExpense={handleAddExpense}
+            onGenerateRecurring={handleGenerateRecurring}
             editingExpense={editingExpense}
           />
         </div>
