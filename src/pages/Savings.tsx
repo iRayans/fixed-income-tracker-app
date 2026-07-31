@@ -5,23 +5,33 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, PiggyBank } from 'lucide-react';
+import { Plus, PiggyBank, Loader2, AlertCircle } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { formatCurrency } from '@/lib/utils';
-import { savingsService } from '@/services/savingsService';
+import { savingsGoalService } from '@/services/savingsService';
 import { useSavingsGoals } from '@/hooks/use-savings';
 import { GoalDialog, GoalFormValues } from '@/components/savings/GoalDialog';
 import { SavingsStatusBadge } from '@/components/savings/SavingsStatusBadge';
 
 const Savings = () => {
   const navigate = useNavigate();
-  const { goals } = useSavingsGoals();
+  const { goals, isLoading, error, refresh } = useSavingsGoals();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleCreate = (values: GoalFormValues) => {
-    savingsService.createGoal(values);
-    setIsDialogOpen(false);
-    toast.success('Savings goal created');
+  const handleCreate = async (values: GoalFormValues) => {
+    try {
+      await savingsGoalService.createGoal({
+        name: values.name,
+        targetAmount: values.targetAmount,
+        status: values.status,
+        targetDate: values.targetDate,
+      });
+      setIsDialogOpen(false);
+      toast.success('Savings goal created');
+      refresh();
+    } catch {
+      toast.error('Failed to create savings goal');
+    }
   };
 
   return (
@@ -38,7 +48,20 @@ const Savings = () => {
           </Button>
         </header>
 
-        {goals.length === 0 ? (
+        {isLoading ? (
+          <div className="flex items-center justify-center gap-2 rounded-lg border border-border/40 bg-card p-12 text-muted-foreground">
+            <Loader2 className="animate-spin" size={18} />
+            Loading savings goals...
+          </div>
+        ) : error ? (
+          <div className="rounded-lg border border-destructive/40 bg-card p-12 text-center">
+            <AlertCircle className="mx-auto mb-3 text-destructive" size={28} />
+            <p className="text-muted-foreground mb-4">Could not load savings goals.</p>
+            <Button variant="outline" onClick={refresh}>
+              Try again
+            </Button>
+          </div>
+        ) : goals.length === 0 ? (
           <div className="card-hover bg-card rounded-lg border border-border/40 p-12 text-center">
             <PiggyBank className="mx-auto mb-3 text-muted-foreground" size={28} />
             <p className="text-muted-foreground">No savings goals yet. Create your first goal to get started.</p>
@@ -46,7 +69,8 @@ const Savings = () => {
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {goals.map((goal) => {
-              const percent = goal.targetAmount > 0 ? Math.min(100, Math.round((goal.currentAmount / goal.targetAmount) * 100)) : 0;
+              const current = goal.currentAmount ?? 0;
+              const percent = goal.targetAmount > 0 ? Math.min(100, Math.round((current / goal.targetAmount) * 100)) : 0;
               return (
                 <Card
                   key={goal.id}
@@ -62,7 +86,7 @@ const Savings = () => {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <p className="text-sm text-muted-foreground">
-                      <span className="text-foreground font-semibold">{formatCurrency(goal.currentAmount)}</span> /{' '}
+                      <span className="text-foreground font-semibold">{formatCurrency(current)}</span> /{' '}
                       {formatCurrency(goal.targetAmount)}
                     </p>
                     <Progress value={percent} className="h-2" />
