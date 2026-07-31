@@ -8,6 +8,8 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Expenses from "./pages/Expenses";
+import Savings from "./pages/Savings";
+import SavingsGoalDetails from "./pages/SavingsGoalDetails";
 import RecurringExpenses from "./pages/RecurringExpenses";
 import Categories from "./pages/Categories";
 import Reports from "./pages/Reports";
@@ -54,6 +56,22 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Expenses />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/savings"
+            element={
+              <ProtectedRoute>
+                <Savings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/savings/:id"
+            element={
+              <ProtectedRoute>
+                <SavingsGoalDetails />
               </ProtectedRoute>
             }
           />
