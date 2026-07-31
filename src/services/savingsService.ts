@@ -1,137 +1,79 @@
+import { authService } from './authService';
+
+const API_BASE = 'http://localhost:8080/api';
+
 export type GoalStatus = 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+export type TransactionType = 'DEPOSIT' | 'WITHDRAWAL';
+
+export interface SavingsGoal {
+  id: number;
+  name: string;
+  targetAmount: number;
+  currentAmount?: number;
+  targetDate?: string;
+  status: GoalStatus;
+}
 
 export interface SavingsTransaction {
-  id: string;
-  goalId: string;
-  date: string;
-  type: 'DEPOSIT' | 'WITHDRAWAL';
+  id: number;
+  goalId: number;
   amount: number;
+  type: TransactionType;
+  description?: string;
+  date?: string;
+  createdAt?: string;
+}
+
+export interface CreateGoalPayload {
+  name: string;
+  targetAmount: number;
+  status: GoalStatus;
+  targetDate?: string;
+}
+
+export interface CreateTransactionPayload {
+  goalId: number;
+  amount: number;
+  type: TransactionType;
   description?: string;
 }
 
-export interface SavingsGoal {
-  id: string;
-  name: string;
-  targetAmount: number;
-  currentAmount: number;
-  targetDate?: string;
-  status: GoalStatus;
-  transactions: SavingsTransaction[];
-}
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(`${API_BASE}${path}`, {
+    headers: authService.getAuthHeaders(),
+    ...init,
+  });
 
-const STORAGE_KEY = 'savings-goals';
-const EVENT = 'savings-goals-updated';
-
-const seed: SavingsGoal[] = [
-  {
-    id: 'seed-emergency',
-    name: 'Emergency Fund',
-    targetAmount: 30000,
-    currentAmount: 6000,
-    targetDate: '2026-12-01',
-    status: 'IN_PROGRESS',
-    transactions: [
-      {
-        id: 'seed-t1',
-        goalId: 'seed-emergency',
-        date: '2026-01-15',
-        type: 'DEPOSIT',
-        amount: 6000,
-        description: 'Initial deposit',
-      },
-    ],
-  },
-  {
-    id: 'seed-travel',
-    name: 'Travel',
-    targetAmount: 12000,
-    currentAmount: 4500,
-    targetDate: '2026-08-01',
-    status: 'IN_PROGRESS',
-    transactions: [
-      {
-        id: 'seed-t2',
-        goalId: 'seed-travel',
-        date: '2026-02-02',
-        type: 'DEPOSIT',
-        amount: 5000,
-        description: 'Bonus',
-      },
-      {
-        id: 'seed-t3',
-        goalId: 'seed-travel',
-        date: '2026-03-10',
-        type: 'WITHDRAWAL',
-        amount: 500,
-        description: 'Visa fees',
-      },
-    ],
-  },
-];
-
-function read(): SavingsGoal[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(seed));
-      return seed;
+  if (!response.ok) {
+    if (response.status === 401) {
+      authService.handleTokenExpiration();
     }
-    return JSON.parse(raw) as SavingsGoal[];
-  } catch {
-    return seed;
+    const message = await response.text().catch(() => '');
+    throw new Error(message || `Request failed with status ${response.status}`);
   }
+
+  if (response.status === 204) return undefined as T;
+  const text = await response.text();
+  return (text ? JSON.parse(text) : undefined) as T;
 }
 
-function write(goals: SavingsGoal[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(goals));
-  window.dispatchEvent(new Event(EVENT));
-}
+export const savingsGoalService = {
+  getGoals: () => request<SavingsGoal[]>('/savings-goals'),
+  getGoal: (id: string | number) => request<SavingsGoal>(`/savings-goals/${id}`),
+  createGoal: (payload: CreateGoalPayload) =>
+    request<SavingsGoal>('/savings-goals', { method: 'POST', body: JSON.stringify(payload) }),
+  deleteGoal: (id: string | number) => request<void>(`/savings-goals/${id}`, { method: 'DELETE' }),
+};
 
-export const savingsService = {
-  EVENT,
-  getGoals: read,
-  getGoal(id: string) {
-    return read().find((g) => g.id === id) ?? null;
+export const savingsTransactionService = {
+  getByGoal: (goalId: string | number) => request<SavingsTransaction[]>(`/savings-transactions/goal/${goalId}`),
+  getBalance: async (goalId: string | number) => {
+    const result = await request<number | { balance: number }>(`/savings-transactions/goal/${goalId}/balance`);
+    return typeof result === 'number' ? result : Number(result?.balance ?? 0);
   },
-  createGoal(input: { name: string; targetAmount: number; targetDate?: string; status: GoalStatus }) {
-    const goal: SavingsGoal = {
-      id: `goal-${Date.now()}`,
-      name: input.name.trim(),
-      targetAmount: input.targetAmount,
-      targetDate: input.targetDate || undefined,
-      status: input.status,
-      currentAmount: 0,
-      transactions: [],
-    };
-    write([...read(), goal]);
-    return goal;
-  },
-  updateGoal(id: string, input: { name: string; targetAmount: number; targetDate?: string; status: GoalStatus }) {
-    write(
-      read().map((g) =>
-        g.id === id
-          ? { ...g, name: input.name.trim(), targetAmount: input.targetAmount, targetDate: input.targetDate || undefined, status: input.status }
-          : g
-      )
-    );
-  },
-  addTransaction(goalId: string, type: 'DEPOSIT' | 'WITHDRAWAL', amount: number, description?: string) {
-    write(
-      read().map((g) => {
-        if (g.id !== goalId) return g;
-        const delta = type === 'DEPOSIT' ? amount : -amount;
-        const tx: SavingsTransaction = {
-          id: `tx-${Date.now()}`,
-          goalId,
-          date: new Date().toISOString(),
-          type,
-          amount,
-          description: description?.trim() || undefined,
-        };
-        return { ...g, currentAmount: g.currentAmount + delta, transactions: [tx, ...g.transactions] };
-      })
-    );
-  },
+  create: (payload: CreateTransactionPayload) =>
+    request<SavingsTransaction>('/savings-transactions', { method: 'POST', body: JSON.stringify(payload) }),
+  remove: (id: string | number) => request<void>(`/savings-transactions/${id}`, { method: 'DELETE' }),
 };
 
 export const statusLabel: Record<GoalStatus, string> = {
