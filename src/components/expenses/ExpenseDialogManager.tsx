@@ -9,10 +9,10 @@ interface ExpenseDialogManagerProps {
   onDelete: (id: number) => Promise<void>;
 }
 
-export const ExpenseDialogManager: React.FC<ExpenseDialogManagerProps> = ({
+export const ExpenseDialogManager = ({
   onAddOrUpdateExpense,
   onDelete,
-}) => {
+}: ExpenseDialogManagerProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deletingExpenseId, setDeletingExpenseId] = useState<number | null>(null);

@@ -82,7 +82,10 @@ const Expenses = () => {
             onPreviousMonth={handlePreviousMonth}
             onNextMonth={handleNextMonth}
             onGenerateRecurring={handleGenerateRecurring}
-            {...dialogProps}
+            isDialogOpen={dialogProps.isOpen}
+            onDialogOpenChange={dialogProps.onOpenChange}
+            onAddExpense={dialogProps.onSubmit}
+            editingExpense={dialogProps.editingExpense}
           />
         </div>
 

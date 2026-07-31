@@ -11,7 +11,8 @@ import {
   Settings, 
   LogOut, 
   Tag, 
-  BarChart2
+  BarChart2,
+  PiggyBank
 } from "lucide-react";
 import { clearAuth } from '@/utils/auth';
 import { toast } from "@/components/ui/sonner";
@@ -66,6 +67,18 @@ export function AppSidebar() {
           >
             <CreditCard size={18} />
             <span>Expenses</span>
+          </Button>
+
+          <Button 
+            variant={isActive("/savings") ? "secondary" : "ghost"} 
+            className={cn(
+              "w-full justify-start gap-3 mb-1 font-medium", 
+              isActive("/savings") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
+            )}
+            onClick={() => navigate('/savings')}
+          >
+            <PiggyBank size={18} />
+            <span>Savings</span>
           </Button>
 
           <Button 
