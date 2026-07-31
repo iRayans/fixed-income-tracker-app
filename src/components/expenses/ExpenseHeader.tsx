@@ -34,22 +34,12 @@ export const ExpenseHeader: React.FC<ExpenseHeaderProps> = ({
           <h1 className="text-3xl font-bold tracking-tight">Expenses</h1>
           <p className="text-muted-foreground">Manage your monthly expenses</p>
         </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={onGenerateRecurring}
-            className="gap-2"
-          >
-            <Repeat className="h-4 w-4" />
-            Generate Recurring
-          </Button>
-          <ExpenseDialog
-            isOpen={isDialogOpen}
-            onOpenChange={onDialogOpenChange}
-            onSubmit={onAddExpense}
-            editingExpense={editingExpense}
-          />
-        </div>
+        <ExpenseDialog
+          isOpen={isDialogOpen}
+          onOpenChange={onDialogOpenChange}
+          onSubmit={onAddExpense}
+          editingExpense={editingExpense}
+        />
       </div>
       
       <ExpenseMonthSelector

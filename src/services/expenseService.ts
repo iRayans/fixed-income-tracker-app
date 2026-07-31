@@ -1,4 +1,4 @@
-import { authService } from './authService';
+import { authService } from "./authService";
 
 export interface Category {
   id: number;
@@ -42,109 +42,144 @@ export interface UpdateExpenseDto {
 export const expenseService = {
   async getExpenses(date: string): Promise<Expense[]> {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/expenses/${date}`, {
-        method: 'GET',
-        headers: authService.getAuthHeaders(),
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/v1/expenses/${date}`,
+        {
+          method: "GET",
+          headers: authService.getAuthHeaders(),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to fetch expenses');
+        throw new Error("Failed to fetch expenses");
       }
 
       return await response.json();
     } catch (error) {
-      console.error('Error fetching expenses:', error);
+      console.error("Error fetching expenses:", error);
       throw error;
     }
   },
 
   async updateExpensePaidStatus(id: number, paid: boolean): Promise<Expense> {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/expenses/${id}`, {
-        method: 'PUT',
-        headers: authService.getAuthHeaders(),
-        body: JSON.stringify({ paid }),
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/v1/expenses/${id}`,
+        {
+          method: "PUT",
+          headers: authService.getAuthHeaders(),
+          body: JSON.stringify({ paid }),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to update expense');
+        throw new Error("Failed to update expense");
       }
 
       return await response.json();
     } catch (error) {
-      console.error('Error updating expense:', error);
+      console.error("Error updating expense:", error);
       throw error;
     }
   },
 
   async updateExpense(id: number, expense: UpdateExpenseDto): Promise<Expense> {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/expenses/${id}`, {
-        method: 'PUT',
-        headers: authService.getAuthHeaders(),
-        body: JSON.stringify(expense),
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/v1/expenses/${id}`,
+        {
+          method: "PUT",
+          headers: authService.getAuthHeaders(),
+          body: JSON.stringify(expense),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to update expense');
+        throw new Error("Failed to update expense");
       }
 
       return await response.json();
     } catch (error) {
-      console.error('Error updating expense:', error);
+      console.error("Error updating expense:", error);
       throw error;
     }
   },
 
   async deleteExpense(id: number): Promise<void> {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/expenses/${id}`, {
-        method: 'DELETE',
-        headers: authService.getAuthHeaders(),
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/v1/expenses/${id}`,
+        {
+          method: "DELETE",
+          headers: authService.getAuthHeaders(),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to delete expense');
+        throw new Error("Failed to delete expense");
       }
     } catch (error) {
-      console.error('Error deleting expense:', error);
+      console.error("Error deleting expense:", error);
       throw error;
     }
   },
 
   async createExpense(expense: CreateExpenseDto): Promise<Expense> {
     try {
-      const response = await fetch('http://localhost:8080/api/v1/expenses', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8080/api/v1/expenses", {
+        method: "POST",
         headers: authService.getAuthHeaders(),
         body: JSON.stringify(expense),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create expense');
+        throw new Error("Failed to create expense");
       }
 
       return await response.json();
     } catch (error) {
-      console.error('Error creating expense:', error);
+      console.error("Error creating expense:", error);
       throw error;
     }
   },
-  
+
   async getAvailableYears(): Promise<number[]> {
     try {
-      const response = await fetch('http://localhost:8080/api/v1/expenses/years', {
-        method: 'GET',
-        headers: authService.getAuthHeaders(),
-      });
+      const response = await fetch(
+        "http://localhost:8080/api/v1/expenses/years",
+        {
+          method: "GET",
+          headers: authService.getAuthHeaders(),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to fetch available years');
+        throw new Error("Failed to fetch available years");
       }
 
       return await response.json();
     } catch (error) {
-      console.error('Error fetching available years:', error);
+      console.error("Error fetching available years:", error);
+      throw error;
+    }
+  },
+
+  async generateRecurringExpenses(yearMonth: string): Promise<void> {
+    try {
+      const response = await fetch(
+        'http://localhost:8080/api/v1/expenses/generate',
+        {
+          method: "POST",
+          body: JSON.stringify({ yearMonth }),
+          headers: authService.getAuthHeaders(),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to generate recurring expenses");
+      }
+    } catch (error) {
+      console.error("Error generating recurring expenses:", error);
       throw error;
     }
   },
