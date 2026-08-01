@@ -203,11 +203,13 @@ const SavingsGoalDetails = () => {
                     <TableHead>Type</TableHead>
                     <TableHead className="text-right">Amount</TableHead>
                     <TableHead>Description</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {transactions.map((tx) => {
                     const rawDate = tx.date ?? tx.createdAt;
+                    const isBusy = busyTxId === tx.id;
                     return (
                       <TableRow key={tx.id}>
                         <TableCell>{rawDate ? format(parseISO(rawDate), 'MMM d, yyyy') : '—'}</TableCell>
@@ -219,6 +221,30 @@ const SavingsGoalDetails = () => {
                           {formatCurrency(tx.amount)}
                         </TableCell>
                         <TableCell className="text-muted-foreground">{tx.description ?? '—'}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                              aria-label="Edit transaction"
+                              disabled={busyTxId !== null}
+                              onClick={() => setEditingTx(tx)}
+                            >
+                              <Pencil size={15} />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                              aria-label="Delete transaction"
+                              disabled={busyTxId !== null}
+                              onClick={() => setDeletingTx(tx)}
+                            >
+                              {isBusy ? <Loader2 className="animate-spin" size={15} /> : <Trash2 size={15} />}
+                            </Button>
+                          </div>
+                        </TableCell>
                       </TableRow>
                     );
                   })}
@@ -235,6 +261,36 @@ const SavingsGoalDetails = () => {
           currentBalance={balance}
           onSubmit={handleTransaction}
         />
+
+        <EditTransactionDialog
+          isOpen={editingTx !== null}
+          onOpenChange={(open) => !open && busyTxId === null && setEditingTx(null)}
+          transaction={editingTx}
+          isSubmitting={busyTxId !== null && editingTx !== null}
+          onSubmit={handleEditTransaction}
+        />
+
+        <AlertDialog open={deletingTx !== null} onOpenChange={(open) => !open && busyTxId === null && setDeletingTx(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete transaction</AlertDialogTitle>
+              <AlertDialogDescription>Are you sure you want to delete this transaction?</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={busyTxId !== null}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleDeleteTransaction();
+                }}
+                disabled={busyTxId !== null}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </AppLayout>
   );
