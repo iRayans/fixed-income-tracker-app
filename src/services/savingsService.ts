@@ -22,6 +22,12 @@ export interface SavingsTransaction {
   description?: string;
   date?: string;
   createdAt?: string;
+  yearMonth?: string;
+}
+
+export interface SavingsMonthlyTotals {
+  totalDeposits: number;
+  totalWithdrawals: number;
 }
 
 export interface CreateGoalPayload {
@@ -74,6 +80,35 @@ export const savingsTransactionService = {
   create: (payload: CreateTransactionPayload) =>
     request<SavingsTransaction>('/savings-transactions', { method: 'POST', body: JSON.stringify(payload) }),
   remove: (id: string | number) => request<void>(`/savings-transactions/${id}`, { method: 'DELETE' }),
+};
+
+function transactionMonth(tx: SavingsTransaction): string | undefined {
+  if (tx.yearMonth) return tx.yearMonth.slice(0, 7);
+  const raw = tx.date ?? tx.createdAt;
+  return raw ? raw.slice(0, 7) : undefined;
+}
+
+export const savingsSummaryService = {
+  /** Aggregates savings deposits/withdrawals for a given month (yyyy-MM) across all goals. */
+  async getMonthlyTotals(yearMonth: string): Promise<SavingsMonthlyTotals> {
+    const goals = await savingsGoalService.getGoals();
+    const lists = await Promise.all(
+      (Array.isArray(goals) ? goals : []).map((goal) =>
+        savingsTransactionService.getByGoal(goal.id).catch(() => [] as SavingsTransaction[]),
+      ),
+    );
+
+    return lists.flat().reduce<SavingsMonthlyTotals>(
+      (acc, tx) => {
+        if (transactionMonth(tx) !== yearMonth) return acc;
+        const amount = Number(tx.amount) || 0;
+        if (tx.type === 'DEPOSIT') acc.totalDeposits += amount;
+        else acc.totalWithdrawals += amount;
+        return acc;
+      },
+      { totalDeposits: 0, totalWithdrawals: 0 },
+    );
+  },
 };
 
 export const statusLabel: Record<GoalStatus, string> = {
