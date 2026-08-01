@@ -33,7 +33,16 @@ export function SalarySummary({ salary, totalExpenses, totalDeposits = 0, totalW
             <span className="font-semibold text-destructive">{formatCurrency(totalExpenses)}</span>
           </div>
           <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Saved This Month</span>
+            <span className="font-semibold text-purple-400">{formatCurrency(totalDeposits)}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Withdrawn From Savings</span>
+            <span className="font-semibold text-green-500">{formatCurrency(totalWithdrawals)}</span>
+          </div>
+          <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Remaining</span>
+
             <span className={`font-semibold ${remaining >= 0 ? 'text-green-500' : 'text-destructive'}`}>
               {formatCurrency(remaining)}
             </span>
