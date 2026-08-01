@@ -7,12 +7,23 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ChevronLeft, Minus, Plus, Trash2, Loader2, AlertCircle } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { ChevronLeft, Minus, Pencil, Plus, Trash2, Loader2, AlertCircle } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { cn, formatCurrency } from '@/lib/utils';
-import { savingsGoalService, savingsTransactionService } from '@/services/savingsService';
+import { savingsGoalService, savingsTransactionService, type SavingsTransaction, type TransactionType } from '@/services/savingsService';
 import { useSavingsGoalDetails } from '@/hooks/use-savings';
 import { TransactionDialog } from '@/components/savings/TransactionDialog';
+import { EditTransactionDialog } from '@/components/savings/EditTransactionDialog';
 import { SavingsStatusBadge } from '@/components/savings/SavingsStatusBadge';
 
 const SavingsGoalDetails = () => {
@@ -21,6 +32,9 @@ const SavingsGoalDetails = () => {
   const queryClient = useQueryClient();
   const { goal, transactions, balance, isLoading, error, refresh } = useSavingsGoalDetails(id);
   const [txMode, setTxMode] = useState<'DEPOSIT' | 'WITHDRAWAL' | null>(null);
+  const [editingTx, setEditingTx] = useState<SavingsTransaction | null>(null);
+  const [deletingTx, setDeletingTx] = useState<SavingsTransaction | null>(null);
+  const [busyTxId, setBusyTxId] = useState<number | null>(null);
 
   const backButton = (
     <Button
@@ -90,6 +104,46 @@ const SavingsGoalDetails = () => {
     }
   };
 
+  const afterTxChange = () => {
+    refresh();
+    queryClient.invalidateQueries({ queryKey: ['savings-monthly'] });
+  };
+
+  const handleEditTransaction = async (values: { amount: number; type: TransactionType; description?: string }) => {
+    if (!editingTx) return;
+    setBusyTxId(editingTx.id);
+    try {
+      await savingsTransactionService.update(editingTx.id, {
+        goalId: Number(goal.id),
+        amount: values.amount,
+        type: values.type,
+        description: values.description,
+      });
+      toast.success('Transaction updated');
+      setEditingTx(null);
+      afterTxChange();
+    } catch {
+      toast.error('Failed to update transaction');
+    } finally {
+      setBusyTxId(null);
+    }
+  };
+
+  const handleDeleteTransaction = async () => {
+    if (!deletingTx) return;
+    setBusyTxId(deletingTx.id);
+    try {
+      await savingsTransactionService.remove(deletingTx.id);
+      toast.success('Transaction deleted');
+      setDeletingTx(null);
+      afterTxChange();
+    } catch {
+      toast.error('Failed to delete transaction');
+    } finally {
+      setBusyTxId(null);
+    }
+  };
+
   return (
     <AppLayout>
       <div className="space-y-6 animate-fade-in">
@@ -149,11 +203,13 @@ const SavingsGoalDetails = () => {
                     <TableHead>Type</TableHead>
                     <TableHead className="text-right">Amount</TableHead>
                     <TableHead>Description</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {transactions.map((tx) => {
                     const rawDate = tx.date ?? tx.createdAt;
+                    const isBusy = busyTxId === tx.id;
                     return (
                       <TableRow key={tx.id}>
                         <TableCell>{rawDate ? format(parseISO(rawDate), 'MMM d, yyyy') : '—'}</TableCell>
@@ -165,6 +221,30 @@ const SavingsGoalDetails = () => {
                           {formatCurrency(tx.amount)}
                         </TableCell>
                         <TableCell className="text-muted-foreground">{tx.description ?? '—'}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                              aria-label="Edit transaction"
+                              disabled={busyTxId !== null}
+                              onClick={() => setEditingTx(tx)}
+                            >
+                              <Pencil size={15} />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                              aria-label="Delete transaction"
+                              disabled={busyTxId !== null}
+                              onClick={() => setDeletingTx(tx)}
+                            >
+                              {isBusy ? <Loader2 className="animate-spin" size={15} /> : <Trash2 size={15} />}
+                            </Button>
+                          </div>
+                        </TableCell>
                       </TableRow>
                     );
                   })}
@@ -181,6 +261,36 @@ const SavingsGoalDetails = () => {
           currentBalance={balance}
           onSubmit={handleTransaction}
         />
+
+        <EditTransactionDialog
+          isOpen={editingTx !== null}
+          onOpenChange={(open) => !open && busyTxId === null && setEditingTx(null)}
+          transaction={editingTx}
+          isSubmitting={busyTxId !== null && editingTx !== null}
+          onSubmit={handleEditTransaction}
+        />
+
+        <AlertDialog open={deletingTx !== null} onOpenChange={(open) => !open && busyTxId === null && setDeletingTx(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete transaction</AlertDialogTitle>
+              <AlertDialogDescription>Are you sure you want to delete this transaction?</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={busyTxId !== null}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleDeleteTransaction();
+                }}
+                disabled={busyTxId !== null}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </AppLayout>
   );
