@@ -79,6 +79,8 @@ export const savingsTransactionService = {
   },
   create: (payload: CreateTransactionPayload) =>
     request<SavingsTransaction>('/savings-transactions', { method: 'POST', body: JSON.stringify(payload) }),
+  update: (id: string | number, payload: CreateTransactionPayload) =>
+    request<SavingsTransaction>(`/savings-transactions/${id}`, { method: 'PUT', body: JSON.stringify(payload) }),
   remove: (id: string | number) => request<void>(`/savings-transactions/${id}`, { method: 'DELETE' }),
 };
 
