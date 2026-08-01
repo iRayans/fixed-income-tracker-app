@@ -7,12 +7,23 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ChevronLeft, Minus, Plus, Trash2, Loader2, AlertCircle } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { ChevronLeft, Minus, Pencil, Plus, Trash2, Loader2, AlertCircle } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { cn, formatCurrency } from '@/lib/utils';
-import { savingsGoalService, savingsTransactionService } from '@/services/savingsService';
+import { savingsGoalService, savingsTransactionService, type SavingsTransaction, type TransactionType } from '@/services/savingsService';
 import { useSavingsGoalDetails } from '@/hooks/use-savings';
 import { TransactionDialog } from '@/components/savings/TransactionDialog';
+import { EditTransactionDialog } from '@/components/savings/EditTransactionDialog';
 import { SavingsStatusBadge } from '@/components/savings/SavingsStatusBadge';
 
 const SavingsGoalDetails = () => {
@@ -21,6 +32,9 @@ const SavingsGoalDetails = () => {
   const queryClient = useQueryClient();
   const { goal, transactions, balance, isLoading, error, refresh } = useSavingsGoalDetails(id);
   const [txMode, setTxMode] = useState<'DEPOSIT' | 'WITHDRAWAL' | null>(null);
+  const [editingTx, setEditingTx] = useState<SavingsTransaction | null>(null);
+  const [deletingTx, setDeletingTx] = useState<SavingsTransaction | null>(null);
+  const [busyTxId, setBusyTxId] = useState<number | null>(null);
 
   const backButton = (
     <Button
