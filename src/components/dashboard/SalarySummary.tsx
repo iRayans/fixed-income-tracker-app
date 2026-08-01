@@ -7,12 +7,15 @@ import { formatCurrency } from "@/lib/utils";
 interface SalarySummaryProps {
   salary: number;
   totalExpenses: number;
+  totalDeposits?: number;
+  totalWithdrawals?: number;
   date: string;
 }
 
-export function SalarySummary({ salary, totalExpenses, date }: SalarySummaryProps) {
-  const remaining = salary - totalExpenses;
-  const percentSpent = (totalExpenses / salary) * 100;
+export function SalarySummary({ salary, totalExpenses, totalDeposits = 0, totalWithdrawals = 0, date }: SalarySummaryProps) {
+  const remaining = salary - totalExpenses - totalDeposits + totalWithdrawals;
+  const used = totalExpenses + totalDeposits - totalWithdrawals;
+  const percentSpent = salary > 0 ? Math.max(0, (used / salary) * 100) : 0;
   
   return (
     <Card className="bg-gradient-to-br from-card to-card/70 border-purple-900/20">
