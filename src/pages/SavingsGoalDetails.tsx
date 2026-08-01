@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { format, parseISO } from 'date-fns';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,7 @@ import { SavingsStatusBadge } from '@/components/savings/SavingsStatusBadge';
 const SavingsGoalDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { goal, transactions, balance, isLoading, error, refresh } = useSavingsGoalDetails(id);
   const [txMode, setTxMode] = useState<'DEPOSIT' | 'WITHDRAWAL' | null>(null);
 
@@ -72,6 +74,7 @@ const SavingsGoalDetails = () => {
       toast.success(txMode === 'DEPOSIT' ? 'Money added' : 'Withdrawal recorded');
       setTxMode(null);
       refresh();
+      queryClient.invalidateQueries({ queryKey: ['savings-monthly'] });
     } catch {
       toast.error('Transaction failed');
     }

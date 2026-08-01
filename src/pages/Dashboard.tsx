@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from 'lucide-react';
 import { summaryService } from '@/services/summaryService';
 import { expenseService } from '@/services/expenseService';
+import { savingsSummaryService } from '@/services/savingsService';
 import { toast } from 'sonner';
 
 const Dashboard = () => {
@@ -43,6 +44,16 @@ const Dashboard = () => {
     meta: {
       onError: () => {
         toast.error('Failed to load expenses');
+      }
+    }
+  });
+
+  const { data: savingsTotals } = useQuery({
+    queryKey: ['savings-monthly', currentDate],
+    queryFn: () => savingsSummaryService.getMonthlyTotals(currentDate),
+    meta: {
+      onError: () => {
+        toast.error('Failed to load savings totals');
       }
     }
   });
@@ -133,6 +144,8 @@ const Dashboard = () => {
               <SalarySummary 
                 salary={summaryData?.salary ?? 0}
                 totalExpenses={summaryData?.totalExpenses ?? 0}
+                totalDeposits={savingsTotals?.totalDeposits ?? 0}
+                totalWithdrawals={savingsTotals?.totalWithdrawals ?? 0}
                 date={format(selectedDate, 'MMMM yyyy')}
               />
             )}

@@ -7,12 +7,15 @@ import { formatCurrency } from "@/lib/utils";
 interface SalarySummaryProps {
   salary: number;
   totalExpenses: number;
+  totalDeposits?: number;
+  totalWithdrawals?: number;
   date: string;
 }
 
-export function SalarySummary({ salary, totalExpenses, date }: SalarySummaryProps) {
-  const remaining = salary - totalExpenses;
-  const percentSpent = (totalExpenses / salary) * 100;
+export function SalarySummary({ salary, totalExpenses, totalDeposits = 0, totalWithdrawals = 0, date }: SalarySummaryProps) {
+  const remaining = salary - totalExpenses - totalDeposits + totalWithdrawals;
+  const used = totalExpenses + totalDeposits - totalWithdrawals;
+  const percentSpent = salary > 0 ? Math.max(0, (used / salary) * 100) : 0;
   
   return (
     <Card className="bg-gradient-to-br from-card to-card/70 border-purple-900/20">
@@ -30,7 +33,16 @@ export function SalarySummary({ salary, totalExpenses, date }: SalarySummaryProp
             <span className="font-semibold text-destructive">{formatCurrency(totalExpenses)}</span>
           </div>
           <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Saved This Month</span>
+            <span className="font-semibold text-purple-400">{formatCurrency(totalDeposits)}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Withdrawn From Savings</span>
+            <span className="font-semibold text-green-500">{formatCurrency(totalWithdrawals)}</span>
+          </div>
+          <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Remaining</span>
+
             <span className={`font-semibold ${remaining >= 0 ? 'text-green-500' : 'text-destructive'}`}>
               {formatCurrency(remaining)}
             </span>
