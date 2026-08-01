@@ -104,6 +104,46 @@ const SavingsGoalDetails = () => {
     }
   };
 
+  const afterTxChange = () => {
+    refresh();
+    queryClient.invalidateQueries({ queryKey: ['savings-monthly'] });
+  };
+
+  const handleEditTransaction = async (values: { amount: number; type: TransactionType; description?: string }) => {
+    if (!editingTx) return;
+    setBusyTxId(editingTx.id);
+    try {
+      await savingsTransactionService.update(editingTx.id, {
+        goalId: Number(goal.id),
+        amount: values.amount,
+        type: values.type,
+        description: values.description,
+      });
+      toast.success('Transaction updated');
+      setEditingTx(null);
+      afterTxChange();
+    } catch {
+      toast.error('Failed to update transaction');
+    } finally {
+      setBusyTxId(null);
+    }
+  };
+
+  const handleDeleteTransaction = async () => {
+    if (!deletingTx) return;
+    setBusyTxId(deletingTx.id);
+    try {
+      await savingsTransactionService.remove(deletingTx.id);
+      toast.success('Transaction deleted');
+      setDeletingTx(null);
+      afterTxChange();
+    } catch {
+      toast.error('Failed to delete transaction');
+    } finally {
+      setBusyTxId(null);
+    }
+  };
+
   return (
     <AppLayout>
       <div className="space-y-6 animate-fade-in">
