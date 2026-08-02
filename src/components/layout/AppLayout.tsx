@@ -38,9 +38,9 @@ export function AppLayout({ children }: AppLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-background/95 text-foreground flex">
+    <div className="min-h-screen bg-gradient-to-br from-background to-background/95 text-foreground">
       <AppSidebar />
-      <main className="flex-1 p-8 overflow-auto animate-fade-in">
+      <main className="ml-64 min-h-screen p-8 animate-fade-in">
         <div className="max-w-7xl mx-auto">
           {children}
         </div>

@@ -40,7 +40,7 @@ export function AppSidebar() {
   };
 
   return (
-    <div className="h-screen border-r border-sidebar-border w-64 bg-sidebar-background flex flex-col">
+    <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-sidebar-border bg-sidebar-background flex flex-col">
       <div className="p-6">
         <h1 className="text-2xl font-bold text-gradient">Salary Tracker</h1>
       </div>
@@ -120,7 +120,7 @@ export function AppSidebar() {
         </nav>
       </ScrollArea>
       
-      <div className="p-3 border-t border-sidebar-border/40 space-y-1.5 pt-3 pb-4">
+      <div className="mt-auto p-3 border-t border-sidebar-border/40 space-y-1.5 pt-3 pb-6">
         <Button 
           variant={isActive("/settings") ? "secondary" : "ghost"} 
           className={cn(
@@ -141,6 +141,6 @@ export function AppSidebar() {
           <span>Logout</span>
         </Button>
       </div>
-    </div>
+    </aside>
   );
 }
