@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -21,9 +21,7 @@ import { useSelectedMonth } from '@/hooks/use-selected-month';
 export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { year, month } = useSelectedMonth();
-  const yearParam = String(year);
   const monthQuery = `year=${year}&month=${month}`;
 
   const isActive = (path: string) => {
