@@ -72,25 +72,25 @@ export function AuthForm() {
   };
 
   return (
-    <Card className="w-[350px] bg-gradient-to-b from-card to-background border-purple-900/20">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl text-center font-bold">
+    <Card className="w-full bg-gradient-to-b from-card to-background border-purple-900/20 shadow-2xl shadow-primary/5">
+      <CardHeader className="space-y-2 p-8 pb-4">
+        <CardTitle className="text-3xl font-bold">
           {mode === 'login' ? 'Sign In' : 'Create Account'}
         </CardTitle>
-        <CardDescription className="text-center">
+        <CardDescription className="text-base">
           {mode === 'login' 
             ? 'Enter your email and password to sign in' 
             : 'Enter your information to create an account'}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 px-8 pb-2">
         {mode === 'login' ? (
           <LoginForm onSubmit={handleSubmit} isLoading={isLoading} />
         ) : (
           <RegisterForm onSubmit={handleSubmit} isLoading={isLoading} />
         )}
       </CardContent>
-      <CardFooter>
+      <CardFooter className="px-8 pb-8 pt-2">
         <Button 
           variant="link" 
           onClick={() => setMode(mode === 'login' ? 'register' : 'login')} 
