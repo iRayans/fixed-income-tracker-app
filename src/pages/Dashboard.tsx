@@ -1,8 +1,7 @@
 
-import React, { useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { format, addMonths, subMonths } from 'date-fns';
+import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { SalarySummary } from '@/components/dashboard/SalarySummary';
@@ -15,18 +14,12 @@ import { summaryService } from '@/services/summaryService';
 import { expenseService } from '@/services/expenseService';
 import { savingsSummaryService } from '@/services/savingsService';
 import { toast } from 'sonner';
+import { useSelectedMonth } from '@/hooks/use-selected-month';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const yearFromUrl = searchParams.get('year') || new Date().getFullYear().toString();
-  const [selectedDate, setSelectedDate] = useState(() => {
-    const currentDate = new Date();
-    const year = parseInt(yearFromUrl);
-    // Use current month but with the selected year
-    return new Date(year, currentDate.getMonth(), 1);
-  });
-  const currentDate = format(selectedDate, 'yyyy-MM');
+  const { selectedDate, yearMonth, goToPreviousMonth, goToNextMonth } = useSelectedMonth();
+  const currentDate = yearMonth;
   
   const { data: summaryData, isLoading: isSummaryLoading } = useQuery({
     queryKey: ['summary', currentDate],
@@ -57,22 +50,6 @@ const Dashboard = () => {
       }
     }
   });
-
-  const handlePreviousMonth = () => {
-    const newDate = subMonths(selectedDate, 1);
-    // Only allow months within the selected year
-    if (newDate.getFullYear().toString() === yearFromUrl) {
-      setSelectedDate(newDate);
-    }
-  };
-
-  const handleNextMonth = () => {
-    const newDate = addMonths(selectedDate, 1);
-    // Only allow months within the selected year
-    if (newDate.getFullYear().toString() === yearFromUrl) {
-      setSelectedDate(newDate);
-    }
-  };
 
   // Process expense data for the pie chart
   const expenseDistributionData = useMemo(() => {
@@ -132,8 +109,8 @@ const Dashboard = () => {
 
         <ExpenseMonthSelector
           selectedDate={selectedDate}
-          onPreviousMonth={handlePreviousMonth}
-          onNextMonth={handleNextMonth}
+          onPreviousMonth={goToPreviousMonth}
+          onNextMonth={goToNextMonth}
         />
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
