@@ -16,12 +16,15 @@ import {
 } from "lucide-react";
 import { clearAuth } from '@/utils/auth';
 import { toast } from "@/components/ui/sonner";
+import { useSelectedMonth } from '@/hooks/use-selected-month';
 
 export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const yearParam = searchParams.get('year') || new Date().getFullYear().toString();
+  const { year, month } = useSelectedMonth();
+  const yearParam = String(year);
+  const monthQuery = `year=${year}&month=${month}`;
 
   const isActive = (path: string) => {
     return location.pathname === path || location.pathname.startsWith(`${path}/`);
@@ -35,7 +38,7 @@ export function AppSidebar() {
 
   const navigateWithYear = (path: string) => {
     // Preserve the year parameter when navigating
-    navigate(`${path}?year=${yearParam}`);
+    navigate(`${path}?${monthQuery}`);
   };
 
   return (
@@ -75,7 +78,7 @@ export function AppSidebar() {
               "w-full justify-start gap-3 mb-1 font-medium", 
               isActive("/savings") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
             )}
-            onClick={() => navigate('/savings')}
+            onClick={() => navigateWithYear('/savings')}
           >
             <PiggyBank size={18} />
             <span>Savings</span>
@@ -111,7 +114,7 @@ export function AppSidebar() {
               "w-full justify-start gap-3 mb-1 font-medium", 
               (isActive("/years") || isActive("/reports")) ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
             )}
-            onClick={() => isActive("/reports") ? navigate('/years') : navigate(`/reports?year=${yearParam}`)}
+            onClick={() => isActive("/reports") ? navigate('/years') : navigate(`/reports?${monthQuery}`)}
           >
             <BarChart2 size={18} />
             <span>Reports</span>
