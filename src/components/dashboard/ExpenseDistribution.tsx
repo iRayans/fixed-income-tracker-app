@@ -8,6 +8,7 @@ interface ExpenseCategory {
     name: string;
     value: number;
     color: string;
+    breakdown?: { name: string; value: number }[];
 }
 
 interface ExpenseDistributionProps {
