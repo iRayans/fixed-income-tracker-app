@@ -123,7 +123,7 @@ export function ExpenseDistribution({ data, isLoading }: ExpenseDistributionProp
                                     Total Expenses
                                 </span>
                                 <span className="text-lg font-semibold text-foreground">
-                                    {formatCurrency(total)}
+                                    {Math.trunc(total).toLocaleString('ar-SA')} ر.س
                                 </span>
                             </div>
                         </div>
