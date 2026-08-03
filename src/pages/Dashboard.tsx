@@ -87,17 +87,23 @@ const Dashboard = () => {
     const top = sorted.slice(0, 6);
     const rest = sorted.slice(6);
 
-    const result = top.map(([name, value], index) => ({
-      name,
-      value,
-      color: colors[index % colors.length],
-    }));
+    const result: { name: string; value: number; color: string; breakdown?: { name: string; value: number }[] }[] =
+      top.map(([name, value], index) => ({
+        name,
+        value,
+        color: colors[index % colors.length],
+      }));
 
     if (rest.length > 0) {
       const othersTotal = rest.reduce((sum, [, value]) => sum + value, 0);
+      const breakdown = rest.map(([name, value]) => ({ name, value }));
       const existingOthers = result.find(item => item.name === 'Others');
-      if (existingOthers) existingOthers.value += othersTotal;
-      else result.push({ name: 'Others', value: othersTotal, color: colors[6] });
+      if (existingOthers) {
+        existingOthers.value += othersTotal;
+        existingOthers.breakdown = [...(existingOthers.breakdown ?? []), ...breakdown];
+      } else {
+        result.push({ name: 'Others', value: othersTotal, color: colors[6], breakdown });
+      }
     }
 
     return result;

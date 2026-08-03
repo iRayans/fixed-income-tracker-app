@@ -29,10 +29,6 @@ export function SalarySummary({ salary, totalExpenses, totalDeposits = 0, totalW
             <span className="font-semibold">{formatCurrency(salary)}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Total Expenses</span>
-            <span className="font-semibold text-destructive">{formatCurrency(totalExpenses)}</span>
-          </div>
-          <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Saved This Month</span>
             <span className="font-semibold text-purple-400">{formatCurrency(totalDeposits)}</span>
           </div>
