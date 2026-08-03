@@ -8,6 +8,7 @@ interface ExpenseCategory {
     name: string;
     value: number;
     color: string;
+    breakdown?: { name: string; value: number }[];
 }
 
 interface ExpenseDistributionProps {
@@ -81,17 +82,32 @@ export function ExpenseDistribution({ data, isLoading }: ExpenseDistributionProp
                                         ))}
                                     </Pie>
                                     <Tooltip
-                                        formatter={(value: number, name: string) => [
-                                            `${formatCurrency(Number(value))} (${((Number(value) / total) * 100).toFixed(1)}%)`,
-                                            name,
-                                        ]}
-                                        contentStyle={{
-                                            backgroundColor: 'hsl(var(--card))',
-                                            borderColor: 'hsl(var(--border))'
+                                        content={({ active, payload }) => {
+                                            if (!active || !payload || payload.length === 0) return null;
+                                            const item = payload[0].payload as ExpenseCategory;
+                                            const value = Number(item.value) || 0;
+                                            const pct = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+                                            return (
+                                                <div className="rounded-md border border-border bg-card px-3 py-2 shadow-md">
+                                                    <p className="text-sm font-medium text-foreground">{item.name}</p>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {formatCurrency(value)} ({pct}%)
+                                                    </p>
+                                                    {item.breakdown && item.breakdown.length > 0 && (
+                                                        <ul className="mt-2 space-y-0.5 border-t border-border pt-2">
+                                                            {item.breakdown.map((entry) => (
+                                                                <li key={entry.name} className="flex gap-4 justify-between text-xs text-muted-foreground">
+                                                                    <span>{entry.name}</span>
+                                                                    <span>{formatCurrency(entry.value)}</span>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    )}
+                                                </div>
+                                            );
                                         }}
-                                        labelStyle={{ color: 'hsl(var(--foreground))' }}
-                                        itemStyle={{ color: 'hsl(var(--foreground))' }}
                                     />
+
                                     <Legend
                                         wrapperStyle={{ paddingTop: 8 }}
                                         iconSize={8}
