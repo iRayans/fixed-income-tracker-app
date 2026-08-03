@@ -51,20 +51,25 @@ const Dashboard = () => {
     }
   });
 
-  // Process expense data for the pie chart
+  // Process expense data for the donut chart
   const expenseDistributionData = useMemo(() => {
     if (!expenses || expenses.length === 0) return [];
-    
-    // Create a map to group expenses by category
-    const categoryMap = new Map();
-    
+
+    const cleanLabel = (name: string) =>
+      name.replace(/[\p{Extended_Pictographic}\uFE0F]/gu, '').trim() || 'Uncategorized';
+
+    const categoryMap = new Map<string, number>();
+
     expenses.forEach(expense => {
-      const categoryName = expense.category?.name || 'Uncategorized';
-      const currentAmount = categoryMap.get(categoryName) || 0;
-      categoryMap.set(categoryName, currentAmount + expense.amount);
+      const rawName = expense.category?.name || 'Uncategorized';
+      const categoryName = cleanLabel(rawName);
+      // Savings are not expenses
+      if (/saving/i.test(categoryName)) return;
+      const amount = Number(expense.amount) || 0;
+      if (amount <= 0) return;
+      categoryMap.set(categoryName, (categoryMap.get(categoryName) || 0) + amount);
     });
-    
-    // Generate colors for each category
+
     const colors = [
       "#8b5cf6", // Purple
       "#3b82f6", // Blue
@@ -72,19 +77,30 @@ const Dashboard = () => {
       "#10b981", // Emerald
       "#ef4444", // Red
       "#ec4899", // Pink
-      "#6366f1", // Indigo
-      "#14b8a6", // Teal
-      "#f97316", // Orange
-      "#6b7280", // Gray
+      "#6b7280", // Gray (Others)
     ];
-    
-    // Convert map to array format needed for the chart
-    let index = 0;
-    return Array.from(categoryMap.entries()).map(([name, value]) => ({
+
+    const sorted = Array.from(categoryMap.entries())
+      .filter(([, value]) => value > 0)
+      .sort((a, b) => b[1] - a[1]);
+
+    const top = sorted.slice(0, 6);
+    const rest = sorted.slice(6);
+
+    const result = top.map(([name, value], index) => ({
       name,
       value,
-      color: colors[index++ % colors.length]
+      color: colors[index % colors.length],
     }));
+
+    if (rest.length > 0) {
+      const othersTotal = rest.reduce((sum, [, value]) => sum + value, 0);
+      const existingOthers = result.find(item => item.name === 'Others');
+      if (existingOthers) existingOthers.value += othersTotal;
+      else result.push({ name: 'Others', value: othersTotal, color: colors[6] });
+    }
+
+    return result;
   }, [expenses]);
 
   return (
