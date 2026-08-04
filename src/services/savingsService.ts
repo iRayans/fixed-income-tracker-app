@@ -91,18 +91,19 @@ function transactionMonth(tx: SavingsTransaction): string | undefined {
 }
 
 export const savingsSummaryService = {
-  /** Aggregates savings deposits/withdrawals for a given month (yyyy-MM) across all goals. */
-  async getMonthlyTotals(yearMonth: string): Promise<SavingsMonthlyTotals> {
-    const goals = await savingsGoalService.getGoals();
-    const lists = await Promise.all(
-      (Array.isArray(goals) ? goals : []).map((goal) =>
-        savingsTransactionService.getByGoal(goal.id).catch(() => [] as SavingsTransaction[]),
-      ),
-    );
+  /** Fetches savings transactions for a given month (yyyy-MM). */
+  getMonthTransactions: (yearMonth: string) =>
+    request<SavingsTransaction[]>(`/savings-transactions/month/${yearMonth}`),
 
-    return lists.flat().reduce<SavingsMonthlyTotals>(
+  /** Aggregates savings deposits/withdrawals for a given month (yyyy-MM). */
+  async getMonthlyTotals(yearMonth: string): Promise<SavingsMonthlyTotals> {
+    const list = await savingsSummaryService.getMonthTransactions(yearMonth);
+
+    return (Array.isArray(list) ? list : []).reduce<SavingsMonthlyTotals>(
       (acc, tx) => {
-        if (transactionMonth(tx) !== yearMonth) return acc;
+        const month = transactionMonth(tx);
+        // Defensive: ignore anything the backend returns outside the requested month.
+        if (month && month !== yearMonth) return acc;
         const amount = Number(tx.amount) || 0;
         if (tx.type === 'DEPOSIT') acc.totalDeposits += amount;
         else acc.totalWithdrawals += amount;
