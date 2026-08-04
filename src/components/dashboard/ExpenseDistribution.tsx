@@ -28,6 +28,8 @@ const COLORS = [
 
 export function ExpenseDistribution({ data, isLoading }: ExpenseDistributionProps) {
     const total = data.reduce((sum, item) => sum + (Number(item.value) || 0), 0);
+    const [activeIndex, setActiveIndex] = React.useState<number | null>(null);
+    const active = activeIndex !== null ? data[activeIndex] : null;
 
     if (isLoading) {
         return (
