@@ -8,6 +8,11 @@ export interface RecurringExpense {
   dueDayOfMonth: number;
   categoryId: number;
   isActive: boolean;
+    category: {
+    id: number;
+    name: string;
+    description?: string;
+  };
 }
 
 export interface CreateRecurringExpenseDto {
