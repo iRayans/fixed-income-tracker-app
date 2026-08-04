@@ -44,13 +44,27 @@ export function ExpenseForm({
 }: ExpenseFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialValues || {
-      name: "",
-      amount: undefined,
-      categoryId: "",
-      description: "",
+    defaultValues: {
+      name: initialValues?.name ?? "",
+      amount: initialValues?.amount ?? undefined,
+      categoryId: String(initialValues?.category?.id ?? initialValues?.categoryId ?? ""),
+      description: initialValues?.description ?? "",
     },
   });
+
+  React.useEffect(() => {
+    if (initialValues) {
+      form.reset({
+        name: initialValues.name ?? "",
+        amount: initialValues.amount ?? undefined,
+        categoryId: String(initialValues.category?.id ?? initialValues.categoryId ?? ""),
+        description: initialValues.description ?? "",
+      });
+    } else {
+      form.reset({ name: "", amount: undefined, categoryId: "", description: "" });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialValues]);
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     onSubmit(values);
