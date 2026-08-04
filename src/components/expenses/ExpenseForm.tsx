@@ -44,13 +44,27 @@ export function ExpenseForm({
 }: ExpenseFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialValues || {
-      name: "",
-      amount: undefined,
-      categoryId: "",
-      description: "",
+    defaultValues: {
+      name: initialValues?.name ?? "",
+      amount: initialValues?.amount ?? undefined,
+      categoryId: String(initialValues?.category?.id ?? initialValues?.categoryId ?? ""),
+      description: initialValues?.description ?? "",
     },
   });
+
+  React.useEffect(() => {
+    if (initialValues) {
+      form.reset({
+        name: initialValues.name ?? "",
+        amount: initialValues.amount ?? undefined,
+        categoryId: String(initialValues.category?.id ?? initialValues.categoryId ?? ""),
+        description: initialValues.description ?? "",
+      });
+    } else {
+      form.reset({ name: "", amount: undefined, categoryId: "", description: "" });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialValues]);
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     onSubmit(values);
@@ -100,7 +114,12 @@ export function ExpenseForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Category</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                value={field.value ?? ""}
+                onValueChange={(value) =>
+                  form.setValue("categoryId", value, { shouldValidate: true })
+                }
+              >
                 <FormControl>
                   <SelectTrigger className="bg-secondary/50">
                     <SelectValue placeholder="Select a category" />
@@ -108,7 +127,7 @@ export function ExpenseForm({
                 </FormControl>
                 <SelectContent>
                   {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
+                    <SelectItem key={category.id} value={String(category.id)}>{category.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
