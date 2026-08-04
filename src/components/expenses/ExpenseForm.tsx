@@ -114,7 +114,12 @@ export function ExpenseForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Category</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                value={field.value ?? ""}
+                onValueChange={(value) =>
+                  form.setValue("categoryId", value, { shouldValidate: true })
+                }
+              >
                 <FormControl>
                   <SelectTrigger className="bg-secondary/50">
                     <SelectValue placeholder="Select a category" />
@@ -122,7 +127,7 @@ export function ExpenseForm({
                 </FormControl>
                 <SelectContent>
                   {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
+                    <SelectItem key={category.id} value={String(category.id)}>{category.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
