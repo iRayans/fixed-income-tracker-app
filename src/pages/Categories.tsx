@@ -6,12 +6,13 @@ import { CategoryForm } from '@/components/categories/CategoryForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Trash2 } from "lucide-react";
-import { categoryService } from '@/services/categoryService';
+import { Pencil, Trash2 } from "lucide-react";
+import { categoryService, Category } from '@/services/categoryService';
 import { toast } from '@/components/ui/sonner';
 
 const Categories = () => {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [editingCategory, setEditingCategory] = React.useState<Category | null>(null);
   const [deletingCategoryId, setDeletingCategoryId] = React.useState<number | null>(null);
   const queryClient = useQueryClient();
 
@@ -34,6 +35,21 @@ const Categories = () => {
     },
   });
 
+  const updateCategory = useMutation({
+    mutationFn: categoryService.updateCategory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      setIsDialogOpen(false);
+      setEditingCategory(null);
+      toast("Category updated successfully");
+    },
+    onError: (error) => {
+      toast("Failed to update category", {
+        description: error instanceof Error ? error.message : "Unknown error occurred",
+      });
+    },
+  });
+
   const deleteCategory = useMutation({
     mutationFn: categoryService.deleteCategory,
     onSuccess: () => {
@@ -48,11 +64,29 @@ const Categories = () => {
     },
   });
 
-  const handleAddCategory = (values: any) => {
-    createCategory.mutate({
-      name: values.name,
-      description: values.description,
-    });
+  const handleSubmitCategory = (values: any) => {
+    if (editingCategory?.id) {
+      updateCategory.mutate({
+        id: editingCategory.id,
+        name: values.name,
+        description: values.description,
+      });
+    } else {
+      createCategory.mutate({
+        name: values.name,
+        description: values.description,
+      });
+    }
+  };
+
+  const handleEditClick = (category: Category) => {
+    setEditingCategory(category);
+    setIsDialogOpen(true);
+  };
+
+  const handleDialogOpenChange = (open: boolean) => {
+    setIsDialogOpen(open);
+    if (!open) setEditingCategory(null);
   };
 
   const handleDeleteClick = (id: number) => {
@@ -81,17 +115,20 @@ const Categories = () => {
             <h1 className="text-3xl font-bold tracking-tight">Categories</h1>
             <p className="text-muted-foreground">Manage expense categories</p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
             <DialogTrigger asChild>
-              <Button>Add Category</Button>
+              <Button onClick={() => setEditingCategory(null)}>Add Category</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Add New Category</DialogTitle>
+                <DialogTitle>{editingCategory ? "Edit Category" : "Add New Category"}</DialogTitle>
               </DialogHeader>
-              <CategoryForm 
-                onSubmit={handleAddCategory} 
-                isLoading={createCategory.isPending}
+              <CategoryForm
+                key={editingCategory?.id ?? 'new'}
+                onSubmit={handleSubmitCategory}
+                initialValues={editingCategory ?? undefined}
+                buttonText={editingCategory ? "Update Category" : "Save Category"}
+                isLoading={createCategory.isPending || updateCategory.isPending}
               />
             </DialogContent>
           </Dialog>
@@ -114,6 +151,13 @@ const Categories = () => {
                   </TableCell>
                   <TableCell>{category.description}</TableCell>
                   <TableCell className="text-right">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEditClick(category)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
                     <Button
                       variant="ghost"
                       size="icon"
