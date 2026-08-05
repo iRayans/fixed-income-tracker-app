@@ -41,9 +41,17 @@ const Reports = () => {
   const [monthlyData, setMonthlyData] = useState<Array<{ name: string; expenses: number }>>([]);
   const [categoryData, setCategoryData] = useState<Array<{ name: string; amount: number }>>([]);
   const [loading, setLoading] = useState(true);
-  
+  const isMobile = useIsMobile();
+
   // Convert year to number for processing
   const selectedYear = parseInt(yearFromUrl);
+
+  const labelWidth = isMobile ? 100 : 170;
+  const chartHeight =
+    reportType === 'category'
+      ? Math.max(400, categoryData.length * (isMobile ? 34 : 44) + 80)
+      : 400;
+
 
   useEffect(() => {
     const fetchAllMonthsData = async () => {
