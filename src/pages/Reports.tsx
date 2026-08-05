@@ -172,12 +172,23 @@ const Reports = () => {
                   ) : (
                     <BarChart
                       data={categoryData}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                      margin={{ top: 20, right: 30, left: labelWidth > 0 ? 8 : 20, bottom: 5 }}
                       layout="vertical"
+                      barSize={isMobile ? 16 : 22}
+                      barCategoryGap={isMobile ? 10 : 16}
                     >
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                       <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
-                      <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" />
+                      <YAxis
+                        dataKey="name"
+                        type="category"
+                        stroke="hsl(var(--muted-foreground))"
+                        width={labelWidth}
+                        tickMargin={8}
+                        interval={0}
+                        tick={<CategoryTick width={labelWidth - 12} fontSize={isMobile ? 10 : 12} />}
+                      />
+
                       <Tooltip 
                         contentStyle={{ 
                           backgroundColor: 'hsl(var(--card))', 
