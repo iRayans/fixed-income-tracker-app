@@ -144,7 +144,7 @@ const Reports = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[400px]">
+            <div style={{ height: chartHeight }}>
               {loading ? (
                 <div className="flex items-center justify-center h-full">
                   <p className="text-muted-foreground">Loading chart data...</p>
