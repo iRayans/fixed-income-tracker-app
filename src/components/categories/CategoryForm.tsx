@@ -33,6 +33,14 @@ export function CategoryForm({
     },
   });
 
+  React.useEffect(() => {
+    form.reset({
+      name: initialValues?.name ?? "",
+      description: initialValues?.description ?? "",
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialValues]);
+
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     onSubmit(values);
   };
