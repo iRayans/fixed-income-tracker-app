@@ -10,6 +10,27 @@ import { ChevronLeft } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { expenseService } from '@/services/expenseService';
 import { toast } from 'sonner';
+import { useIsMobile } from '@/hooks/use-mobile';
+
+const CategoryTick = ({ x, y, payload, width, fontSize }: any) => {
+  const label = String(payload?.value ?? '');
+  const maxChars = Math.max(8, Math.floor(width / (fontSize * 0.6)));
+  const text = label.length > maxChars ? `${label.slice(0, maxChars - 1)}…` : label;
+  return (
+    <text
+      x={x}
+      y={y}
+      dy={4}
+      textAnchor="end"
+      fill="hsl(var(--muted-foreground))"
+      fontSize={fontSize}
+    >
+      <title>{label}</title>
+      {text}
+    </text>
+  );
+};
+
 
 const Reports = () => {
   const { year: yearParam } = useParams<{ year?: string }>();
