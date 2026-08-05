@@ -115,17 +115,20 @@ const Categories = () => {
             <h1 className="text-3xl font-bold tracking-tight">Categories</h1>
             <p className="text-muted-foreground">Manage expense categories</p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
             <DialogTrigger asChild>
-              <Button>Add Category</Button>
+              <Button onClick={() => setEditingCategory(null)}>Add Category</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Add New Category</DialogTitle>
+                <DialogTitle>{editingCategory ? "Edit Category" : "Add New Category"}</DialogTitle>
               </DialogHeader>
-              <CategoryForm 
-                onSubmit={handleAddCategory} 
-                isLoading={createCategory.isPending}
+              <CategoryForm
+                key={editingCategory?.id ?? 'new'}
+                onSubmit={handleSubmitCategory}
+                initialValues={editingCategory ?? undefined}
+                buttonText={editingCategory ? "Update Category" : "Save Category"}
+                isLoading={createCategory.isPending || updateCategory.isPending}
               />
             </DialogContent>
           </Dialog>
