@@ -154,6 +154,13 @@ const Categories = () => {
                     <Button
                       variant="ghost"
                       size="icon"
+                      onClick={() => handleEditClick(category)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       onClick={() => category.id && handleDeleteClick(category.id)}
                     >
                       <Trash2 className="h-4 w-4" />
