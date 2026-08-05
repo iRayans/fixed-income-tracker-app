@@ -10,6 +10,27 @@ import { ChevronLeft } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { expenseService } from '@/services/expenseService';
 import { toast } from 'sonner';
+import { useIsMobile } from '@/hooks/use-mobile';
+
+const CategoryTick = ({ x, y, payload, width, fontSize }: any) => {
+  const label = String(payload?.value ?? '');
+  const maxChars = Math.max(8, Math.floor(width / (fontSize * 0.6)));
+  const text = label.length > maxChars ? `${label.slice(0, maxChars - 1)}…` : label;
+  return (
+    <text
+      x={x}
+      y={y}
+      dy={4}
+      textAnchor="end"
+      fill="hsl(var(--muted-foreground))"
+      fontSize={fontSize}
+    >
+      <title>{label}</title>
+      {text}
+    </text>
+  );
+};
+
 
 const Reports = () => {
   const { year: yearParam } = useParams<{ year?: string }>();
@@ -20,9 +41,17 @@ const Reports = () => {
   const [monthlyData, setMonthlyData] = useState<Array<{ name: string; expenses: number }>>([]);
   const [categoryData, setCategoryData] = useState<Array<{ name: string; amount: number }>>([]);
   const [loading, setLoading] = useState(true);
-  
+  const isMobile = useIsMobile();
+
   // Convert year to number for processing
   const selectedYear = parseInt(yearFromUrl);
+
+  const labelWidth = isMobile ? 100 : 170;
+  const chartHeight =
+    reportType === 'category'
+      ? Math.max(400, categoryData.length * (isMobile ? 34 : 44) + 80)
+      : 400;
+
 
   useEffect(() => {
     const fetchAllMonthsData = async () => {
@@ -123,7 +152,7 @@ const Reports = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[400px]">
+            <div style={{ height: chartHeight }}>
               {loading ? (
                 <div className="flex items-center justify-center h-full">
                   <p className="text-muted-foreground">Loading chart data...</p>
@@ -151,12 +180,23 @@ const Reports = () => {
                   ) : (
                     <BarChart
                       data={categoryData}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                      margin={{ top: 20, right: 30, left: labelWidth > 0 ? 8 : 20, bottom: 5 }}
                       layout="vertical"
+                      barSize={isMobile ? 16 : 22}
+                      barCategoryGap={isMobile ? 10 : 16}
                     >
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                       <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
-                      <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" />
+                      <YAxis
+                        dataKey="name"
+                        type="category"
+                        stroke="hsl(var(--muted-foreground))"
+                        width={labelWidth}
+                        tickMargin={8}
+                        interval={0}
+                        tick={<CategoryTick width={labelWidth - 12} fontSize={isMobile ? 10 : 12} />}
+                      />
+
                       <Tooltip 
                         contentStyle={{ 
                           backgroundColor: 'hsl(var(--card))', 
