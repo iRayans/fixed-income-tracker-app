@@ -107,6 +107,34 @@ const SavingsGoalDetails = () => {
     }
   };
 
+  const goalFormValues: GoalFormValues = {
+    name: goal.name,
+    targetAmount: goal.targetAmount,
+    targetDate: goal.targetDate,
+    status: goal.status,
+  };
+
+  const handleUpdateGoal = async (values: GoalFormValues) => {
+    setIsSavingGoal(true);
+    try {
+      await savingsGoalService.updateGoal(goal.id, {
+        name: values.name,
+        targetAmount: values.targetAmount,
+        targetDate: values.targetDate,
+        status: values.status,
+      });
+      toast.success('Goal updated');
+      setIsEditingGoal(false);
+      refresh();
+      queryClient.invalidateQueries({ queryKey: ['savings-goals'] });
+      queryClient.invalidateQueries({ queryKey: ['savings-monthly'] });
+    } catch {
+      toast.error('Failed to update goal');
+    } finally {
+      setIsSavingGoal(false);
+    }
+  };
+
   const afterTxChange = () => {
     refresh();
     queryClient.invalidateQueries({ queryKey: ['savings-monthly'] });
