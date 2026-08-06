@@ -24,6 +24,7 @@ import { savingsGoalService, savingsTransactionService, type SavingsTransaction,
 import { useSavingsGoalDetails } from '@/hooks/use-savings';
 import { TransactionDialog } from '@/components/savings/TransactionDialog';
 import { EditTransactionDialog } from '@/components/savings/EditTransactionDialog';
+import { GoalDialog, type GoalFormValues } from '@/components/savings/GoalDialog';
 import { SavingsStatusBadge } from '@/components/savings/SavingsStatusBadge';
 
 const SavingsGoalDetails = () => {
@@ -35,6 +36,8 @@ const SavingsGoalDetails = () => {
   const [editingTx, setEditingTx] = useState<SavingsTransaction | null>(null);
   const [deletingTx, setDeletingTx] = useState<SavingsTransaction | null>(null);
   const [busyTxId, setBusyTxId] = useState<number | null>(null);
+  const [isEditingGoal, setIsEditingGoal] = useState(false);
+  const [isSavingGoal, setIsSavingGoal] = useState(false);
 
   const backButton = (
     <Button
