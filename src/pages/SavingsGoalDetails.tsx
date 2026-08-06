@@ -299,6 +299,14 @@ const SavingsGoalDetails = () => {
           </CardContent>
         </Card>
 
+        <GoalDialog
+          isOpen={isEditingGoal}
+          onOpenChange={(open) => !open && !isSavingGoal && setIsEditingGoal(false)}
+          title="Edit Goal"
+          initialValues={goalFormValues}
+          onSubmit={handleUpdateGoal}
+        />
+
         <TransactionDialog
           isOpen={txMode !== null}
           onOpenChange={(open) => !open && setTxMode(null)}
