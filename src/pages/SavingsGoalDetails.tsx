@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { ChevronLeft, Minus, Pencil, Plus, Trash2, Loader2, AlertCircle } from 'lucide-react';
+import { ChevronLeft, Minus, Pencil, Plus, Trash2, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { cn, formatCurrency } from '@/lib/utils';
 import { savingsGoalService, savingsTransactionService, type SavingsTransaction, type TransactionType } from '@/services/savingsService';
