@@ -17,13 +17,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { ChevronLeft, Minus, Pencil, Plus, Trash2, Loader2, AlertCircle } from 'lucide-react';
+import { ChevronLeft, Minus, Pencil, Plus, Trash2, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { cn, formatCurrency } from '@/lib/utils';
 import { savingsGoalService, savingsTransactionService, type SavingsTransaction, type TransactionType } from '@/services/savingsService';
 import { useSavingsGoalDetails } from '@/hooks/use-savings';
 import { TransactionDialog } from '@/components/savings/TransactionDialog';
 import { EditTransactionDialog } from '@/components/savings/EditTransactionDialog';
+import { GoalDialog, type GoalFormValues } from '@/components/savings/GoalDialog';
 import { SavingsStatusBadge } from '@/components/savings/SavingsStatusBadge';
 
 const SavingsGoalDetails = () => {
@@ -35,6 +36,8 @@ const SavingsGoalDetails = () => {
   const [editingTx, setEditingTx] = useState<SavingsTransaction | null>(null);
   const [deletingTx, setDeletingTx] = useState<SavingsTransaction | null>(null);
   const [busyTxId, setBusyTxId] = useState<number | null>(null);
+  const [isEditingGoal, setIsEditingGoal] = useState(false);
+  const [isSavingGoal, setIsSavingGoal] = useState(false);
 
   const backButton = (
     <Button
@@ -101,6 +104,34 @@ const SavingsGoalDetails = () => {
       navigate('/savings');
     } catch {
       toast.error('Failed to delete goal');
+    }
+  };
+
+  const goalFormValues: GoalFormValues = {
+    name: goal.name,
+    targetAmount: goal.targetAmount,
+    targetDate: goal.targetDate,
+    status: goal.status,
+  };
+
+  const handleUpdateGoal = async (values: GoalFormValues) => {
+    setIsSavingGoal(true);
+    try {
+      await savingsGoalService.updateGoal(goal.id, {
+        name: values.name,
+        targetAmount: values.targetAmount,
+        targetDate: values.targetDate,
+        status: values.status,
+      });
+      toast.success('Goal updated');
+      setIsEditingGoal(false);
+      refresh();
+      queryClient.invalidateQueries({ queryKey: ['savings-goals'] });
+      queryClient.invalidateQueries({ queryKey: ['savings-monthly'] });
+    } catch {
+      toast.error('Failed to update goal');
+    } finally {
+      setIsSavingGoal(false);
     }
   };
 
@@ -181,10 +212,24 @@ const SavingsGoalDetails = () => {
               <Button variant="secondary" className="gap-2" onClick={() => setTxMode('WITHDRAWAL')}>
                 <Minus size={16} /> Withdraw
               </Button>
+              <Button variant="outline" className="gap-2" onClick={() => setIsEditingGoal(true)}>
+                <Pencil size={16} /> Edit Goal
+              </Button>
               <Button variant="outline" className="gap-2" onClick={handleDeleteGoal}>
                 <Trash2 size={16} /> Delete Goal
               </Button>
+              {balance >= goal.targetAmount && goal.status === 'IN_PROGRESS' && (
+                <Button
+                  variant="ghost"
+                  className="gap-2 text-primary hover:text-primary"
+                  disabled={isSavingGoal}
+                  onClick={() => handleUpdateGoal({ ...goalFormValues, status: 'COMPLETED' })}
+                >
+                  <CheckCircle2 size={16} /> Mark as Completed
+                </Button>
+              )}
             </div>
+
           </CardContent>
         </Card>
 
@@ -253,6 +298,14 @@ const SavingsGoalDetails = () => {
             )}
           </CardContent>
         </Card>
+
+        <GoalDialog
+          isOpen={isEditingGoal}
+          onOpenChange={(open) => !open && !isSavingGoal && setIsEditingGoal(false)}
+          title="Edit Goal"
+          initialValues={goalFormValues}
+          onSubmit={handleUpdateGoal}
+        />
 
         <TransactionDialog
           isOpen={txMode !== null}
