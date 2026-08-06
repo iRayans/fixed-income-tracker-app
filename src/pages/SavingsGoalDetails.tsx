@@ -184,10 +184,24 @@ const SavingsGoalDetails = () => {
               <Button variant="secondary" className="gap-2" onClick={() => setTxMode('WITHDRAWAL')}>
                 <Minus size={16} /> Withdraw
               </Button>
+              <Button variant="outline" className="gap-2" onClick={() => setIsEditingGoal(true)}>
+                <Pencil size={16} /> Edit Goal
+              </Button>
               <Button variant="outline" className="gap-2" onClick={handleDeleteGoal}>
                 <Trash2 size={16} /> Delete Goal
               </Button>
+              {balance >= goal.targetAmount && goal.status === 'IN_PROGRESS' && (
+                <Button
+                  variant="ghost"
+                  className="gap-2 text-primary hover:text-primary"
+                  disabled={isSavingGoal}
+                  onClick={() => handleUpdateGoal({ ...goalFormValues, status: 'COMPLETED' })}
+                >
+                  <CheckCircle2 size={16} /> Mark as Completed
+                </Button>
+              )}
             </div>
+
           </CardContent>
         </Card>
 
