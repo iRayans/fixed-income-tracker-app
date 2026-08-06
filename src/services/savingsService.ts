@@ -68,6 +68,11 @@ export const savingsGoalService = {
   getGoal: (id: string | number) => request<SavingsGoal>(`/savings-goals/${id}`),
   createGoal: (payload: CreateGoalPayload) =>
     request<SavingsGoal>('/savings-goals', { method: 'POST', body: JSON.stringify(payload) }),
+  updateGoal: (id: string | number, payload: CreateGoalPayload) =>
+    request<SavingsGoal>(`/savings-goals/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ ...payload, targetDate: payload.targetDate ?? null }),
+    }),
   deleteGoal: (id: string | number) => request<void>(`/savings-goals/${id}`, { method: 'DELETE' }),
 };
 
