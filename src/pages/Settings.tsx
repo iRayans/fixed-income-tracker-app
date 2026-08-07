@@ -76,7 +76,6 @@ const Settings = () => {
     setDialogOpen(true);
   };
 
-
   const sortedSalaries = [...salaries].sort((a, b) =>
     (b.effectiveFrom || '').localeCompare(a.effectiveFrom || '')
   );
