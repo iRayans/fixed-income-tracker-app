@@ -13,6 +13,7 @@ import { ChevronLeft } from 'lucide-react';
 import { summaryService } from '@/services/summaryService';
 import { expenseService } from '@/services/expenseService';
 import { savingsSummaryService } from '@/services/savingsService';
+import { salaryService } from '@/services/salaryService';
 import { toast } from 'sonner';
 import { useSelectedMonth } from '@/hooks/use-selected-month';
 
@@ -20,13 +21,24 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { selectedDate, yearMonth, goToPreviousMonth, goToNextMonth } = useSelectedMonth();
   const currentDate = yearMonth;
-  
+  const effectiveDate = format(selectedDate, 'yyyy-MM-01');
+
   const { data: summaryData, isLoading: isSummaryLoading } = useQuery({
     queryKey: ['summary', currentDate],
     queryFn: () => summaryService.getSummary(currentDate),
     meta: {
       onError: () => {
         toast.error('Failed to load summary data');
+      }
+    }
+  });
+
+  const { data: effectiveSalary } = useQuery({
+    queryKey: ['salary-effective', effectiveDate],
+    queryFn: () => salaryService.getEffectiveSalary(effectiveDate),
+    meta: {
+      onError: () => {
+        toast.error('Failed to load salary for this month');
       }
     }
   });
@@ -141,7 +153,7 @@ const Dashboard = () => {
               <div className="animate-pulse bg-muted h-[300px] rounded-lg" />
             ) : (
               <SalarySummary 
-                salary={summaryData?.salary ?? 0}
+                salary={effectiveSalary?.amount ?? summaryData?.salary ?? 0}
                 totalExpenses={summaryData?.totalExpenses ?? 0}
                 totalDeposits={savingsTotals?.totalDeposits ?? 0}
                 totalWithdrawals={savingsTotals?.totalWithdrawals ?? 0}
