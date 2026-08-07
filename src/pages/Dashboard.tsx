@@ -153,7 +153,7 @@ const Dashboard = () => {
               <div className="animate-pulse bg-muted h-[300px] rounded-lg" />
             ) : (
               <SalarySummary 
-                salary={summaryData?.salary ?? 0}
+                salary={effectiveSalary?.amount ?? summaryData?.salary ?? 0}
                 totalExpenses={summaryData?.totalExpenses ?? 0}
                 totalDeposits={savingsTotals?.totalDeposits ?? 0}
                 totalWithdrawals={savingsTotals?.totalWithdrawals ?? 0}
