@@ -13,8 +13,8 @@ interface SalarySummaryProps {
 }
 
 export function SalarySummary({ salary, totalExpenses, totalDeposits = 0, totalWithdrawals = 0, date }: SalarySummaryProps) {
-  const remaining = salary - totalExpenses - totalDeposits + totalWithdrawals;
-  const used = totalExpenses + totalDeposits - totalWithdrawals;
+  const remaining = salary - totalExpenses - totalDeposits;
+  const used = totalExpenses + totalDeposits;
   const percentSpent = salary > 0 ? Math.max(0, (used / salary) * 100) : 0;
   
   return (
@@ -32,12 +32,12 @@ export function SalarySummary({ salary, totalExpenses, totalDeposits = 0, totalW
             <span className="text-muted-foreground">Saved This Month</span>
             <span className="font-semibold text-purple-400">{formatCurrency(totalDeposits)}</span>
           </div>
-          {totalWithdrawals > 0 && (
+          {/* {totalWithdrawals > 0 && (
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Withdrawn From Savings</span>
               <span className="font-semibold text-green-500">{formatCurrency(totalWithdrawals)}</span>
             </div>
-          )}
+          )} */}
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Remaining</span>
 
