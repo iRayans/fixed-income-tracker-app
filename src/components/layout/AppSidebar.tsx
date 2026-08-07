@@ -1,9 +1,17 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { 
   Home, 
   CreditCard, 
@@ -28,9 +36,14 @@ export function AppSidebar() {
     return location.pathname === path || location.pathname.startsWith(`${path}/`);
   };
 
-  const handleLogout = () => {
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+
+  const handleLogoutClick = () => setLogoutDialogOpen(true);
+
+  const handleLogoutConfirm = () => {
     clearAuth();
     toast.success("You have been logged out successfully.");
+    setLogoutDialogOpen(false);
     navigate('/auth');
   };
 
@@ -135,12 +148,31 @@ export function AppSidebar() {
         <Button 
           variant="ghost" 
           className="w-full justify-start gap-3 font-medium text-sidebar-foreground/80 hover:text-destructive hover:bg-destructive/10"
-          onClick={handleLogout}
+          onClick={handleLogoutClick}
         >
           <LogOut size={18} />
           <span>Logout</span>
         </Button>
       </div>
+
+      <Dialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Confirm Logout</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to log out?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setLogoutDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleLogoutConfirm}>
+              Logout
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </aside>
   );
 }

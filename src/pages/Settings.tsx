@@ -8,8 +8,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SalaryForm, SalaryFormValues } from '@/components/settings/SalaryForm';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Pencil, Plus } from 'lucide-react';
 import { toast } from 'sonner';
@@ -23,8 +21,6 @@ const formatDate = (value?: string | null) => {
 };
 
 const Settings = () => {
-  const [darkMode, setDarkMode] = useState(false);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSalary, setEditingSalary] = useState<Salary | null>(null);
   const queryClient = useQueryClient();
@@ -78,21 +74,6 @@ const Settings = () => {
   const openEdit = (salary: Salary) => {
     setEditingSalary(salary);
     setDialogOpen(true);
-  };
-
-  const handleToggleDarkMode = () => {
-    const newDarkMode = !darkMode;
-    setDarkMode(newDarkMode);
-    document.documentElement.classList.toggle('dark', newDarkMode);
-  };
-
-  const handleToggleNotifications = () => setNotificationsEnabled(prev => !prev);
-
-  const handleResetSettings = () => {
-    setDarkMode(false);
-    setNotificationsEnabled(true);
-    document.documentElement.classList.remove('dark');
-    toast.success('All settings have been reset to their default values.');
   };
 
   const sortedSalaries = [...salaries].sort((a, b) =>
@@ -167,59 +148,6 @@ const Settings = () => {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle>Appearance</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label htmlFor="dark-mode">Dark Mode</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Enable dark mode for a more comfortable viewing experience at night
-                  </p>
-                </div>
-                <Switch id="dark-mode" checked={darkMode} onCheckedChange={handleToggleDarkMode} />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle>Notifications</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label htmlFor="notifications">Enable Notifications</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Receive notifications about your expenses and budget
-                  </p>
-                </div>
-                <Switch
-                  id="notifications"
-                  checked={notificationsEnabled}
-                  onCheckedChange={handleToggleNotifications}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle>Reset Settings</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Reset all settings to their default values. This action cannot be undone.
-                </p>
-                <Button variant="destructive" onClick={handleResetSettings}>
-                  Reset All Settings
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
 
