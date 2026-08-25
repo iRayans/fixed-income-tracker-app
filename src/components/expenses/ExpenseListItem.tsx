@@ -3,6 +3,8 @@ import React from 'react';
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { Edit, Trash2, CheckCircle2, XCircle, Calendar } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
 import { Expense } from '@/services/expenseService';
