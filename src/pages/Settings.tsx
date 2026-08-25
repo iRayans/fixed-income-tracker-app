@@ -184,10 +184,24 @@ const Settings = () => {
                         <TableCell>{formatDate(salary.effectiveFrom)}</TableCell>
                         <TableCell>{formatDate(salary.effectiveTo)}</TableCell>
                         <TableCell className="text-right">
-                          <Button variant="ghost" size="icon" onClick={() => openEdit(salary)}>
-                            <Pencil size={16} />
-                          </Button>
+                          <div className="inline-flex items-center gap-2">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  aria-label="Edit salary"
+                                  onClick={() => openEdit(salary)}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent side="top">Edit</TooltipContent>
+                            </Tooltip>
+                          </div>
                         </TableCell>
+
                       </TableRow>
                     ))}
                   </TableBody>
