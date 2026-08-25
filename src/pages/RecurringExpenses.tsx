@@ -18,6 +18,8 @@ const RecurringExpenses = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingExpense, setEditingExpense] = useState<RecurringExpense | null>(null);
     const [deletingExpenseId, setDeletingExpenseId] = useState<number | null>(null);
+    const [archivingExpenseId, setArchivingExpenseId] = useState<number | null>(null);
+
     const { toast } = useToast();
     const queryClient = useQueryClient();
 
