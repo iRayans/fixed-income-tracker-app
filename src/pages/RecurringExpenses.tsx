@@ -331,6 +331,7 @@ const RecurringExpenses = () => {
                 </AlertDialogContent>
             </AlertDialog>
 
+            </TooltipProvider>
         </AppLayout>
     );
 };
