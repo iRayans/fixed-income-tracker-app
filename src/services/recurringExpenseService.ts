@@ -66,12 +66,12 @@ export const recurringExpenseService = {
     }
   },
 
-  async toggleRecurringExpenseStatus(id: number, isActive: boolean): Promise<RecurringExpense> {
+  async updateRecurringExpenseStatus(id: number, status: RecurringExpenseStatus): Promise<RecurringExpense> {
     try {
       const response = await fetch(`http://localhost:8080/api/v1/recurringExpenses/${id}`, {
         method: 'PUT',
         headers: authService.getAuthHeaders(),
-        body: JSON.stringify({ isActive }),
+        body: JSON.stringify({ status }),
       });
 
       if (!response.ok) {
@@ -84,6 +84,7 @@ export const recurringExpenseService = {
       throw error;
     }
   },
+
 
   async deleteRecurringExpense(id: number): Promise<void> {
     try {
