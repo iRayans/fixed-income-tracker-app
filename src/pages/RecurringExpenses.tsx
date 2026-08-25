@@ -6,6 +6,7 @@ import { RecurringExpenseForm } from '@/components/expenses/RecurringExpenseForm
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Calendar, Edit, Trash2, Archive } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -195,6 +196,7 @@ const RecurringExpenses = () => {
 
     return (
         <AppLayout>
+            <TooltipProvider delayDuration={0}>
             <div className="space-y-8">
                 <header className="flex items-center justify-between">
                     <div>
@@ -262,30 +264,50 @@ const RecurringExpenses = () => {
                                             onCheckedChange={() => expense.id && handleToggleStatus(expense.id, expense.status)}
                                         />
                                     </TableCell>
-                                    <TableCell className="text-right space-x-2">
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => handleEdit(expense)}
-                                        >
-                                            <Edit className="h-4 w-4" />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            title="Archive"
-                                            disabled={statusMutation.isPending}
-                                            onClick={() => expense.id && setArchivingExpenseId(expense.id)}
-                                        >
-                                            <Archive className="h-4 w-4" />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => expense.id && handleDeleteClick(expense.id)}
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
+                                    <TableCell className="text-right">
+                                        <div className="inline-flex items-center gap-2">
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-8 w-8"
+                                                        onClick={() => handleEdit(expense)}
+                                                    >
+                                                        <Edit className="h-4 w-4" />
+                                                    </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent side="top">Edit</TooltipContent>
+                                            </Tooltip>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-8 w-8"
+                                                        title="Archive"
+                                                        disabled={statusMutation.isPending}
+                                                        onClick={() => expense.id && setArchivingExpenseId(expense.id)}
+                                                    >
+                                                        <Archive className="h-4 w-4" />
+                                                    </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent side="top">Archive</TooltipContent>
+                                            </Tooltip>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                                        onClick={() => expense.id && handleDeleteClick(expense.id)}
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent side="top">Delete</TooltipContent>
+                                            </Tooltip>
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -329,6 +351,7 @@ const RecurringExpenses = () => {
                 </AlertDialogContent>
             </AlertDialog>
 
+            </TooltipProvider>
         </AppLayout>
     );
 };
