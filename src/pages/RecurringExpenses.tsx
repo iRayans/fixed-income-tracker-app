@@ -296,6 +296,24 @@ const RecurringExpenses = () => {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            <AlertDialog open={!!archivingExpenseId} onOpenChange={(open) => !open && setArchivingExpenseId(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Archive this recurring expense?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            It will be hidden from the list but not deleted. You can restore it later from the backend.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleArchive}>
+                            Archive
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
         </AppLayout>
     );
 };
