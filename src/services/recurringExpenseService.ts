@@ -10,8 +10,7 @@ export interface RecurringExpense {
   dueDayOfMonth: number;
   categoryId: number;
   status: RecurringExpenseStatus;
-  isActive?: boolean;
-    category: {
+  category: {
     id: number;
     name: string;
     description?: string;
@@ -25,6 +24,15 @@ export interface CreateRecurringExpenseDto {
   dueDayOfMonth: number;
   categoryId: number;
   status: RecurringExpenseStatus;
+}
+
+export interface UpdateRecurringExpenseDto {
+  name?: string;
+  description?: string;
+  amount?: number;
+  dueDayOfMonth?: number;
+  categoryId?: number;
+  status?: RecurringExpenseStatus;
 }
 
 
@@ -102,7 +110,7 @@ export const recurringExpenseService = {
     }
   },
 
-  async updateRecurringExpense(id: number, expense: Partial<RecurringExpense>): Promise<RecurringExpense> {
+  async updateRecurringExpense(id: number, expense: UpdateRecurringExpenseDto): Promise<RecurringExpense> {
     try {
       const response = await fetch(`http://localhost:8080/api/v1/recurringExpenses/${id}`, {
         method: 'PUT',

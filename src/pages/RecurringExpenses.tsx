@@ -10,7 +10,7 @@ import { Calendar, Edit, Trash2, Archive } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { categoryService } from '@/services/categoryService';
-import { recurringExpenseService, RecurringExpense, RecurringExpenseStatus } from '@/services/recurringExpenseService';
+import { recurringExpenseService, RecurringExpense, RecurringExpenseStatus, UpdateRecurringExpenseDto } from '@/services/recurringExpenseService';
 
 import { formatCurrency } from '@/lib/utils';
 
@@ -54,7 +54,7 @@ const RecurringExpenses = () => {
     });
 
     const updateRecurringExpenseMutation = useMutation({
-        mutationFn: ({ id, data }: { id: number; data: Partial<RecurringExpense> }) =>
+        mutationFn: ({ id, data }: { id: number; data: UpdateRecurringExpenseDto }) =>
             recurringExpenseService.updateRecurringExpense(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['recurringExpenses'] });
@@ -95,6 +95,16 @@ const RecurringExpenses = () => {
     const statusMutation = useMutation({
         mutationFn: ({ id, status }: { id: number; status: RecurringExpenseStatus }) =>
             recurringExpenseService.updateRecurringExpenseStatus(id, status),
+        onMutate: async ({ id, status }) => {
+            await queryClient.cancelQueries({ queryKey: ['recurringExpenses'] });
+            const previousRecurringExpenses = queryClient.getQueryData<RecurringExpense[]>(['recurringExpenses']);
+
+            queryClient.setQueryData<RecurringExpense[]>(['recurringExpenses'], (current = []) =>
+                current.map((expense) => expense.id === id ? { ...expense, status } : expense)
+            );
+
+            return { previousRecurringExpenses };
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['recurringExpenses'] });
             toast({
@@ -102,7 +112,10 @@ const RecurringExpenses = () => {
                 description: "Recurring expense status has been updated successfully.",
             });
         },
-        onError: () => {
+        onError: (_error, _variables, context) => {
+            if (context?.previousRecurringExpenses) {
+                queryClient.setQueryData(['recurringExpenses'], context.previousRecurringExpenses);
+            }
             toast({
                 title: "Error",
                 description: "Failed to update recurring expense status. Please try again.",
@@ -148,6 +161,8 @@ const RecurringExpenses = () => {
     };
 
     const handleToggleStatus = (id: number, status: RecurringExpenseStatus) => {
+        if (status === "ARCHIVED") return;
+
         statusMutation.mutate({ id, status: status === "ACTIVE" ? "PAUSED" : "ACTIVE" });
     };
 
