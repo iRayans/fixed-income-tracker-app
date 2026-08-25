@@ -196,6 +196,7 @@ const RecurringExpenses = () => {
 
     return (
         <AppLayout>
+            <TooltipProvider delayDuration={0}>
             <div className="space-y-8">
                 <header className="flex items-center justify-between">
                     <div>
