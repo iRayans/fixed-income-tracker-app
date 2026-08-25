@@ -6,17 +6,20 @@ import { RecurringExpenseForm } from '@/components/expenses/RecurringExpenseForm
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Calendar, Edit, Trash2 } from "lucide-react";
+import { Calendar, Edit, Trash2, Archive } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { categoryService } from '@/services/categoryService';
-import { recurringExpenseService, RecurringExpense } from '@/services/recurringExpenseService';
+import { recurringExpenseService, RecurringExpense, RecurringExpenseStatus } from '@/services/recurringExpenseService';
+
 import { formatCurrency } from '@/lib/utils';
 
 const RecurringExpenses = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingExpense, setEditingExpense] = useState<RecurringExpense | null>(null);
     const [deletingExpenseId, setDeletingExpenseId] = useState<number | null>(null);
+    const [archivingExpenseId, setArchivingExpenseId] = useState<number | null>(null);
+
     const { toast } = useToast();
     const queryClient = useQueryClient();
 
@@ -89,9 +92,9 @@ const RecurringExpenses = () => {
         },
     });
 
-    const toggleStatusMutation = useMutation({
-        mutationFn: ({ id, isActive }: { id: number; isActive: boolean }) =>
-            recurringExpenseService.toggleRecurringExpenseStatus(id, isActive),
+    const statusMutation = useMutation({
+        mutationFn: ({ id, status }: { id: number; status: RecurringExpenseStatus }) =>
+            recurringExpenseService.updateRecurringExpenseStatus(id, status),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['recurringExpenses'] });
             toast({
@@ -126,7 +129,7 @@ const RecurringExpenses = () => {
             categoryId: parseInt(values.categoryId),
             dueDayOfMonth: values.dueDay,
             description: values.description || "",
-            isActive: true,
+            status: (editingExpense?.status ?? "ACTIVE") as RecurringExpenseStatus,
         };
 
         if (editingExpense?.id) {
@@ -144,15 +147,19 @@ const RecurringExpenses = () => {
         setIsDialogOpen(true);
     };
 
-    const handleDelete = (id: number) => {
-        deleteRecurringExpenseMutation.mutate(id);
+    const handleToggleStatus = (id: number, status: RecurringExpenseStatus) => {
+        statusMutation.mutate({ id, status: status === "ACTIVE" ? "PAUSED" : "ACTIVE" });
     };
 
-    const handleToggleStatus = (id: number, currentStatus: boolean) => {
-        if (id) {
-            toggleStatusMutation.mutate({ id, isActive: !currentStatus });
+    const handleArchive = () => {
+        if (archivingExpenseId) {
+            statusMutation.mutate({ id: archivingExpenseId, status: "ARCHIVED" });
+            setArchivingExpenseId(null);
         }
     };
+
+    const visibleExpenses = recurringExpenses.filter(expense => expense.status !== "ARCHIVED");
+
 
     const formattedCategories = categories.map(category => ({
         id: String(category.id),
@@ -221,7 +228,7 @@ const RecurringExpenses = () => {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {recurringExpenses.map((expense) => (
+                            {visibleExpenses.map((expense) => (
                                 <TableRow key={expense.id}>
                                     <TableCell className="font-medium flex items-center">
                                         <Calendar className="mr-2 h-4 w-4 text-purple-500" />
@@ -235,8 +242,9 @@ const RecurringExpenses = () => {
                                     <TableCell className="text-right">{formatCurrency(expense.amount)}</TableCell>
                                     <TableCell className="text-center">
                                         <Switch
-                                            checked={expense.isActive}
-                                            onCheckedChange={() => expense.id && handleToggleStatus(expense.id, expense.isActive)}
+                                            checked={expense.status === "ACTIVE"}
+                                            disabled={statusMutation.isPending}
+                                            onCheckedChange={() => expense.id && handleToggleStatus(expense.id, expense.status)}
                                         />
                                     </TableCell>
                                     <TableCell className="text-right space-x-2">
@@ -250,6 +258,15 @@ const RecurringExpenses = () => {
                                         <Button
                                             variant="ghost"
                                             size="icon"
+                                            title="Archive"
+                                            disabled={statusMutation.isPending}
+                                            onClick={() => expense.id && setArchivingExpenseId(expense.id)}
+                                        >
+                                            <Archive className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
                                             onClick={() => expense.id && handleDeleteClick(expense.id)}
                                         >
                                             <Trash2 className="h-4 w-4" />
@@ -257,6 +274,7 @@ const RecurringExpenses = () => {
                                     </TableCell>
                                 </TableRow>
                             ))}
+
                         </TableBody>
                     </Table>
                 </div>
@@ -278,6 +296,24 @@ const RecurringExpenses = () => {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            <AlertDialog open={!!archivingExpenseId} onOpenChange={(open) => !open && setArchivingExpenseId(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Archive this recurring expense?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            It will be hidden from the list but not deleted. You can restore it later from the backend.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleArchive}>
+                            Archive
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
         </AppLayout>
     );
 };
