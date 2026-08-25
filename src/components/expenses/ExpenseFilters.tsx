@@ -75,7 +75,7 @@ export const ExpenseFilters: React.FC<ExpenseFiltersProps> = ({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Categories</SelectItem>
-            {categories.map((category) => (
+            {validCategories.map((category) => (
               <SelectItem key={category.id} value={String(category.id)}>
                 {category.name}
               </SelectItem>
