@@ -6,11 +6,12 @@ import { RecurringExpenseForm } from '@/components/expenses/RecurringExpenseForm
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Calendar, Edit, Trash2 } from "lucide-react";
+import { Calendar, Edit, Trash2, Archive } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { categoryService } from '@/services/categoryService';
-import { recurringExpenseService, RecurringExpense } from '@/services/recurringExpenseService';
+import { recurringExpenseService, RecurringExpense, RecurringExpenseStatus } from '@/services/recurringExpenseService';
+
 import { formatCurrency } from '@/lib/utils';
 
 const RecurringExpenses = () => {
