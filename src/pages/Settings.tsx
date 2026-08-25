@@ -1,7 +1,7 @@
-
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
+import { SalaryAdjustmentForm, SalaryAdjustmentFormValues } from '@/components/settings/SalaryAdjustmentForm';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -13,6 +13,8 @@ import { Pencil, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { salaryService, Salary } from '@/services/salaryService';
 import { formatCurrency } from '@/lib/utils';
+import { salaryAdjustmentService, SalaryAdjustment } from '@/services/salaryAdjustmentService';
+
 
 const formatDate = (value?: string | null) => {
   if (!value) return '—';
@@ -78,6 +80,52 @@ const Settings = () => {
 
   const sortedSalaries = [...salaries].sort((a, b) =>
     (b.effectiveFrom || '').localeCompare(a.effectiveFrom || '')
+  );
+
+  const [adjustmentDialogOpen, setAdjustmentDialogOpen] = useState(false);
+  const [editingAdjustment, setEditingAdjustment] = useState<SalaryAdjustment | null>(null);
+
+  const { data: adjustments = [], isLoading: isAdjustmentsLoading } = useQuery({
+    queryKey: ['salary-adjustments'],
+    queryFn: () => salaryAdjustmentService.getAdjustments(),
+    meta: { onError: () => toast.error('Failed to load salary adjustments') },
+  });
+
+  const saveAdjustment = useMutation({
+    mutationFn: async (values: SalaryAdjustmentFormValues) => {
+      const payload = {
+        type: values.type,
+        amount: values.amount,
+        date: values.date,
+        description: values.description || '',
+      };
+
+      if (editingAdjustment?.id) {
+        return salaryAdjustmentService.updateAdjustment(editingAdjustment.id, payload);
+      }
+      return salaryAdjustmentService.createAdjustment(payload);
+    },
+    onSuccess: () => {
+      toast.success(editingAdjustment ? 'Adjustment updated' : 'Adjustment added');
+      setAdjustmentDialogOpen(false);
+      setEditingAdjustment(null);
+      queryClient.invalidateQueries({ queryKey: ['salary-adjustments'] });
+    },
+    onError: () => toast.error('Failed to save salary adjustment'),
+  });
+
+  const openCreateAdjustment = () => {
+    setEditingAdjustment(null);
+    setAdjustmentDialogOpen(true);
+  };
+
+  const openEditAdjustment = (adjustment: SalaryAdjustment) => {
+    setEditingAdjustment(adjustment);
+    setAdjustmentDialogOpen(true);
+  };
+
+  const sortedAdjustments = [...adjustments].sort((a, b) =>
+    (b.date || '').localeCompare(a.date || '')
   );
 
   return (
@@ -148,6 +196,67 @@ const Settings = () => {
             </CardContent>
           </Card>
 
+          <Card>
+            <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
+              <div>
+                <CardTitle>Salary Adjustments</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Bonuses, deductions, and overtime
+                </p>
+              </div>
+              <Button onClick={openCreateAdjustment} size="sm">
+                <Plus size={16} className="mr-1" />
+                Add Adjustment
+              </Button>
+            </CardHeader>
+            <CardContent>
+              {isAdjustmentsLoading ? (
+                <p className="text-muted-foreground">Loading adjustments...</p>
+              ) : sortedAdjustments.length === 0 ? (
+                <p className="text-muted-foreground">
+                  No adjustments yet. Add a bonus, deduction, or overtime record to get started.
+                </p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Amount</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {sortedAdjustments.map((adjustment) => (
+                      <TableRow key={adjustment.id}>
+                        <TableCell>
+                          <Badge variant={adjustment.type === 'DEDUCTION' ? 'destructive' : 'secondary'}>
+                            {adjustment.type}
+                          </Badge>
+                        </TableCell>
+                        <TableCell
+                          className={`font-medium ${adjustment.amount < 0 ? 'text-destructive' : 'text-green-500'}`}
+                        >
+                          {formatCurrency(adjustment.amount)}
+                        </TableCell>
+                        <TableCell>{formatDate(adjustment.date)}</TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {adjustment.description || '—'}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="ghost" size="icon" onClick={() => openEditAdjustment(adjustment)}>
+                            <Pencil size={16} />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+
         </div>
       </div>
 
@@ -177,6 +286,36 @@ const Settings = () => {
             buttonText={editingSalary ? 'Update Salary' : 'Add Salary'}
             isLoading={saveSalary.isPending}
             onSubmit={(values) => saveSalary.mutate(values)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={adjustmentDialogOpen}
+        onOpenChange={(open) => {
+          setAdjustmentDialogOpen(open);
+          if (!open) setEditingAdjustment(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editingAdjustment ? 'Edit Adjustment' : 'Add Salary Adjustment'}</DialogTitle>
+          </DialogHeader>
+          <SalaryAdjustmentForm
+            key={editingAdjustment?.id ?? 'new'}
+            initialValues={
+              editingAdjustment
+                ? {
+                    type: editingAdjustment.type,
+                    amount: Math.abs(editingAdjustment.amount),
+                    date: editingAdjustment.date?.slice(0, 10),
+                    description: editingAdjustment.description ?? '',
+                  }
+                : undefined
+            }
+            buttonText={editingAdjustment ? 'Update Adjustment' : 'Add Adjustment'}
+            isLoading={saveAdjustment.isPending}
+            onSubmit={(values) => saveAdjustment.mutate(values)}
           />
         </DialogContent>
       </Dialog>

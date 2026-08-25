@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -62,6 +61,14 @@ const Dashboard = () => {
       }
     }
   });
+
+  // Only paid expenses count against Remaining / Budget Used
+  const totalPaidExpenses = useMemo(() => {
+    if (!expenses) return 0;
+    return expenses
+      .filter(expense => expense.paid)
+      .reduce((sum, expense) => sum + expense.amount, 0);
+  }, [expenses]);
 
   // Process expense data for the donut chart
   const expenseDistributionData = useMemo(() => {
@@ -149,12 +156,12 @@ const Dashboard = () => {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div className="lg:col-span-1">
-            {isSummaryLoading ? (
+            {(isSummaryLoading || isExpensesLoading) ? (
               <div className="animate-pulse bg-muted h-[300px] rounded-lg" />
             ) : (
               <SalarySummary 
                 salary={effectiveSalary?.amount ?? summaryData?.salary ?? 0}
-                totalExpenses={summaryData?.totalExpenses ?? 0}
+                totalExpenses={totalPaidExpenses}
                 totalDeposits={savingsTotals?.totalDeposits ?? 0}
                 totalWithdrawals={savingsTotals?.totalWithdrawals ?? 0}
                 date={format(selectedDate, 'MMMM yyyy')}

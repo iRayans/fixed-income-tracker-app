@@ -1,12 +1,13 @@
-
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
+import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { Expense, expenseService } from '@/services/expenseService';
 
 export const useExpenses = (selectedDate: Date) => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const selectedYearMonth = format(selectedDate, 'yyyy-MM');
 
   useEffect(() => {
@@ -102,6 +103,7 @@ export const useExpenses = (selectedDate: Date) => {
       ));
       
       await expenseService.updateExpensePaidStatus(id, paid);
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
       
       toast({
         title: paid ? "Marked as Paid" : "Marked as Unpaid",
