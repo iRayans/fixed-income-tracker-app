@@ -10,6 +10,8 @@ import { SalaryForm, SalaryFormValues } from '@/components/settings/SalaryForm';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Pencil, Plus } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { toast } from 'sonner';
 import { salaryService, Salary } from '@/services/salaryService';
 import { formatCurrency } from '@/lib/utils';
