@@ -267,29 +267,40 @@ const SavingsGoalDetails = () => {
                         </TableCell>
                         <TableCell className="text-muted-foreground">{tx.description ?? '—'}</TableCell>
                         <TableCell className="text-right">
-                          <div className="flex justify-end gap-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                              aria-label="Edit transaction"
-                              disabled={busyTxId !== null}
-                              onClick={() => setEditingTx(tx)}
-                            >
-                              <Pencil size={15} />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                              aria-label="Delete transaction"
-                              disabled={busyTxId !== null}
-                              onClick={() => setDeletingTx(tx)}
-                            >
-                              {isBusy ? <Loader2 className="animate-spin" size={15} /> : <Trash2 size={15} />}
-                            </Button>
+                          <div className="inline-flex items-center gap-2">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                                  aria-label="Edit transaction"
+                                  disabled={busyTxId !== null}
+                                  onClick={() => setEditingTx(tx)}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent side="top">Edit</TooltipContent>
+                            </Tooltip>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                  aria-label="Delete transaction"
+                                  disabled={busyTxId !== null}
+                                  onClick={() => setDeletingTx(tx)}
+                                >
+                                  {isBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent side="top">Delete</TooltipContent>
+                            </Tooltip>
                           </div>
                         </TableCell>
+
                       </TableRow>
                     );
                   })}
