@@ -89,9 +89,9 @@ const RecurringExpenses = () => {
         },
     });
 
-    const toggleStatusMutation = useMutation({
-        mutationFn: ({ id, isActive }: { id: number; isActive: boolean }) =>
-            recurringExpenseService.toggleRecurringExpenseStatus(id, isActive),
+    const statusMutation = useMutation({
+        mutationFn: ({ id, status }: { id: number; status: RecurringExpenseStatus }) =>
+            recurringExpenseService.updateRecurringExpenseStatus(id, status),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['recurringExpenses'] });
             toast({
@@ -126,7 +126,7 @@ const RecurringExpenses = () => {
             categoryId: parseInt(values.categoryId),
             dueDayOfMonth: values.dueDay,
             description: values.description || "",
-            isActive: true,
+            status: (editingExpense?.status ?? "ACTIVE") as RecurringExpenseStatus,
         };
 
         if (editingExpense?.id) {
@@ -144,15 +144,19 @@ const RecurringExpenses = () => {
         setIsDialogOpen(true);
     };
 
-    const handleDelete = (id: number) => {
-        deleteRecurringExpenseMutation.mutate(id);
+    const handleToggleStatus = (id: number, status: RecurringExpenseStatus) => {
+        statusMutation.mutate({ id, status: status === "ACTIVE" ? "PAUSED" : "ACTIVE" });
     };
 
-    const handleToggleStatus = (id: number, currentStatus: boolean) => {
-        if (id) {
-            toggleStatusMutation.mutate({ id, isActive: !currentStatus });
+    const handleArchive = () => {
+        if (archivingExpenseId) {
+            statusMutation.mutate({ id: archivingExpenseId, status: "ARCHIVED" });
+            setArchivingExpenseId(null);
         }
     };
+
+    const visibleExpenses = recurringExpenses.filter(expense => expense.status !== "ARCHIVED");
+
 
     const formattedCategories = categories.map(category => ({
         id: String(category.id),
