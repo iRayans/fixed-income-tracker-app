@@ -26,6 +26,8 @@ import { TransactionDialog } from '@/components/savings/TransactionDialog';
 import { EditTransactionDialog } from '@/components/savings/EditTransactionDialog';
 import { GoalDialog, type GoalFormValues } from '@/components/savings/GoalDialog';
 import { SavingsStatusBadge } from '@/components/savings/SavingsStatusBadge';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+
 
 const SavingsGoalDetails = () => {
   const { id } = useParams();
