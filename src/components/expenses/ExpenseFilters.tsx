@@ -54,6 +54,8 @@ export const ExpenseFilters: React.FC<ExpenseFiltersProps> = ({
     onChange(defaultExpenseFilters);
   };
 
+  const validCategories = categories.filter((c) => c.id != null);
+
   return (
     <div className="flex flex-col gap-3 p-4 rounded-lg border border-border/40 bg-card/50">
       <div className="flex flex-wrap items-center gap-3">
