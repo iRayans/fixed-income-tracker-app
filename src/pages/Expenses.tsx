@@ -1,19 +1,59 @@
 
-import React from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ExpenseList } from '@/components/expenses/ExpenseList';
 import { ExpenseHeader } from '@/components/expenses/ExpenseHeader';
 import { ExpenseDeleteDialog } from '@/components/expenses/ExpenseDeleteDialog';
+import { ExpenseFilters, defaultExpenseFilters, ExpenseFiltersState } from '@/components/expenses/ExpenseFilters';
 import { useExpenses } from '@/hooks/use-expenses';
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from 'lucide-react';
 import { ExpenseDialogManager } from '@/components/expenses/ExpenseDialogManager';
 import { useSelectedMonth } from '@/hooks/use-selected-month';
+import { categoryService } from '@/services/categoryService';
+import { Expense } from '@/services/expenseService';
+
+const matchesFilters = (expense: Expense, filters: ExpenseFiltersState): boolean => {
+  if (filters.search) {
+    const term = filters.search.toLowerCase();
+    const nameMatch = expense.name?.toLowerCase().includes(term);
+    const descriptionMatch = expense.description?.toLowerCase().includes(term);
+    if (!nameMatch && !descriptionMatch) return false;
+  }
+
+  if (filters.category !== 'all' && String(expense.category?.id) !== filters.category) {
+    return false;
+  }
+
+  if (filters.paid !== 'all') {
+    if (filters.paid === 'paid' && !expense.paid) return false;
+    if (filters.paid === 'unpaid' && expense.paid) return false;
+  }
+
+  if (filters.bank !== 'all' && expense.bank !== filters.bank) {
+    return false;
+  }
+
+  if (filters.recurring !== 'all') {
+    const isRecurring = Boolean(expense.recurringId);
+    if (filters.recurring === 'recurring' && !isRecurring) return false;
+    if (filters.recurring === 'non-recurring' && isRecurring) return false;
+  }
+
+  return true;
+};
 
 const Expenses = () => {
   const navigate = useNavigate();
   const { selectedDate, goToPreviousMonth, goToNextMonth } = useSelectedMonth();
+  const [filters, setFilters] = useState<ExpenseFiltersState>(defaultExpenseFilters);
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ['categories'],
+    queryFn: categoryService.getCategories,
+  });
 
   const {
     expenses,
@@ -22,6 +62,15 @@ const Expenses = () => {
     handleTogglePaid,
     handleGenerateRecurring
   } = useExpenses(selectedDate);
+
+  const filteredExpenses = useMemo(() => {
+    return expenses.filter((expense) => matchesFilters(expense, filters));
+  }, [expenses, filters]);
+
+  const banks = useMemo(() => {
+    const unique = new Set(expenses.map((expense) => expense.bank).filter(Boolean));
+    return Array.from(unique).sort();
+  }, [expenses]);
 
   const {
     dialogProps,
@@ -62,12 +111,25 @@ const Expenses = () => {
         </div>
 
         <div className="card-hover bg-card rounded-lg shadow border border-border/40 p-1 animate-slide-up">
+          <div className="p-4">
+            <ExpenseFilters
+              filters={filters}
+              onChange={setFilters}
+              categories={categories}
+              banks={banks}
+            />
+          </div>
           <ExpenseList
-            expenses={expenses}
+            expenses={filteredExpenses}
             onEdit={handleEdit}
             onDelete={handleDeleteClick}
             onTogglePaid={handleTogglePaid}
           />
+          {filteredExpenses.length === 0 && expenses.length > 0 && (
+            <div className="text-center py-10 text-muted-foreground">
+              No expenses match the selected filters.
+            </div>
+          )}
         </div>
 
         <ExpenseDeleteDialog {...deleteDialogProps} />
