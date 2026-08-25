@@ -151,21 +151,38 @@ const Categories = () => {
                   </TableCell>
                   <TableCell>{category.description}</TableCell>
                   <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEditClick(category)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => category.id && handleDeleteClick(category.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="inline-flex items-center gap-2">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            aria-label="Edit category"
+                            onClick={() => handleEditClick(category)}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">Edit</TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 hover:text-destructive"
+                            aria-label="Delete category"
+                            onClick={() => category.id && handleDeleteClick(category.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">Delete</TooltipContent>
+                      </Tooltip>
+                    </div>
                   </TableCell>
+
                 </TableRow>
               ))}
             </TableBody>
