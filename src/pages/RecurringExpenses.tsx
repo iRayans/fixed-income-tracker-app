@@ -228,7 +228,7 @@ const RecurringExpenses = () => {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {recurringExpenses.map((expense) => (
+                            {visibleExpenses.map((expense) => (
                                 <TableRow key={expense.id}>
                                     <TableCell className="font-medium flex items-center">
                                         <Calendar className="mr-2 h-4 w-4 text-purple-500" />
@@ -242,8 +242,9 @@ const RecurringExpenses = () => {
                                     <TableCell className="text-right">{formatCurrency(expense.amount)}</TableCell>
                                     <TableCell className="text-center">
                                         <Switch
-                                            checked={expense.isActive}
-                                            onCheckedChange={() => expense.id && handleToggleStatus(expense.id, expense.isActive)}
+                                            checked={expense.status === "ACTIVE"}
+                                            disabled={statusMutation.isPending}
+                                            onCheckedChange={() => expense.id && handleToggleStatus(expense.id, expense.status)}
                                         />
                                     </TableCell>
                                     <TableCell className="text-right space-x-2">
@@ -257,6 +258,15 @@ const RecurringExpenses = () => {
                                         <Button
                                             variant="ghost"
                                             size="icon"
+                                            title="Archive"
+                                            disabled={statusMutation.isPending}
+                                            onClick={() => expense.id && setArchivingExpenseId(expense.id)}
+                                        >
+                                            <Archive className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
                                             onClick={() => expense.id && handleDeleteClick(expense.id)}
                                         >
                                             <Trash2 className="h-4 w-4" />
@@ -264,6 +274,7 @@ const RecurringExpenses = () => {
                                     </TableCell>
                                 </TableRow>
                             ))}
+
                         </TableBody>
                     </Table>
                 </div>
