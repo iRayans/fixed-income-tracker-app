@@ -1,5 +1,7 @@
 import { authService } from './authService';
 
+export type RecurringExpenseStatus = "ACTIVE" | "PAUSED" | "ARCHIVED";
+
 export interface RecurringExpense {
   id?: number;
   name: string;
@@ -7,7 +9,8 @@ export interface RecurringExpense {
   amount: number;
   dueDayOfMonth: number;
   categoryId: number;
-  isActive: boolean;
+  status: RecurringExpenseStatus;
+  isActive?: boolean;
     category: {
     id: number;
     name: string;
@@ -21,8 +24,9 @@ export interface CreateRecurringExpenseDto {
   amount: number;
   dueDayOfMonth: number;
   categoryId: number;
-  isActive: boolean;
+  status: RecurringExpenseStatus;
 }
+
 
 export const recurringExpenseService = {
   async createRecurringExpense(expense: CreateRecurringExpenseDto): Promise<RecurringExpense> {
