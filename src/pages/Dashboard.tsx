@@ -79,15 +79,17 @@ const Dashboard = () => {
 
     const categoryMap = new Map<string, number>();
 
-    expenses.forEach(expense => {
-      const rawName = expense.category?.name || 'Uncategorized';
-      const categoryName = cleanLabel(rawName);
-      // Savings are not expenses
-      if (/saving/i.test(categoryName)) return;
-      const amount = Number(expense.amount) || 0;
-      if (amount <= 0) return;
-      categoryMap.set(categoryName, (categoryMap.get(categoryName) || 0) + amount);
-    });
+    expenses
+      .filter(expense => expense.paid)
+      .forEach(expense => {
+        const rawName = expense.category?.name || 'Uncategorized';
+        const categoryName = cleanLabel(rawName);
+        // Savings are not expenses
+        if (/saving/i.test(categoryName)) return;
+        const amount = Number(expense.amount) || 0;
+        if (amount <= 0) return;
+        categoryMap.set(categoryName, (categoryMap.get(categoryName) || 0) + amount);
+      });
 
     const colors = [
       "#8b5cf6", // Purple
