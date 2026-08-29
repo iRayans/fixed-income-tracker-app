@@ -231,7 +231,7 @@ const RecurringExpenses = () => {
                     </Dialog>
                 </header>
 
-                <div className="rounded-lg border border-border/40 backdrop-blur-sm">
+                <div className="rounded-lg border border-border/40 backdrop-blur-sm overflow-x-auto">
                     <Table>
                         <TableHeader>
                             <TableRow>

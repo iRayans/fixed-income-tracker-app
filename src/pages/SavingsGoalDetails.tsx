@@ -243,7 +243,7 @@ const SavingsGoalDetails = () => {
             {transactions.length === 0 ? (
               <p className="text-muted-foreground py-6 text-center">No transactions yet.</p>
             ) : (
-              <Table>
+              <div className="overflow-x-auto">                <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Date</TableHead>
@@ -307,7 +307,7 @@ const SavingsGoalDetails = () => {
                     );
                   })}
                 </TableBody>
-              </Table>
+                </Table>              </div>
             )}
           </CardContent>
         </Card>
