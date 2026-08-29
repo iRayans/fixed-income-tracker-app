@@ -35,11 +35,12 @@ export const ExpenseDialog: React.FC<ExpenseDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button className="gap-2" onClick={() => onOpenChange(true)}>
+        <Button className="gap-2 w-full sm:w-auto" onClick={() => onOpenChange(true)}>
           <Plus className="h-4 w-4" /> Add Expense
         </Button>
       </DialogTrigger>
       <DialogContent>
+
         <DialogHeader>
           <DialogTitle>{editingExpense ? 'Edit Expense' : 'Add New Expense'}</DialogTitle>
         </DialogHeader>
