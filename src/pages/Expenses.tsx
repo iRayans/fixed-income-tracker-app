@@ -1,7 +1,7 @@
 
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ExpenseList } from '@/components/expenses/ExpenseList';
 import { ExpenseHeader } from '@/components/expenses/ExpenseHeader';
@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from 'lucide-react';
 import { ExpenseDialogManager } from '@/components/expenses/ExpenseDialogManager';
 import { useSelectedMonth } from '@/hooks/use-selected-month';
-import { categoryService } from '@/services/categoryService';
+
 import { Expense } from '@/services/expenseService';
 
 const matchesFilters = (expense: Expense, filters: ExpenseFiltersState): boolean => {
@@ -50,11 +50,6 @@ const Expenses = () => {
   const { selectedDate, goToPreviousMonth, goToNextMonth } = useSelectedMonth();
   const [filters, setFilters] = useState<ExpenseFiltersState>(defaultExpenseFilters);
 
-  const { data: categories = [] } = useQuery({
-    queryKey: ['categories'],
-    queryFn: categoryService.getCategories,
-  });
-
   const {
     expenses,
     handleAddOrUpdateExpense,
@@ -62,6 +57,18 @@ const Expenses = () => {
     handleTogglePaid,
     handleGenerateRecurring
   } = useExpenses(selectedDate);
+
+  // Derive filter categories from the already-loaded expenses — no extra fetch.
+  // Categories are only fetched from the API lazily when the Add/Edit dialog opens.
+  const categories = useMemo(() => {
+    const map = new Map<number, { id: number; name: string; description: string }>();
+    for (const expense of expenses) {
+      if (expense.category && expense.category.id != null && !map.has(expense.category.id)) {
+        map.set(expense.category.id, expense.category);
+      }
+    }
+    return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }, [expenses]);
 
   const filteredExpenses = useMemo(() => {
     return expenses.filter((expense) => matchesFilters(expense, filters));
