@@ -239,11 +239,62 @@ const SavingsGoalDetails = () => {
           <CardHeader>
             <CardTitle className="text-lg">Transaction history</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-3 sm:px-6">
             {transactions.length === 0 ? (
               <p className="text-muted-foreground py-6 text-center">No transactions yet.</p>
             ) : (
-              <div className="overflow-x-auto">                <Table>
+              <>
+              {/* Mobile list */}
+              <div className="md:hidden space-y-2">
+                {transactions.map((tx) => {
+                  const rawDate = tx.date ?? tx.createdAt;
+                  const isBusy = busyTxId === tx.id;
+                  return (
+                    <div key={tx.id} className="rounded-lg border border-border/40 bg-card/60 p-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className={cn('font-medium', tx.type === 'DEPOSIT' ? 'text-primary' : 'text-destructive')}>
+                            {tx.type === 'DEPOSIT' ? 'Deposit' : 'Withdrawal'}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {rawDate ? format(parseISO(rawDate), 'MMM d, yyyy') : '—'}
+                          </p>
+                        </div>
+                        <p className={cn('shrink-0 font-semibold', tx.type === 'DEPOSIT' ? 'text-primary' : 'text-destructive')}>
+                          {tx.type === 'DEPOSIT' ? '+' : '-'}
+                          {formatCurrency(tx.amount)}
+                        </p>
+                      </div>
+                      <p className="mt-1 text-xs text-muted-foreground break-words">{tx.description ?? '—'}</p>
+                      <div className="mt-3 flex items-center justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-10 w-10"
+                          aria-label="Edit transaction"
+                          disabled={busyTxId !== null}
+                          onClick={() => setEditingTx(tx)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-10 w-10 text-destructive"
+                          aria-label="Delete transaction"
+                          disabled={busyTxId !== null}
+                          onClick={() => setDeletingTx(tx)}
+                        >
+                          {isBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="hidden md:block overflow-x-auto">                <Table>
+
                 <TableHeader>
                   <TableRow>
                     <TableHead>Date</TableHead>
