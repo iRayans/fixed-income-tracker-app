@@ -197,11 +197,11 @@ const RecurringExpenses = () => {
     return (
         <AppLayout>
             <TooltipProvider delayDuration={0}>
-            <div className="space-y-8">
-                <header className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Recurring Expenses</h1>
-                        <p className="text-muted-foreground">Manage your recurring monthly expenses</p>
+            <div className="space-y-6 sm:space-y-8">
+                <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="min-w-0">
+                        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Recurring Expenses</h1>
+                        <p className="text-sm text-muted-foreground">Manage your recurring monthly expenses</p>
                     </div>
 
                     <Dialog open={isDialogOpen} onOpenChange={(open) => {
@@ -209,7 +209,7 @@ const RecurringExpenses = () => {
                         if (!open) setEditingExpense(null);
                     }}>
                         <DialogTrigger asChild>
-                            <Button onClick={() => setIsDialogOpen(true)}>Add Recurring Expense</Button>
+                            <Button className="w-full sm:w-auto" onClick={() => setIsDialogOpen(true)}>Add Recurring Expense</Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
@@ -231,7 +231,78 @@ const RecurringExpenses = () => {
                     </Dialog>
                 </header>
 
-                <div className="rounded-lg border border-border/40 backdrop-blur-sm overflow-x-auto">
+                {/* Mobile cards */}
+                <div className="md:hidden space-y-2">
+                    {visibleExpenses.map((expense) => (
+                        <div key={expense.id} className="rounded-lg border border-border/40 bg-card/60 p-3">
+                            <div className="flex items-start justify-between gap-3">
+                                <div className="min-w-0">
+                                    <p className="flex items-center gap-2 font-medium break-words">
+                                        <Calendar className="h-4 w-4 shrink-0 text-purple-500" />
+                                        {expense.name}
+                                    </p>
+                                    <p className="mt-0.5 text-xs text-muted-foreground break-words">
+                                        {expense.description || 'No description'}
+                                    </p>
+                                </div>
+                                <p className="shrink-0 font-semibold">{formatCurrency(expense.amount)}</p>
+                            </div>
+
+                            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                                <span className="rounded-full bg-secondary/60 px-2 py-0.5">
+                                    {expense.category?.name ?? 'No Category'}
+                                </span>
+                                <span className="rounded-full bg-secondary/60 px-2 py-0.5">
+                                    Day {expense.dueDayOfMonth}
+                                </span>
+                            </div>
+
+                            <div className="mt-3 flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                    <Switch
+                                        checked={expense.status === "ACTIVE"}
+                                        disabled={statusMutation.isPending}
+                                        onCheckedChange={() => expense.id && handleToggleStatus(expense.id, expense.status)}
+                                    />
+                                    <span>{expense.status === "ACTIVE" ? 'Active' : 'Paused'}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-10 w-10"
+                                        aria-label="Edit recurring expense"
+                                        onClick={() => handleEdit(expense)}
+                                    >
+                                        <Edit className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-10 w-10"
+                                        aria-label="Archive recurring expense"
+                                        disabled={statusMutation.isPending}
+                                        onClick={() => expense.id && setArchivingExpenseId(expense.id)}
+                                    >
+                                        <Archive className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-10 w-10 text-destructive"
+                                        aria-label="Delete recurring expense"
+                                        onClick={() => expense.id && handleDeleteClick(expense.id)}
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="hidden md:block rounded-lg border border-border/40 backdrop-blur-sm overflow-x-auto">
+
                     <Table>
                         <TableHeader>
                             <TableRow>
