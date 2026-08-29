@@ -132,13 +132,13 @@ const Settings = () => {
 
   return (
     <AppLayout>
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8">
         <header>
-          <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Settings</h1>
           <p className="text-muted-foreground">Manage your application preferences</p>
         </header>
 
-        <div className="grid gap-8">
+        <div className="grid gap-6 sm:gap-8">
           <Card>
             <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
               <div>
@@ -155,7 +155,7 @@ const Settings = () => {
                 Add New Salary
               </Button>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-3 sm:px-6">
               {isLoading ? (
                 <p className="text-muted-foreground">Loading salary history...</p>
               ) : sortedSalaries.length === 0 ? (
@@ -225,7 +225,7 @@ const Settings = () => {
                 Add Adjustment
               </Button>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-3 sm:px-6">
               {isAdjustmentsLoading ? (
                 <p className="text-muted-foreground">Loading adjustments...</p>
               ) : sortedAdjustments.length === 0 ? (

@@ -118,7 +118,7 @@ const Reports = () => {
 
   return (
     <AppLayout>
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8">
         <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Button 
@@ -130,12 +130,12 @@ const Reports = () => {
               <ChevronLeft size={18} />
             </Button>
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Reports for {selectedYear}</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Reports for {selectedYear}</h1>
               <p className="text-muted-foreground">View expense reports and trends</p>
             </div>
           </div>
           <Select value={reportType} onValueChange={setReportType}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full sm:w-[180px] h-11 sm:h-10">
               <SelectValue placeholder="Report Type" />
             </SelectTrigger>
             <SelectContent>
@@ -151,7 +151,7 @@ const Reports = () => {
               {reportType === 'monthly' ? 'Monthly Expense Trends' : 'Expenses by Category'}
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-3 sm:px-6">
             <div style={{ height: chartHeight }}>
               {loading ? (
                 <div className="flex items-center justify-center h-full">
