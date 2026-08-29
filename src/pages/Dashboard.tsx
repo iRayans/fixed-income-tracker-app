@@ -132,20 +132,21 @@ const Dashboard = () => {
 
   return (
     <AppLayout>
-      <div className="space-y-8">
+      <div className="space-y-6 md:space-y-8">
         <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Button 
-              variant="outline" 
-              size="icon" 
+          <div className="flex items-start gap-3 min-w-0">
+            <Button
+              variant="outline"
+              size="icon"
               onClick={() => navigate('/years')}
-              className="h-9 w-9"
+              className="h-9 w-9 shrink-0"
+              aria-label="Back to years"
             >
               <ChevronLeft size={18} />
             </Button>
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-              <p className="text-muted-foreground">Overview of your salary and expenses</p>
+            <div className="min-w-0">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
+              <p className="text-sm text-muted-foreground">Overview of your salary and expenses</p>
             </div>
           </div>
         </header>
@@ -156,8 +157,8 @@ const Dashboard = () => {
           onNextMonth={goToNextMonth}
         />
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <div className="lg:col-span-1">
+        <div className="grid gap-4 md:gap-6 lg:grid-cols-3">
+          <div className="min-w-0 lg:col-span-1">
             {(isSummaryLoading || isExpensesLoading) ? (
               <div className="animate-pulse bg-muted h-[300px] rounded-lg" />
             ) : (
@@ -171,7 +172,7 @@ const Dashboard = () => {
             )}
           </div>
 
-          <div className="md:col-span-2">
+          <div className="min-w-0 lg:col-span-2">
             <ExpenseDistribution 
               data={expenseDistributionData}
               isLoading={isExpensesLoading}
@@ -179,7 +180,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="mt-8">
+        <div>
           <RecentExpenses 
             expenses={expenses || []} 
             isLoading={isExpensesLoading} 
@@ -188,6 +189,7 @@ const Dashboard = () => {
       </div>
     </AppLayout>
   );
+
 };
 
 export default Dashboard;

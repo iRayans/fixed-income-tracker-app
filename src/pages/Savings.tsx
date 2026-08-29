@@ -36,17 +36,18 @@ const Savings = () => {
 
   return (
     <AppLayout>
-      <div className="space-y-8 animate-fade-in">
-        <header className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Savings</h1>
-            <p className="text-muted-foreground">Track your savings goals and balances</p>
+      <div className="space-y-6 sm:space-y-8 animate-fade-in">
+        <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Savings</h1>
+            <p className="text-sm text-muted-foreground">Track your savings goals and balances</p>
           </div>
-          <Button className="gap-2" onClick={() => setIsDialogOpen(true)}>
+          <Button className="gap-2 h-11 sm:h-10 w-full sm:w-auto" onClick={() => setIsDialogOpen(true)}>
             <Plus size={16} />
             Create Goal
           </Button>
         </header>
+
 
         {isLoading ? (
           <div className="flex items-center justify-center gap-2 rounded-lg border border-border/40 bg-card p-12 text-muted-foreground">

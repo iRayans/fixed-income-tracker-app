@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,18 @@ export function AppSidebar({ mobileOpen = false, onMobileClose }: AppSidebarProp
 
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
+  // Prevent body scrolling while the mobile drawer is open
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [mobileOpen]);
+
+
+
   const handleLogoutClick = () => setLogoutDialogOpen(true);
 
   const handleLogoutConfirm = () => {
@@ -65,34 +78,39 @@ export function AppSidebar({ mobileOpen = false, onMobileClose }: AppSidebarProp
       {/* Mobile backdrop */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/60 md:hidden"
+          className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm md:hidden"
           onClick={onMobileClose}
           aria-hidden="true"
         />
       )}
 
-      <aside className={cn(
-        "fixed left-0 top-0 z-50 h-screen w-64 border-r border-sidebar-border bg-sidebar-background flex flex-col transition-transform duration-300 md:z-40 safe-area-top safe-area-bottom",
-        mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-      )}>
-        <div className="p-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gradient">Salary Tracker</h1>
+      <aside
+        role="navigation"
+        aria-hidden={!mobileOpen ? undefined : false}
+        className={cn(
+          "fixed left-0 top-0 z-50 h-[100dvh] w-[82vw] max-w-[18rem] md:w-64 md:max-w-none border-r border-sidebar-border bg-sidebar-background flex flex-col transition-transform duration-300 md:z-40 safe-area-top safe-area-bottom",
+          mobileOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"
+        )}
+      >
+        <div className="px-4 py-4 md:p-6 flex items-center justify-between gap-2">
+          <h1 className="text-xl md:text-2xl font-bold text-gradient truncate">Salary Tracker</h1>
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden text-sidebar-foreground/80"
+            className="md:hidden h-10 w-10 shrink-0 text-sidebar-foreground/80"
             onClick={onMobileClose}
             aria-label="Close menu"
           >
             <X size={18} />
           </Button>
         </div>
+
         <ScrollArea className="flex-1 px-3">
           <nav className="space-y-1.5 py-3">
             <Button 
               variant={isActive("/dashboard") ? "secondary" : "ghost"} 
               className={cn(
-                "w-full justify-start gap-3 mb-1 font-medium", 
+                "w-full justify-start gap-3 mb-1 h-11 font-medium", 
                 isActive("/dashboard") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
               )}
               onClick={() => navigateWithYear('/dashboard')}
@@ -104,7 +122,7 @@ export function AppSidebar({ mobileOpen = false, onMobileClose }: AppSidebarProp
             <Button 
               variant={isActive("/expenses") ? "secondary" : "ghost"} 
               className={cn(
-                "w-full justify-start gap-3 mb-1 font-medium", 
+                "w-full justify-start gap-3 mb-1 h-11 font-medium", 
                 isActive("/expenses") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
               )}
               onClick={() => navigateWithYear('/expenses')}
@@ -116,7 +134,7 @@ export function AppSidebar({ mobileOpen = false, onMobileClose }: AppSidebarProp
             <Button 
               variant={isActive("/savings") ? "secondary" : "ghost"} 
               className={cn(
-                "w-full justify-start gap-3 mb-1 font-medium", 
+                "w-full justify-start gap-3 mb-1 h-11 font-medium", 
                 isActive("/savings") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
               )}
               onClick={() => navigateWithYear('/savings')}
@@ -128,7 +146,7 @@ export function AppSidebar({ mobileOpen = false, onMobileClose }: AppSidebarProp
             <Button 
               variant={isActive("/recurring") ? "secondary" : "ghost"} 
               className={cn(
-                "w-full justify-start gap-3 mb-1 font-medium", 
+                "w-full justify-start gap-3 mb-1 h-11 font-medium", 
                 isActive("/recurring") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
               )}
               onClick={() => navigateWithYear('/recurring')}
@@ -140,7 +158,7 @@ export function AppSidebar({ mobileOpen = false, onMobileClose }: AppSidebarProp
             <Button 
               variant={isActive("/categories") ? "secondary" : "ghost"} 
               className={cn(
-                "w-full justify-start gap-3 mb-1 font-medium", 
+                "w-full justify-start gap-3 mb-1 h-11 font-medium", 
                 isActive("/categories") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
               )}
               onClick={() => navigateWithYear('/categories')}
@@ -152,7 +170,7 @@ export function AppSidebar({ mobileOpen = false, onMobileClose }: AppSidebarProp
             <Button 
               variant={isActive("/reports") || isActive("/years") ? "secondary" : "ghost"} 
               className={cn(
-                "w-full justify-start gap-3 mb-1 font-medium", 
+                "w-full justify-start gap-3 mb-1 h-11 font-medium", 
                 (isActive("/years") || isActive("/reports")) ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
               )}
               onClick={() => {
@@ -170,7 +188,7 @@ export function AppSidebar({ mobileOpen = false, onMobileClose }: AppSidebarProp
           <Button 
             variant={isActive("/settings") ? "secondary" : "ghost"} 
             className={cn(
-              "w-full justify-start gap-3 font-medium", 
+              "w-full justify-start gap-3 h-11 font-medium", 
               isActive("/settings") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
             )}
             onClick={() => navigateWithYear('/settings')}
@@ -180,7 +198,7 @@ export function AppSidebar({ mobileOpen = false, onMobileClose }: AppSidebarProp
           </Button>
           <Button 
             variant="ghost" 
-            className="w-full justify-start gap-3 font-medium text-sidebar-foreground/80 hover:text-destructive hover:bg-destructive/10"
+            className="w-full justify-start gap-3 h-11 font-medium text-sidebar-foreground/80 hover:text-destructive hover:bg-destructive/10"
             onClick={handleLogoutClick}
           >
             <LogOut size={18} />

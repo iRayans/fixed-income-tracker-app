@@ -111,15 +111,15 @@ const Categories = () => {
 
   return (
     <AppLayout>
-      <div className="space-y-8">
-        <header className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Categories</h1>
-            <p className="text-muted-foreground">Manage expense categories</p>
+      <div className="space-y-6 sm:space-y-8">
+        <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Categories</h1>
+            <p className="text-sm text-muted-foreground">Manage expense categories</p>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
             <DialogTrigger asChild>
-              <Button onClick={() => setEditingCategory(null)}>Add Category</Button>
+              <Button className="w-full sm:w-auto" onClick={() => setEditingCategory(null)}>Add Category</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -136,7 +136,43 @@ const Categories = () => {
           </Dialog>
         </header>
 
-        <div className="rounded-lg border border-border/40 backdrop-blur-sm overflow-x-auto">
+        {/* Mobile cards */}
+        <div className="md:hidden space-y-2">
+          {categories.map((category) => (
+            <div key={category.id} className="rounded-lg border border-border/40 bg-card/60 p-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-medium break-words">{category.name}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground break-words">
+                    {category.description || 'No description'}
+                  </p>
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-10 w-10"
+                    aria-label="Edit category"
+                    onClick={() => handleEditClick(category)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-10 w-10 text-destructive"
+                    aria-label="Delete category"
+                    onClick={() => category.id && handleDeleteClick(category.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="hidden md:block rounded-lg border border-border/40 backdrop-blur-sm overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -191,6 +227,7 @@ const Categories = () => {
           </Table>
         </div>
       </div>
+
 
       <AlertDialog open={!!deletingCategoryId} onOpenChange={(open) => !open && setDeletingCategoryId(null)}>
         <AlertDialogContent>

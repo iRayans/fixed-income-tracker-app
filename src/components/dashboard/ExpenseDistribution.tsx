@@ -55,30 +55,33 @@ export function ExpenseDistribution({ data, isLoading }: ExpenseDistributionProp
                     Expense Distribution
                 </CardTitle>
             </CardHeader>
-            <CardContent>
-                <div>
+            <CardContent className="px-3 sm:px-6">
+                <div className="min-w-0">
                     {data.length === 0 || total <= 0 ? (
-                        <div className="h-[300px] flex flex-col items-center justify-center gap-1 text-center">
+                        <div className="h-[240px] sm:h-[300px] flex flex-col items-center justify-center gap-1 text-center">
                             <p className="text-muted-foreground">No expenses recorded for this month</p>
                             <p className="text-sm text-muted-foreground/70">
                                 Add an expense to see the distribution here
                             </p>
                         </div>
                     ) : (
-                        <div className="flex flex-col md:flex-row md:items-center gap-4">
-                            <div className="relative h-[300px] flex-1 min-w-0">
+                        <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+                            <div className="relative h-[280px] sm:h-[320px] w-full min-w-0 flex-1">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
                                         <Pie
                                             data={data}
                                             cx="50%"
-                                            cy="45%"
+                                            cy="42%"
                                             labelLine={false}
-                                            innerRadius={65}
-                                            outerRadius={100}
+                                            innerRadius="52%"
+                                            outerRadius="80%"
                                             paddingAngle={2}
                                             dataKey="value"
                                             nameKey="name"
+                                            onClick={(_, index) =>
+                                                setActiveIndex((current) => (current === index ? null : index))
+                                            }
                                             onMouseEnter={(_, index) => setActiveIndex(index)}
                                             onMouseLeave={() => setActiveIndex(null)}
                                         >
@@ -93,37 +96,39 @@ export function ExpenseDistribution({ data, isLoading }: ExpenseDistributionProp
                                         <Tooltip content={() => null} cursor={false} />
 
                                         <Legend
-                                            wrapperStyle={{ paddingTop: 8 }}
+                                            wrapperStyle={{ paddingTop: 8, maxWidth: '100%' }}
                                             iconSize={8}
                                             formatter={(value) => (
-                                                <span className="text-xs text-foreground">{value}</span>
+                                                <span className="text-[11px] sm:text-xs text-foreground break-words">
+                                                    {value}
+                                                </span>
                                             )}
                                         />
                                     </PieChart>
                                 </ResponsiveContainer>
 
-                                <div className="pointer-events-none absolute inset-x-0 top-[45%] -translate-y-1/2 flex flex-col items-center">
-                                    <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                                <div className="pointer-events-none absolute inset-x-0 top-[42%] -translate-y-1/2 flex flex-col items-center px-6 text-center">
+                                    <span className="text-[10px] sm:text-xs uppercase tracking-wide text-muted-foreground">
                                         Total Expenses
                                     </span>
-                                    <span className="text-lg font-semibold text-foreground">
+                                    <span className="text-base sm:text-lg font-semibold text-foreground">
                                         {Math.trunc(total).toLocaleString('ar-SA')} ر.س
                                     </span>
                                 </div>
                             </div>
 
-                            <div className="w-full md:w-[200px] shrink-0 rounded-md border border-border bg-muted/20 px-3 py-3 min-h-[110px]">
+                            <div className="w-full lg:w-[200px] lg:shrink-0 min-w-0 rounded-md border border-border bg-muted/20 px-3 py-3 min-h-[90px]">
                                 {active ? (
                                     <>
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-2 min-w-0">
                                             <span
-                                                className="h-2.5 w-2.5 rounded-full"
+                                                className="h-2.5 w-2.5 shrink-0 rounded-full"
                                                 style={{
                                                     backgroundColor:
                                                         active.color || COLORS[(activeIndex ?? 0) % COLORS.length],
                                                 }}
                                             />
-                                            <p className="text-sm font-medium text-foreground">{active.name}</p>
+                                            <p className="text-sm font-medium text-foreground truncate">{active.name}</p>
                                         </div>
                                         <p className="mt-1 text-sm text-muted-foreground">
                                             {formatCurrency(Number(active.value) || 0)} (
@@ -148,7 +153,7 @@ export function ExpenseDistribution({ data, isLoading }: ExpenseDistributionProp
                                     </>
                                 ) : (
                                     <p className="text-xs text-muted-foreground">
-                                        Hover a slice to see category details
+                                        Tap or hover a slice to see category details
                                     </p>
                                 )}
                             </div>
@@ -159,3 +164,4 @@ export function ExpenseDistribution({ data, isLoading }: ExpenseDistributionProp
         </Card>
     );
 }
+

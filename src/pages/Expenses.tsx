@@ -84,8 +84,8 @@ const Expenses = () => {
 
   return (
     <AppLayout>
-      <div className="space-y-6 animate-fade-in">
-        <div className="flex items-center mb-8">
+      <div className="space-y-4 sm:space-y-6 animate-fade-in">
+        <div className="flex items-center">
           <Button 
             variant="ghost" 
             size="sm" 
@@ -97,7 +97,7 @@ const Expenses = () => {
           </Button>
         </div>
         
-        <div className="glass-morphism rounded-lg p-6 shadow-lg animate-scale-in">
+        <div className="glass-morphism rounded-lg p-3 sm:p-6 shadow-lg animate-scale-in">
           <ExpenseHeader
             selectedDate={selectedDate}
             onPreviousMonth={goToPreviousMonth}
@@ -111,7 +111,7 @@ const Expenses = () => {
         </div>
 
         <div className="card-hover bg-card rounded-lg shadow border border-border/40 p-1 animate-slide-up">
-          <div className="p-4">
+          <div className="p-2 sm:p-4">
             <ExpenseFilters
               filters={filters}
               onChange={setFilters}
@@ -126,7 +126,7 @@ const Expenses = () => {
             onTogglePaid={handleTogglePaid}
           />
           {filteredExpenses.length === 0 && expenses.length > 0 && (
-            <div className="text-center py-10 text-muted-foreground">
+            <div className="text-center py-10 px-4 text-muted-foreground">
               No expenses match the selected filters.
             </div>
           )}
@@ -136,6 +136,7 @@ const Expenses = () => {
       </div>
     </AppLayout>
   );
+
 };
 
 export default Expenses;
