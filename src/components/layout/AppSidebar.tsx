@@ -45,6 +45,18 @@ export function AppSidebar({ mobileOpen = false, onMobileClose }: AppSidebarProp
 
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
+  // Prevent body scrolling while the mobile drawer is open
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [mobileOpen]);
+
+
+
   const handleLogoutClick = () => setLogoutDialogOpen(true);
 
   const handleLogoutConfirm = () => {
