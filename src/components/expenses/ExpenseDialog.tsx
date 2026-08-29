@@ -24,6 +24,8 @@ export const ExpenseDialog: React.FC<ExpenseDialogProps> = ({
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
     queryFn: categoryService.getCategories,
+    enabled: isOpen, // lazy: only fetch when the Add/Edit dialog is open
+    staleTime: 5 * 60 * 1000, // reuse fresh cache for 5 minutes
   });
 
   // Convert categories to match the expected format in ExpenseForm

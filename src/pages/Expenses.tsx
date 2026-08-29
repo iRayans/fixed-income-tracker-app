@@ -50,10 +50,17 @@ const Expenses = () => {
   const { selectedDate, goToPreviousMonth, goToNextMonth } = useSelectedMonth();
   const [filters, setFilters] = useState<ExpenseFiltersState>(defaultExpenseFilters);
 
-  const { data: categories = [] } = useQuery({
-    queryKey: ['categories'],
-    queryFn: categoryService.getCategories,
-  });
+  // Derive filter categories from the already-loaded expenses — no extra fetch.
+  // Categories are only fetched from the API lazily when the Add/Edit dialog opens.
+  const categories = useMemo(() => {
+    const map = new Map<number, { id: number; name: string; description: string }>();
+    for (const expense of expenses) {
+      if (expense.category && expense.category.id != null && !map.has(expense.category.id)) {
+        map.set(expense.category.id, expense.category);
+      }
+    }
+    return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }, [expenses]);
 
   const {
     expenses,
