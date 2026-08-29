@@ -359,7 +359,9 @@ const SavingsGoalDetails = () => {
                   })}
                 </TableBody>
                 </Table>              </div>
+              </>
             )}
+
           </CardContent>
         </Card>
 
