@@ -110,7 +110,7 @@ export function AppSidebar({ mobileOpen = false, onMobileClose }: AppSidebarProp
             <Button 
               variant={isActive("/dashboard") ? "secondary" : "ghost"} 
               className={cn(
-                "w-full justify-start gap-3 mb-1 font-medium", 
+                "w-full justify-start gap-3 mb-1 h-11 font-medium", 
                 isActive("/dashboard") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
               )}
               onClick={() => navigateWithYear('/dashboard')}
@@ -122,7 +122,7 @@ export function AppSidebar({ mobileOpen = false, onMobileClose }: AppSidebarProp
             <Button 
               variant={isActive("/expenses") ? "secondary" : "ghost"} 
               className={cn(
-                "w-full justify-start gap-3 mb-1 font-medium", 
+                "w-full justify-start gap-3 mb-1 h-11 font-medium", 
                 isActive("/expenses") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
               )}
               onClick={() => navigateWithYear('/expenses')}
@@ -134,7 +134,7 @@ export function AppSidebar({ mobileOpen = false, onMobileClose }: AppSidebarProp
             <Button 
               variant={isActive("/savings") ? "secondary" : "ghost"} 
               className={cn(
-                "w-full justify-start gap-3 mb-1 font-medium", 
+                "w-full justify-start gap-3 mb-1 h-11 font-medium", 
                 isActive("/savings") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
               )}
               onClick={() => navigateWithYear('/savings')}
@@ -146,7 +146,7 @@ export function AppSidebar({ mobileOpen = false, onMobileClose }: AppSidebarProp
             <Button 
               variant={isActive("/recurring") ? "secondary" : "ghost"} 
               className={cn(
-                "w-full justify-start gap-3 mb-1 font-medium", 
+                "w-full justify-start gap-3 mb-1 h-11 font-medium", 
                 isActive("/recurring") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
               )}
               onClick={() => navigateWithYear('/recurring')}
@@ -158,7 +158,7 @@ export function AppSidebar({ mobileOpen = false, onMobileClose }: AppSidebarProp
             <Button 
               variant={isActive("/categories") ? "secondary" : "ghost"} 
               className={cn(
-                "w-full justify-start gap-3 mb-1 font-medium", 
+                "w-full justify-start gap-3 mb-1 h-11 font-medium", 
                 isActive("/categories") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
               )}
               onClick={() => navigateWithYear('/categories')}
@@ -170,7 +170,7 @@ export function AppSidebar({ mobileOpen = false, onMobileClose }: AppSidebarProp
             <Button 
               variant={isActive("/reports") || isActive("/years") ? "secondary" : "ghost"} 
               className={cn(
-                "w-full justify-start gap-3 mb-1 font-medium", 
+                "w-full justify-start gap-3 mb-1 h-11 font-medium", 
                 (isActive("/years") || isActive("/reports")) ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
               )}
               onClick={() => {
@@ -188,7 +188,7 @@ export function AppSidebar({ mobileOpen = false, onMobileClose }: AppSidebarProp
           <Button 
             variant={isActive("/settings") ? "secondary" : "ghost"} 
             className={cn(
-              "w-full justify-start gap-3 font-medium", 
+              "w-full justify-start gap-3 h-11 font-medium", 
               isActive("/settings") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
             )}
             onClick={() => navigateWithYear('/settings')}
@@ -198,7 +198,7 @@ export function AppSidebar({ mobileOpen = false, onMobileClose }: AppSidebarProp
           </Button>
           <Button 
             variant="ghost" 
-            className="w-full justify-start gap-3 font-medium text-sidebar-foreground/80 hover:text-destructive hover:bg-destructive/10"
+            className="w-full justify-start gap-3 h-11 font-medium text-sidebar-foreground/80 hover:text-destructive hover:bg-destructive/10"
             onClick={handleLogoutClick}
           >
             <LogOut size={18} />
