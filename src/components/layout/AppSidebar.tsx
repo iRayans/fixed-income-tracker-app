@@ -72,7 +72,7 @@ export function AppSidebar({ mobileOpen = false, onMobileClose }: AppSidebarProp
       )}
 
       <aside className={cn(
-        "fixed left-0 top-0 z-50 h-screen w-64 border-r border-sidebar-border bg-sidebar-background flex flex-col transition-transform duration-300 md:z-40",
+        "fixed left-0 top-0 z-50 h-screen w-64 border-r border-sidebar-border bg-sidebar-background flex flex-col transition-transform duration-300 md:z-40 safe-area-top safe-area-bottom",
         mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
       )}>
         <div className="p-6 flex items-center justify-between">
