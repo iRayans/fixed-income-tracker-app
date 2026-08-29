@@ -1,7 +1,7 @@
 
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ExpenseList } from '@/components/expenses/ExpenseList';
 import { ExpenseHeader } from '@/components/expenses/ExpenseHeader';
@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from 'lucide-react';
 import { ExpenseDialogManager } from '@/components/expenses/ExpenseDialogManager';
 import { useSelectedMonth } from '@/hooks/use-selected-month';
-import { categoryService } from '@/services/categoryService';
+
 import { Expense } from '@/services/expenseService';
 
 const matchesFilters = (expense: Expense, filters: ExpenseFiltersState): boolean => {
