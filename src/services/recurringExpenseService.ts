@@ -39,7 +39,7 @@ export interface UpdateRecurringExpenseDto {
 export const recurringExpenseService = {
   async createRecurringExpense(expense: CreateRecurringExpenseDto): Promise<RecurringExpense> {
     try {
-      const response = await fetch('http://localhost:8080/api/v1/recurringExpenses', {
+      const response = await fetch('http://192.168.0.4:8080/api/v1/recurringExpenses', {
         method: 'POST',
         headers: authService.getAuthHeaders(),
         body: JSON.stringify(expense),
@@ -58,7 +58,7 @@ export const recurringExpenseService = {
 
   async getRecurringExpenses(): Promise<RecurringExpense[]> {
     try {
-      const response = await fetch('http://localhost:8080/api/v1/recurringExpenses', {
+      const response = await fetch('http://192.168.0.4:8080/api/v1/recurringExpenses', {
         method: 'GET',
         headers: authService.getAuthHeaders(),
       });
@@ -76,7 +76,7 @@ export const recurringExpenseService = {
 
   async updateRecurringExpenseStatus(id: number, status: RecurringExpenseStatus): Promise<RecurringExpense> {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/recurringExpenses/${id}`, {
+      const response = await fetch(`http://192.168.0.4:8080/api/v1/recurringExpenses/${id}`, {
         method: 'PUT',
         headers: authService.getAuthHeaders(),
         body: JSON.stringify({ status }),
@@ -96,7 +96,7 @@ export const recurringExpenseService = {
 
   async deleteRecurringExpense(id: number): Promise<void> {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/recurringExpenses/${id}`, {
+      const response = await fetch(`http://192.168.0.4:8080/api/v1/recurringExpenses/${id}`, {
         method: 'DELETE',
         headers: authService.getAuthHeaders(),
       });
@@ -112,7 +112,7 @@ export const recurringExpenseService = {
 
   async updateRecurringExpense(id: number, expense: UpdateRecurringExpenseDto): Promise<RecurringExpense> {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/recurringExpenses/${id}`, {
+      const response = await fetch(`http://192.168.0.4:8080/api/v1/recurringExpenses/${id}`, {
         method: 'PUT',
         headers: authService.getAuthHeaders(),
         body: JSON.stringify(expense),

@@ -1,6 +1,6 @@
 import { authService } from './authService';
 
-const API_BASE = 'http://localhost:8080/api/v1';
+const API_BASE = 'http://192.168.0.4:8080/api/v1';
 
 export type GoalStatus = 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 export type TransactionType = 'DEPOSIT' | 'WITHDRAWAL';

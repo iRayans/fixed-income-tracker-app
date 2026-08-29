@@ -9,7 +9,7 @@ export interface Category {
 export const categoryService = {
   async getCategories(): Promise<Category[]> {
     try {
-      const response = await fetch('http://localhost:8080/api/v1/categories', {
+      const response = await fetch('http://192.168.0.4:8080/api/v1/categories', {
         method: 'GET',
         headers: authService.getAuthHeaders(),
       });
@@ -27,7 +27,7 @@ export const categoryService = {
 
   async createCategory(category: Omit<Category, 'id'>): Promise<Category> {
     try {
-      const response = await fetch('http://localhost:8080/api/v1/categories', {
+      const response = await fetch('http://192.168.0.4:8080/api/v1/categories', {
         method: 'POST',
         headers: authService.getAuthHeaders(),
         body: JSON.stringify(category),
@@ -46,7 +46,7 @@ export const categoryService = {
 
   async updateCategory({ id, ...category }: Category & { id: number }): Promise<Category> {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/categories/${id}`, {
+      const response = await fetch(`http://192.168.0.4:8080/api/v1/categories/${id}`, {
         method: 'PUT',
         headers: authService.getAuthHeaders(),
         body: JSON.stringify({ name: category.name, description: category.description }),
@@ -65,7 +65,7 @@ export const categoryService = {
 
   async deleteCategory(id: number): Promise<void> {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/categories/${id}`, {
+      const response = await fetch(`http://192.168.0.4:8080/api/v1/categories/${id}`, {
         method: 'DELETE',
         headers: authService.getAuthHeaders(),
       });
