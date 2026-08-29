@@ -50,6 +50,14 @@ const Expenses = () => {
   const { selectedDate, goToPreviousMonth, goToNextMonth } = useSelectedMonth();
   const [filters, setFilters] = useState<ExpenseFiltersState>(defaultExpenseFilters);
 
+  const {
+    expenses,
+    handleAddOrUpdateExpense,
+    handleDelete,
+    handleTogglePaid,
+    handleGenerateRecurring
+  } = useExpenses(selectedDate);
+
   // Derive filter categories from the already-loaded expenses — no extra fetch.
   // Categories are only fetched from the API lazily when the Add/Edit dialog opens.
   const categories = useMemo(() => {
@@ -61,14 +69,6 @@ const Expenses = () => {
     }
     return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
   }, [expenses]);
-
-  const {
-    expenses,
-    handleAddOrUpdateExpense,
-    handleDelete,
-    handleTogglePaid,
-    handleGenerateRecurring
-  } = useExpenses(selectedDate);
 
   const filteredExpenses = useMemo(() => {
     return expenses.filter((expense) => matchesFilters(expense, filters));
