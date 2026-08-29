@@ -163,7 +163,7 @@ const Settings = () => {
                   No salary records yet. Add your first salary to get started.
                 </p>
               ) : (
-                <Table>
+                <div className="overflow-x-auto">                  <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>Amount</TableHead>
@@ -207,7 +207,7 @@ const Settings = () => {
                       </TableRow>
                     ))}
                   </TableBody>
-                </Table>
+                  </Table>                </div>
               )}
             </CardContent>
           </Card>
@@ -233,7 +233,7 @@ const Settings = () => {
                   No adjustments yet. Add a bonus, deduction, or overtime record to get started.
                 </p>
               ) : (
-                <Table>
+                <div className="overflow-x-auto">                  <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>Type</TableHead>
@@ -282,7 +282,7 @@ const Settings = () => {
                       </TableRow>
                     ))}
                   </TableBody>
-                </Table>
+                  </Table>                </div>
               )}
             </CardContent>
           </Card>
