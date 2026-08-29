@@ -183,47 +183,47 @@ const SavingsGoalDetails = () => {
         {backButton}
 
         <Card className="border-border/40 animate-scale-in">
-          <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
-            <div>
-              <CardTitle className="text-2xl">{goal.name}</CardTitle>
-              <p className="text-muted-foreground mt-1">
+          <CardHeader className="flex flex-col gap-2 space-y-0 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+            <div className="min-w-0">
+              <CardTitle className="text-xl sm:text-2xl break-words">{goal.name}</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
                 {goal.targetDate ? `Target date: ${format(parseISO(goal.targetDate), 'MMMM yyyy')}` : 'No target date'}
               </p>
             </div>
-            <SavingsStatusBadge status={goal.status} />
+            <div className="shrink-0"><SavingsStatusBadge status={goal.status} /></div>
           </CardHeader>
-          <CardContent className="space-y-5">
+          <CardContent className="space-y-5 px-3 sm:px-6">
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <p className="text-sm text-muted-foreground">Current balance</p>
-                <p className="text-2xl font-bold">{formatCurrency(balance)}</p>
+                <p className="text-xl sm:text-2xl font-bold">{formatCurrency(balance)}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Target amount</p>
-                <p className="text-2xl font-bold">{formatCurrency(goal.targetAmount)}</p>
+                <p className="text-xl sm:text-2xl font-bold">{formatCurrency(goal.targetAmount)}</p>
               </div>
             </div>
             <div className="space-y-2">
               <Progress value={percent} className="h-2" />
               <p className="text-sm text-muted-foreground">{percent}% completed</p>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Button className="gap-2" onClick={() => setTxMode('DEPOSIT')}>
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+              <Button className="gap-2 h-11 sm:h-10 w-full sm:w-auto" onClick={() => setTxMode('DEPOSIT')}>
                 <Plus size={16} /> Add Money
               </Button>
-              <Button variant="secondary" className="gap-2" onClick={() => setTxMode('WITHDRAWAL')}>
+              <Button variant="secondary" className="gap-2 h-11 sm:h-10 w-full sm:w-auto" onClick={() => setTxMode('WITHDRAWAL')}>
                 <Minus size={16} /> Withdraw
               </Button>
-              <Button variant="outline" className="gap-2" onClick={() => setIsEditingGoal(true)}>
+              <Button variant="outline" className="gap-2 h-11 sm:h-10 w-full sm:w-auto" onClick={() => setIsEditingGoal(true)}>
                 <Pencil size={16} /> Edit Goal
               </Button>
-              <Button variant="outline" className="gap-2" onClick={handleDeleteGoal}>
+              <Button variant="outline" className="gap-2 h-11 sm:h-10 w-full sm:w-auto" onClick={handleDeleteGoal}>
                 <Trash2 size={16} /> Delete Goal
               </Button>
               {balance >= goal.targetAmount && goal.status === 'IN_PROGRESS' && (
                 <Button
                   variant="ghost"
-                  className="gap-2 text-primary hover:text-primary"
+                  className="col-span-2 gap-2 h-11 sm:h-10 w-full sm:w-auto text-primary hover:text-primary"
                   disabled={isSavingGoal}
                   onClick={() => handleUpdateGoal({ ...goalFormValues, status: 'COMPLETED' })}
                 >
@@ -231,6 +231,7 @@ const SavingsGoalDetails = () => {
                 </Button>
               )}
             </div>
+
 
           </CardContent>
         </Card>
