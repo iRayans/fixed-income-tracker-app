@@ -45,7 +45,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       <AppSidebar mobileOpen={mobileMenuOpen} onMobileClose={() => setMobileMenuOpen(false)} />
 
       {/* Mobile top bar */}
-      <header className="md:hidden sticky top-0 z-30 flex items-center gap-3 border-b border-sidebar-border/40 bg-sidebar-background/90 backdrop-blur px-4 py-3">
+      <header className="md:hidden sticky top-0 z-30 flex items-center gap-3 border-b border-sidebar-border/40 bg-sidebar-background/90 backdrop-blur px-4 py-3 safe-area-top">
         <Button
           variant="ghost"
           size="icon"
@@ -57,7 +57,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         <h1 className="text-lg font-bold text-gradient">Salary Tracker</h1>
       </header>
 
-      <main className="ml-0 md:ml-64 min-h-screen p-4 md:p-8 animate-fade-in">
+      <main className="ml-0 md:ml-64 min-h-screen p-4 md:p-8 animate-fade-in safe-area-bottom">
         <div className="max-w-7xl mx-auto">
           {children}
         </div>
