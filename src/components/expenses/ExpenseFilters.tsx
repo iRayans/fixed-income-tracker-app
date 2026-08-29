@@ -57,20 +57,20 @@ export const ExpenseFilters: React.FC<ExpenseFiltersProps> = ({
   const validCategories = categories.filter((c) => c.id != null);
 
   return (
-    <div className="flex flex-col gap-3 p-4 rounded-lg border border-border/40 bg-card/50">
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-          <Input
-            placeholder="Search by name or description..."
-            value={filters.search}
-            onChange={(e) => update({ search: e.target.value })}
-            className="pl-9 bg-secondary/50"
-          />
-        </div>
+    <div className="flex flex-col gap-3 p-3 sm:p-4 rounded-lg border border-border/40 bg-card/50">
+      <div className="relative w-full min-w-0">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+        <Input
+          placeholder="Search by name or description..."
+          value={filters.search}
+          onChange={(e) => update({ search: e.target.value })}
+          className="pl-9 h-11 sm:h-10 bg-secondary/50"
+        />
+      </div>
 
+      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
         <Select value={filters.category} onValueChange={(value) => update({ category: value })}>
-          <SelectTrigger className="w-[160px] bg-secondary/50">
+          <SelectTrigger className="w-full sm:w-[160px] h-11 sm:h-10 bg-secondary/50">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
@@ -84,7 +84,7 @@ export const ExpenseFilters: React.FC<ExpenseFiltersProps> = ({
         </Select>
 
         <Select value={filters.paid} onValueChange={(value) => update({ paid: value })}>
-          <SelectTrigger className="w-[150px] bg-secondary/50">
+          <SelectTrigger className="w-full sm:w-[150px] h-11 sm:h-10 bg-secondary/50">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -95,7 +95,7 @@ export const ExpenseFilters: React.FC<ExpenseFiltersProps> = ({
         </Select>
 
         <Select value={filters.bank} onValueChange={(value) => update({ bank: value })}>
-          <SelectTrigger className="w-[150px] bg-secondary/50">
+          <SelectTrigger className="w-full sm:w-[150px] h-11 sm:h-10 bg-secondary/50">
             <SelectValue placeholder="Bank" />
           </SelectTrigger>
           <SelectContent>
@@ -109,7 +109,7 @@ export const ExpenseFilters: React.FC<ExpenseFiltersProps> = ({
         </Select>
 
         <Select value={filters.recurring} onValueChange={(value) => update({ recurring: value })}>
-          <SelectTrigger className="w-[170px] bg-secondary/50">
+          <SelectTrigger className="w-full sm:w-[170px] h-11 sm:h-10 bg-secondary/50">
             <SelectValue placeholder="Recurring" />
           </SelectTrigger>
           <SelectContent>
@@ -122,9 +122,8 @@ export const ExpenseFilters: React.FC<ExpenseFiltersProps> = ({
         {hasFilters && (
           <Button
             variant="outline"
-            size="sm"
             onClick={clear}
-            className="gap-1"
+            className="col-span-2 gap-1 h-11 sm:h-10 w-full sm:w-auto"
           >
             <X className="h-4 w-4" />
             Clear Filters
@@ -134,3 +133,4 @@ export const ExpenseFilters: React.FC<ExpenseFiltersProps> = ({
     </div>
   );
 };
+
