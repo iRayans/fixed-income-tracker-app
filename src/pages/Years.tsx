@@ -5,13 +5,14 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { authService } from '@/services/authService';
+import { useAuthSession } from '@/hooks/use-auth-session';
 
 const Years = () => {
   const [years, setYears] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
+  const { user, isLoading: isSessionLoading } = useAuthSession();
 
   useEffect(() => {
     if (isSessionLoading) return;
