@@ -63,9 +63,17 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return (text ? JSON.parse(text) : undefined) as T;
 }
 
+export interface SavingsGoalDetails extends SavingsGoal {
+  createdAt?: string;
+  updatedAt?: string;
+  transactions: SavingsTransaction[];
+}
+
 export const savingsGoalService = {
   getGoals: () => request<SavingsGoal[]>('/savings-goals'),
   getGoal: (id: string | number) => request<SavingsGoal>(`/savings-goals/${id}`),
+  /** Combined goal + transactions + balance for the goal detail screen. */
+  getGoalDetails: (id: string | number) => request<SavingsGoalDetails>(`/savings-goals/${id}/details`),
   createGoal: (payload: CreateGoalPayload) =>
     request<SavingsGoal>('/savings-goals', { method: 'POST', body: JSON.stringify(payload) }),
   updateGoal: (id: string | number, payload: CreateGoalPayload) =>
