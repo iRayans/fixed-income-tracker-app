@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppSidebar } from './AppSidebar';
-import { authService } from '@/services/authService';
+import { useAuthSession } from '@/hooks/use-auth-session';
 import { Button } from "@/components/ui/button";
 import { Menu } from 'lucide-react';
 
@@ -12,22 +12,14 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isAuthenticated, isLoading } = useAuthSession();
 
   useEffect(() => {
-    const checkTokenValidity = async () => {
-      const isValid = await authService.validateToken();
-
-      if (!isValid) {
-        navigate('/auth');
-      } else {
-        setIsLoading(false);
-      }
-    };
-
-    checkTokenValidity();
-  }, [navigate]);
+    if (!isLoading && !isAuthenticated) {
+      navigate('/auth');
+    }
+  }, [isLoading, isAuthenticated, navigate]);
 
   if (isLoading) {
     return (
@@ -39,6 +31,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       </div>
     );
   }
+
 
   return (
     <div className="min-h-screen w-full overflow-x-hidden bg-gradient-to-br from-background to-background/95 text-foreground">

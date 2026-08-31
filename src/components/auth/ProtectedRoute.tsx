@@ -1,7 +1,6 @@
 
 import { Navigate, useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { authService } from '@/services/authService';
+import { useAuthSession } from '@/hooks/use-auth-session';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -9,26 +8,16 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const location = useLocation();
-  const [isValid, setIsValid] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const checkTokenValidity = async () => {
-      const valid = await authService.validateToken();
-      setIsValid(valid);
-      setIsLoading(false);
-    };
-
-    checkTokenValidity();
-  }, []);
+  const { isAuthenticated, isLoading } = useAuthSession();
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  if (!isValid) {
+  if (!isAuthenticated) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
   return children;
 };
+

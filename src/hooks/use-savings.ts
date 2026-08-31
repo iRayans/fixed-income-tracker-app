@@ -3,7 +3,6 @@ import {
   SavingsGoal,
   SavingsTransaction,
   savingsGoalService,
-  savingsTransactionService,
 } from '@/services/savingsService';
 
 export function useSavingsGoals() {
@@ -42,14 +41,19 @@ export function useSavingsGoalDetails(id?: string) {
     if (!id) return;
     setIsLoading(true);
     try {
-      const [goalData, txData, balanceData] = await Promise.all([
-        savingsGoalService.getGoal(id),
-        savingsTransactionService.getByGoal(id),
-        savingsTransactionService.getBalance(id),
-      ]);
-      setGoal(goalData ?? null);
-      setTransactions(Array.isArray(txData) ? txData : []);
-      setBalance(Number.isFinite(balanceData) ? balanceData : 0);
+      const details = await savingsGoalService.getGoalDetails(id);
+      const txs = Array.isArray(details?.transactions) ? details.transactions : [];
+      setGoal(details ? { ...details } : null);
+      setTransactions(txs);
+      const current = Number(details?.currentAmount);
+      setBalance(
+        Number.isFinite(current)
+          ? current
+          : txs.reduce(
+              (sum, tx) => sum + (tx.type === 'DEPOSIT' ? Number(tx.amount) || 0 : -(Number(tx.amount) || 0)),
+              0,
+            ),
+      );
       setError(null);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load savings goal');
