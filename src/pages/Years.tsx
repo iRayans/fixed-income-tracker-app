@@ -14,40 +14,27 @@ const Years = () => {
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
-    const generateAvailableYears = async () => {
-      setLoading(true);
-      try {
-        // Get user data which includes creation date
-        const userData = await authService.getCurrentUser();
-        
-        if (!userData) {
-          throw new Error('Could not fetch user data');
-        }
-
-        // Get the year from user's creation date
-        const creationYear = new Date(userData.createdAt).getFullYear();
-        
-        // Generate array of years from creation year to current year
-        const availableYears = [];
-        for (let year = creationYear; year <= currentYear; year++) {
-          availableYears.push(year);
-        }
-        
-        // Sort years in descending order (newest first)
-        availableYears.sort((a, b) => b - a);
-        setYears(availableYears);
-      } catch (error) {
-        console.error('Error generating years:', error);
-        toast.error("Failed to load years data. Please try again.");
-        // Fallback to just showing current year
-        setYears([currentYear]);
-      } finally {
-        setLoading(false);
+    if (isSessionLoading) return;
+    try {
+      if (!user) {
+        throw new Error('Could not fetch user data');
       }
-    };
-    
-    generateAvailableYears();
-  }, [currentYear]);
+
+      const creationYear = new Date(user.createdAt).getFullYear();
+      const availableYears = [];
+      for (let year = creationYear; year <= currentYear; year++) {
+        availableYears.push(year);
+      }
+      availableYears.sort((a, b) => b - a);
+      setYears(availableYears);
+    } catch (error) {
+      console.error('Error generating years:', error);
+      toast.error("Failed to load years data. Please try again.");
+      setYears([currentYear]);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentYear, user, isSessionLoading]);
 
   const handleYearSelect = (year: number) => {
     navigate(`/dashboard?year=${year}`);

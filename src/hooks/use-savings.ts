@@ -3,7 +3,6 @@ import {
   SavingsGoal,
   SavingsTransaction,
   savingsGoalService,
-  savingsTransactionService,
 } from '@/services/savingsService';
 
 export function useSavingsGoals() {
