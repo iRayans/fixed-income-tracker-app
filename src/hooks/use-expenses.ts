@@ -7,6 +7,7 @@ import { Expense, expenseService } from '@/services/expenseService';
 export const useExpenses = (selectedDate: Date) => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const selectedYearMonth = format(selectedDate, 'yyyy-MM');
@@ -20,26 +21,40 @@ export const useExpenses = (selectedDate: Date) => {
     fetchExpenses(selectedYearMonth);
   }, [selectedYearMonth]);
 
-  const fetchExpenses = async (yearMonth: string) => {
+  const fetchExpenses = async (yearMonth: string, attempt = 0) => {
     latestRequest.current = yearMonth;
     setIsLoading(true);
+    setError(null);
     try {
       const data = await expenseService.getExpenses(yearMonth);
       if (latestRequest.current !== yearMonth) return;
       setExpenses(Array.isArray(data) ? data : []);
-    } catch (error) {
+      setIsLoading(false);
+    } catch (err) {
       if (latestRequest.current !== yearMonth) return;
+      console.error('Error fetching expenses:', err);
+
+      // The backend runs on Lambda: the first call after a cold start can fail
+      // or time out. Retry with backoff before giving up.
+      if (attempt < 2) {
+        const delay = 1000 * 2 ** attempt;
+        setTimeout(() => {
+          if (latestRequest.current === yearMonth) fetchExpenses(yearMonth, attempt + 1);
+        }, delay);
+        return;
+      }
+
       setExpenses([]);
-      console.error('Error fetching expenses:', error);
+      setIsLoading(false);
+      setError(err instanceof Error ? err.message : 'Failed to load expenses');
       toast({
         title: "Error",
         description: "Failed to load expenses. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      if (latestRequest.current === yearMonth) setIsLoading(false);
     }
   };
+
 
   const handleAddOrUpdateExpense = async (values: any, editingExpense: Expense | null) => {
     try {
@@ -154,6 +169,8 @@ export const useExpenses = (selectedDate: Date) => {
   return {
     expenses,
     isLoading,
+    error,
+
     handleAddOrUpdateExpense,
     handleDelete,
     handleTogglePaid,
