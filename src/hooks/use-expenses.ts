@@ -6,6 +6,8 @@ import { Expense, expenseService } from '@/services/expenseService';
 
 export const useExpenses = (selectedDate: Date) => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const selectedYearMonth = format(selectedDate, 'yyyy-MM');
@@ -15,18 +17,25 @@ export const useExpenses = (selectedDate: Date) => {
   }, [selectedYearMonth]);
 
   const fetchExpenses = async (yearMonth: string) => {
+    setIsLoading(true);
+    setLoadError(null);
     try {
       const data = await expenseService.getExpenses(yearMonth);
       setExpenses(data);
     } catch (error) {
       console.error('Error fetching expenses:', error);
+      setLoadError(error instanceof Error ? error.message : 'Failed to load expenses');
+      setExpenses([]);
       toast({
         title: "Error",
         description: "Failed to load expenses. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
+
 
   const handleAddOrUpdateExpense = async (values: any, editingExpense: Expense | null) => {
     try {
