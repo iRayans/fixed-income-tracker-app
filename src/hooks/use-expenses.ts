@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { format } from 'date-fns';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
@@ -6,25 +6,38 @@ import { Expense, expenseService } from '@/services/expenseService';
 
 export const useExpenses = (selectedDate: Date) => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const selectedYearMonth = format(selectedDate, 'yyyy-MM');
+
+  // Guards against out-of-order responses: only the most recent request may
+  // write to state, so a slow fetch for a previous month can never overwrite
+  // the data of the month currently on screen.
+  const latestRequest = useRef<string | null>(null);
 
   useEffect(() => {
     fetchExpenses(selectedYearMonth);
   }, [selectedYearMonth]);
 
   const fetchExpenses = async (yearMonth: string) => {
+    latestRequest.current = yearMonth;
+    setIsLoading(true);
     try {
       const data = await expenseService.getExpenses(yearMonth);
-      setExpenses(data);
+      if (latestRequest.current !== yearMonth) return;
+      setExpenses(Array.isArray(data) ? data : []);
     } catch (error) {
+      if (latestRequest.current !== yearMonth) return;
+      setExpenses([]);
       console.error('Error fetching expenses:', error);
       toast({
         title: "Error",
         description: "Failed to load expenses. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      if (latestRequest.current === yearMonth) setIsLoading(false);
     }
   };
 
@@ -140,6 +153,7 @@ export const useExpenses = (selectedDate: Date) => {
 
   return {
     expenses,
+    isLoading,
     handleAddOrUpdateExpense,
     handleDelete,
     handleTogglePaid,
