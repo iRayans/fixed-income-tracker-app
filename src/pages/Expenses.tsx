@@ -72,7 +72,8 @@ const Expenses = () => {
         map.set(expense.category.id, expense.category);
       }
     }
-    return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+    // A category with a null/undefined name (e.g. deleted category) must not crash the page.
+    return Array.from(map.values()).sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
   }, [expenses]);
 
   const filteredExpenses = useMemo(() => {
