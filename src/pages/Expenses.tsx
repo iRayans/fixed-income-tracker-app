@@ -134,8 +134,21 @@ const Expenses = () => {
           {isLoading ? (
             <div className="text-center py-10 px-4 text-muted-foreground">
               Loading expenses…
+              <p className="mt-1 text-xs text-muted-foreground/70">
+                The server can take a few seconds to wake up.
+              </p>
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center gap-3 py-10 px-4 text-center">
+              <p className="text-sm text-destructive">
+                Couldn't load expenses for {format(selectedDate, 'MMMM yyyy')}.
+              </p>
+              <Button variant="outline" size="sm" onClick={() => refetchExpenses()}>
+                Retry
+              </Button>
             </div>
           ) : (
+
             <>
               <ExpenseList
                 expenses={filteredExpenses}
