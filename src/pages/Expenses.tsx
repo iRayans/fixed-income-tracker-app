@@ -144,6 +144,9 @@ const Expenses = () => {
               <p className="text-sm text-destructive">
                 Couldn't load expenses for {format(selectedDate, 'MMMM yyyy')}.
               </p>
+              <p className="max-w-full break-words font-mono text-xs text-muted-foreground">
+                {error}
+              </p>
               <Button variant="outline" size="sm" onClick={() => refetchExpenses()}>
                 Retry
               </Button>
