@@ -52,11 +52,15 @@ const Expenses = () => {
 
   const {
     expenses,
+    isLoading,
+    loadError,
     handleAddOrUpdateExpense,
     handleDelete,
     handleTogglePaid,
-    handleGenerateRecurring
+    handleGenerateRecurring,
+    refetchExpenses
   } = useExpenses(selectedDate);
+
 
   // Derive filter categories from the already-loaded expenses — no extra fetch.
   // Categories are only fetched from the API lazily when the Add/Edit dialog opens.
@@ -126,17 +130,37 @@ const Expenses = () => {
               banks={banks}
             />
           </div>
-          <ExpenseList
-            expenses={filteredExpenses}
-            onEdit={handleEdit}
-            onDelete={handleDeleteClick}
-            onTogglePaid={handleTogglePaid}
-          />
-          {filteredExpenses.length === 0 && expenses.length > 0 && (
-            <div className="text-center py-10 px-4 text-muted-foreground">
-              No expenses match the selected filters.
+          {isLoading ? (
+            <div className="space-y-2 p-2 sm:p-4">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="h-12 rounded-md bg-secondary animate-pulse" />
+              ))}
             </div>
+          ) : loadError ? (
+            <div className="text-center py-10 px-4 space-y-3">
+              <p className="text-sm text-destructive">{loadError}</p>
+              <Button variant="outline" size="sm" onClick={refetchExpenses}>
+                Retry
+              </Button>
+            </div>
+          ) : (
+            <>
+              <ExpenseList
+                expenses={filteredExpenses}
+                onEdit={handleEdit}
+                onDelete={handleDeleteClick}
+                onTogglePaid={handleTogglePaid}
+              />
+              {filteredExpenses.length === 0 && (
+                <div className="text-center py-10 px-4 text-muted-foreground">
+                  {expenses.length > 0
+                    ? 'No expenses match the selected filters.'
+                    : 'No expenses found for this month.'}
+                </div>
+              )}
+            </>
           )}
+
         </div>
 
         <ExpenseDeleteDialog {...deleteDialogProps} />
