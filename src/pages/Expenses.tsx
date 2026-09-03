@@ -1,6 +1,7 @@
 
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
 
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ExpenseList } from '@/components/expenses/ExpenseList';
@@ -55,7 +56,8 @@ const Expenses = () => {
     handleAddOrUpdateExpense,
     handleDelete,
     handleTogglePaid,
-    handleGenerateRecurring
+    handleGenerateRecurring,
+    isLoading,
   } = useExpenses(selectedDate);
 
   // Derive filter categories from the already-loaded expenses — no extra fetch.
@@ -126,16 +128,29 @@ const Expenses = () => {
               banks={banks}
             />
           </div>
-          <ExpenseList
-            expenses={filteredExpenses}
-            onEdit={handleEdit}
-            onDelete={handleDeleteClick}
-            onTogglePaid={handleTogglePaid}
-          />
-          {filteredExpenses.length === 0 && expenses.length > 0 && (
+          {isLoading ? (
             <div className="text-center py-10 px-4 text-muted-foreground">
-              No expenses match the selected filters.
+              Loading expenses…
             </div>
+          ) : (
+            <>
+              <ExpenseList
+                expenses={filteredExpenses}
+                onEdit={handleEdit}
+                onDelete={handleDeleteClick}
+                onTogglePaid={handleTogglePaid}
+              />
+              {expenses.length === 0 && (
+                <div className="text-center py-10 px-4 text-muted-foreground">
+                  No expenses recorded for {format(selectedDate, 'MMMM yyyy')}.
+                </div>
+              )}
+              {filteredExpenses.length === 0 && expenses.length > 0 && (
+                <div className="text-center py-10 px-4 text-muted-foreground">
+                  No expenses match the selected filters.
+                </div>
+              )}
+            </>
           )}
         </div>
 

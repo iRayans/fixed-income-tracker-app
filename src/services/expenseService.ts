@@ -54,7 +54,14 @@ export const expenseService = {
         throw new Error("Failed to fetch expenses");
       }
 
-      return await response.json();
+      const data = await response.json();
+      if (import.meta.env.DEV) {
+        console.debug(
+          `[expenses] GET ${date} -> ${Array.isArray(data) ? `${data.length} item(s)` : typeof data}`,
+          data
+        );
+      }
+      return data;
     } catch (error) {
       console.error("Error fetching expenses:", error);
       throw error;
