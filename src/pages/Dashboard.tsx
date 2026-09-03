@@ -42,15 +42,17 @@ const Dashboard = () => {
     }
   });
 
-  const { data: expenses, isLoading: isExpensesLoading } = useQuery({
+  const {
+    data: expenses,
+    isLoading: isExpensesLoading,
+    isError: isExpensesError,
+    isFetching: isExpensesFetching,
+    refetch: refetchExpenses,
+  } = useQuery({
     queryKey: ['expenses', currentDate],
     queryFn: () => expenseService.getExpenses(currentDate),
-    meta: {
-      onError: () => {
-        toast.error('Failed to load expenses');
-      }
-    }
   });
+
 
   const { data: savingsTotals } = useQuery({
     queryKey: ['savings-monthly', currentDate],
