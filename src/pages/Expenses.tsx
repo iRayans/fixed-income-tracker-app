@@ -52,11 +52,15 @@ const Expenses = () => {
 
   const {
     expenses,
+    isLoading,
+    loadError,
     handleAddOrUpdateExpense,
     handleDelete,
     handleTogglePaid,
-    handleGenerateRecurring
+    handleGenerateRecurring,
+    refetchExpenses
   } = useExpenses(selectedDate);
+
 
   // Derive filter categories from the already-loaded expenses — no extra fetch.
   // Categories are only fetched from the API lazily when the Add/Edit dialog opens.
