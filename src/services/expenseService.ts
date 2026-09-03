@@ -47,11 +47,15 @@ export const expenseService = {
         {
           method: "GET",
           headers: authService.getAuthHeaders(),
+          // Lambda cold starts can be slow; allow plenty of time before aborting.
+          signal: AbortSignal.timeout(60000),
         }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch expenses");
+        throw new Error(
+          `Failed to fetch expenses for ${date} (HTTP ${response.status})`
+        );
       }
 
       const data = await response.json();
@@ -61,12 +65,13 @@ export const expenseService = {
           data
         );
       }
-      return data;
+      return Array.isArray(data) ? data : [];
     } catch (error) {
       console.error("Error fetching expenses:", error);
       throw error;
     }
   },
+
 
   async updateExpensePaidStatus(id: number, paid: boolean): Promise<Expense> {
     try {
