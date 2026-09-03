@@ -41,6 +41,7 @@ export interface UpdateExpenseDto {
 
 export const expenseService = {
   async getExpenses(date: string): Promise<Expense[]> {
+    const startedAt = performance.now();
     try {
       const response = await fetch(
         `http://192.168.0.4:8080/api/v1/expenses/${date}`,
@@ -51,15 +52,36 @@ export const expenseService = {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch expenses");
+        throw new Error(`Failed to fetch expenses (${response.status})`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      const list: Expense[] = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.content)
+          ? data.content
+          : [];
+
+      console.info(
+        `[expenses] ${date} -> ${list.length} items in ${Math.round(performance.now() - startedAt)}ms`,
+        Array.isArray(data) ? "array" : typeof data
+      );
+
+      return list.map((expense) => ({
+        ...expense,
+        amount: Number(expense.amount) || 0,
+        categoryId: expense.categoryId ?? expense.category?.id ?? 0,
+        paid: Boolean(expense.paid),
+      }));
     } catch (error) {
-      console.error("Error fetching expenses:", error);
+      console.error(
+        `[expenses] ${date} failed after ${Math.round(performance.now() - startedAt)}ms`,
+        error
+      );
       throw error;
     }
   },
+
 
   async updateExpensePaidStatus(id: number, paid: boolean): Promise<Expense> {
     try {
