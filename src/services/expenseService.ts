@@ -58,14 +58,35 @@ export const expenseService = {
         );
       }
 
-      const data = await response.json();
+      // Read as text first so a malformed body (NaN, Infinity, truncated JSON,
+      // an HTML error page with a 200 status…) produces a precise error instead
+      // of a generic "Unexpected token" that hides which month/what broke.
+      const raw = await response.text();
+      let data: unknown;
+      try {
+        data = JSON.parse(raw);
+      } catch (parseError) {
+        console.error(`[expenses] GET ${date} returned a non-JSON body:`, raw.slice(0, 500));
+        throw new Error(
+          `Invalid JSON in response for ${date}: ${(parseError as Error).message}`
+        );
+      }
+
       if (import.meta.env.DEV) {
         console.debug(
           `[expenses] GET ${date} -> ${Array.isArray(data) ? `${data.length} item(s)` : typeof data}`,
           data
         );
       }
-      return Array.isArray(data) ? data : [];
+
+      if (!Array.isArray(data)) {
+        throw new Error(
+          `Unexpected response shape for ${date}: expected an array, got ${
+            data === null ? 'null' : typeof data
+          }`
+        );
+      }
+      return data as Expense[];
     } catch (error) {
       console.error("Error fetching expenses:", error);
       throw error;
