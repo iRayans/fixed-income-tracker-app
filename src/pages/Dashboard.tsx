@@ -42,7 +42,12 @@ const Dashboard = () => {
     }
   });
 
-  const { data: expenses, isLoading: isExpensesLoading } = useQuery({
+  const {
+    data: expenses,
+    isLoading: isExpensesLoading,
+    isError: isExpensesError,
+    refetch: refetchExpenses,
+  } = useQuery({
     queryKey: ['expenses', currentDate],
     queryFn: () => expenseService.getExpenses(currentDate),
     meta: {
@@ -51,6 +56,7 @@ const Dashboard = () => {
       }
     }
   });
+
 
   const { data: savingsTotals } = useQuery({
     queryKey: ['savings-monthly', currentDate],
