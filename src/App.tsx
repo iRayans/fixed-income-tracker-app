@@ -1,5 +1,5 @@
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, QueryCache } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -18,13 +18,25 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
+  // Surface failures instead of letting components silently render empty data.
+  queryCache: new QueryCache({
+    onError: (error, query) => {
+      console.error("[query error]", query.queryKey, error);
+    },
+  }),
   defaultOptions: {
     queries: {
-      retry: 1,
+      // Backend runs on Lambda: cold starts can take 30s+ and the first
+      // attempt often fails (502/504/timeout). Retry with backoff so a slow
+      // but eventually-valid response is used instead of an empty error state.
+      retry: 3,
+      retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 8000),
       staleTime: 30000,
+      refetchOnWindowFocus: false,
     },
   },
 });
+
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
