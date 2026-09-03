@@ -47,52 +47,19 @@ export const expenseService = {
         {
           method: "GET",
           headers: authService.getAuthHeaders(),
-          // Lambda cold starts can be slow; allow plenty of time before aborting.
-          signal: AbortSignal.timeout(60000),
         }
       );
 
       if (!response.ok) {
-        throw new Error(
-          `Failed to fetch expenses for ${date} (HTTP ${response.status})`
-        );
+        throw new Error("Failed to fetch expenses");
       }
 
-      // Read as text first so a malformed body (NaN, Infinity, truncated JSON,
-      // an HTML error page with a 200 status…) produces a precise error instead
-      // of a generic "Unexpected token" that hides which month/what broke.
-      const raw = await response.text();
-      let data: unknown;
-      try {
-        data = JSON.parse(raw);
-      } catch (parseError) {
-        console.error(`[expenses] GET ${date} returned a non-JSON body:`, raw.slice(0, 500));
-        throw new Error(
-          `Invalid JSON in response for ${date}: ${(parseError as Error).message}`
-        );
-      }
-
-      if (import.meta.env.DEV) {
-        console.debug(
-          `[expenses] GET ${date} -> ${Array.isArray(data) ? `${data.length} item(s)` : typeof data}`,
-          data
-        );
-      }
-
-      if (!Array.isArray(data)) {
-        throw new Error(
-          `Unexpected response shape for ${date}: expected an array, got ${
-            data === null ? 'null' : typeof data
-          }`
-        );
-      }
-      return data as Expense[];
+      return await response.json();
     } catch (error) {
       console.error("Error fetching expenses:", error);
       throw error;
     }
   },
-
 
   async updateExpensePaidStatus(id: number, paid: boolean): Promise<Expense> {
     try {

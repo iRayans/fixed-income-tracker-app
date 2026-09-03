@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
@@ -6,47 +6,20 @@ import { Expense, expenseService } from '@/services/expenseService';
 
 export const useExpenses = (selectedDate: Date) => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const selectedYearMonth = format(selectedDate, 'yyyy-MM');
-
-  // Guards against out-of-order responses: only the most recent request may
-  // write to state, so a slow fetch for a previous month can never overwrite
-  // the data of the month currently on screen.
-  const latestRequest = useRef<string | null>(null);
 
   useEffect(() => {
     fetchExpenses(selectedYearMonth);
   }, [selectedYearMonth]);
 
-  const fetchExpenses = async (yearMonth: string, attempt = 0) => {
-    latestRequest.current = yearMonth;
-    setIsLoading(true);
-    setError(null);
+  const fetchExpenses = async (yearMonth: string) => {
     try {
       const data = await expenseService.getExpenses(yearMonth);
-      if (latestRequest.current !== yearMonth) return;
-      setExpenses(Array.isArray(data) ? data : []);
-      setIsLoading(false);
-    } catch (err) {
-      if (latestRequest.current !== yearMonth) return;
-      console.error('Error fetching expenses:', err);
-
-      // The backend runs on Lambda: the first call after a cold start can fail
-      // or time out. Retry with backoff before giving up.
-      if (attempt < 2) {
-        const delay = 1000 * 2 ** attempt;
-        setTimeout(() => {
-          if (latestRequest.current === yearMonth) fetchExpenses(yearMonth, attempt + 1);
-        }, delay);
-        return;
-      }
-
-      setExpenses([]);
-      setIsLoading(false);
-      setError(err instanceof Error ? err.message : 'Failed to load expenses');
+      setExpenses(data);
+    } catch (error) {
+      console.error('Error fetching expenses:', error);
       toast({
         title: "Error",
         description: "Failed to load expenses. Please try again.",
@@ -54,7 +27,6 @@ export const useExpenses = (selectedDate: Date) => {
       });
     }
   };
-
 
   const handleAddOrUpdateExpense = async (values: any, editingExpense: Expense | null) => {
     try {
@@ -168,9 +140,6 @@ export const useExpenses = (selectedDate: Date) => {
 
   return {
     expenses,
-    isLoading,
-    error,
-
     handleAddOrUpdateExpense,
     handleDelete,
     handleTogglePaid,

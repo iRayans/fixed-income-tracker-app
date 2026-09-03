@@ -1,7 +1,6 @@
 
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { format } from 'date-fns';
 
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ExpenseList } from '@/components/expenses/ExpenseList';
@@ -56,12 +55,8 @@ const Expenses = () => {
     handleAddOrUpdateExpense,
     handleDelete,
     handleTogglePaid,
-    handleGenerateRecurring,
-    isLoading,
-    error,
-    refetchExpenses,
+    handleGenerateRecurring
   } = useExpenses(selectedDate);
-
 
   // Derive filter categories from the already-loaded expenses — no extra fetch.
   // Categories are only fetched from the API lazily when the Add/Edit dialog opens.
@@ -72,8 +67,7 @@ const Expenses = () => {
         map.set(expense.category.id, expense.category);
       }
     }
-    // A category with a null/undefined name (e.g. deleted category) must not crash the page.
-    return Array.from(map.values()).sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
+    return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
   }, [expenses]);
 
   const filteredExpenses = useMemo(() => {
@@ -132,45 +126,16 @@ const Expenses = () => {
               banks={banks}
             />
           </div>
-          {isLoading ? (
+          <ExpenseList
+            expenses={filteredExpenses}
+            onEdit={handleEdit}
+            onDelete={handleDeleteClick}
+            onTogglePaid={handleTogglePaid}
+          />
+          {filteredExpenses.length === 0 && expenses.length > 0 && (
             <div className="text-center py-10 px-4 text-muted-foreground">
-              Loading expenses…
-              <p className="mt-1 text-xs text-muted-foreground/70">
-                The server can take a few seconds to wake up.
-              </p>
+              No expenses match the selected filters.
             </div>
-          ) : error ? (
-            <div className="flex flex-col items-center gap-3 py-10 px-4 text-center">
-              <p className="text-sm text-destructive">
-                Couldn't load expenses for {format(selectedDate, 'MMMM yyyy')}.
-              </p>
-              <p className="max-w-full break-words font-mono text-xs text-muted-foreground">
-                {error}
-              </p>
-              <Button variant="outline" size="sm" onClick={() => refetchExpenses()}>
-                Retry
-              </Button>
-            </div>
-          ) : (
-
-            <>
-              <ExpenseList
-                expenses={filteredExpenses}
-                onEdit={handleEdit}
-                onDelete={handleDeleteClick}
-                onTogglePaid={handleTogglePaid}
-              />
-              {expenses.length === 0 && (
-                <div className="text-center py-10 px-4 text-muted-foreground">
-                  No expenses recorded for {format(selectedDate, 'MMMM yyyy')}.
-                </div>
-              )}
-              {filteredExpenses.length === 0 && expenses.length > 0 && (
-                <div className="text-center py-10 px-4 text-muted-foreground">
-                  No expenses match the selected filters.
-                </div>
-              )}
-            </>
           )}
         </div>
 
