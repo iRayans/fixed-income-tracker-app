@@ -72,7 +72,8 @@ const Expenses = () => {
         map.set(expense.category.id, expense.category);
       }
     }
-    return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+    // A category with a null/undefined name (e.g. deleted category) must not crash the page.
+    return Array.from(map.values()).sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
   }, [expenses]);
 
   const filteredExpenses = useMemo(() => {
@@ -142,6 +143,9 @@ const Expenses = () => {
             <div className="flex flex-col items-center gap-3 py-10 px-4 text-center">
               <p className="text-sm text-destructive">
                 Couldn't load expenses for {format(selectedDate, 'MMMM yyyy')}.
+              </p>
+              <p className="max-w-full break-words font-mono text-xs text-muted-foreground">
+                {error}
               </p>
               <Button variant="outline" size="sm" onClick={() => refetchExpenses()}>
                 Retry
