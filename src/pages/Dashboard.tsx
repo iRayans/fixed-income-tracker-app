@@ -159,6 +159,24 @@ const Dashboard = () => {
           onNextMonth={goToNextMonth}
         />
 
+        {isExpensesError && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3">
+            <p className="text-sm text-destructive-foreground">
+              Couldn't load expenses for {format(selectedDate, 'MMMM yyyy')}. The server may still be
+              starting up.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetchExpenses()}
+              disabled={isExpensesFetching}
+              className="shrink-0"
+            >
+              {isExpensesFetching ? 'Retrying…' : 'Retry'}
+            </Button>
+          </div>
+        )}
+
         <div className="grid gap-4 md:gap-6 lg:grid-cols-3">
           <div className="min-w-0 lg:col-span-1">
             {(isSummaryLoading || isExpensesLoading) ? (
@@ -177,7 +195,7 @@ const Dashboard = () => {
           <div className="min-w-0 lg:col-span-2">
             <ExpenseDistribution 
               data={expenseDistributionData}
-              isLoading={isExpensesLoading}
+              isLoading={isExpensesLoading || (isExpensesError && isExpensesFetching)}
             />
           </div>
         </div>
@@ -185,9 +203,10 @@ const Dashboard = () => {
         <div>
           <RecentExpenses 
             expenses={expenses || []} 
-            isLoading={isExpensesLoading} 
+            isLoading={isExpensesLoading || (isExpensesError && isExpensesFetching)} 
           />
         </div>
+
       </div>
     </AppLayout>
   );
