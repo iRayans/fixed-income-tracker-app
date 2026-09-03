@@ -169,6 +169,8 @@ export const useExpenses = (selectedDate: Date) => {
   return {
     expenses,
     isLoading,
+    error,
+
     handleAddOrUpdateExpense,
     handleDelete,
     handleTogglePaid,
