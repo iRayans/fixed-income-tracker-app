@@ -15,6 +15,7 @@ import { savingsSummaryService } from '@/services/savingsService';
 import { salaryService } from '@/services/salaryService';
 import { toast } from 'sonner';
 import { useSelectedMonth } from '@/hooks/use-selected-month';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -191,18 +192,22 @@ const Dashboard = () => {
           </div>
 
           <div className="min-w-0 lg:col-span-2">
-            <ExpenseDistribution 
-              data={expenseDistributionData}
-              isLoading={isExpensesLoading}
-            />
+            <ErrorBoundary fallbackLabel="Failed to render the expense distribution chart.">
+              <ExpenseDistribution 
+                data={expenseDistributionData}
+                isLoading={isExpensesLoading}
+              />
+            </ErrorBoundary>
           </div>
         </div>
 
         <div>
-          <RecentExpenses 
-            expenses={expenses || []} 
-            isLoading={isExpensesLoading} 
-          />
+          <ErrorBoundary fallbackLabel="Failed to render recent expenses.">
+            <RecentExpenses 
+              expenses={expenses || []} 
+              isLoading={isExpensesLoading} 
+            />
+          </ErrorBoundary>
         </div>
       </div>
     </AppLayout>

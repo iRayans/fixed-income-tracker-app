@@ -11,6 +11,7 @@ import { useExpenses } from '@/hooks/use-expenses';
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from 'lucide-react';
 import { ExpenseDialogManager } from '@/components/expenses/ExpenseDialogManager';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useSelectedMonth } from '@/hooks/use-selected-month';
 
 import { Expense } from '@/services/expenseService';
@@ -145,12 +146,14 @@ const Expenses = () => {
             </div>
           ) : (
             <>
-              <ExpenseList
-                expenses={filteredExpenses}
-                onEdit={handleEdit}
-                onDelete={handleDeleteClick}
-                onTogglePaid={handleTogglePaid}
-              />
+              <ErrorBoundary fallbackLabel="Failed to render the expense list.">
+                <ExpenseList
+                  expenses={filteredExpenses}
+                  onEdit={handleEdit}
+                  onDelete={handleDeleteClick}
+                  onTogglePaid={handleTogglePaid}
+                />
+              </ErrorBoundary>
               {filteredExpenses.length === 0 && (
                 <div className="text-center py-10 px-4 text-muted-foreground">
                   {expenses.length > 0
