@@ -145,12 +145,14 @@ const Expenses = () => {
             </div>
           ) : (
             <>
-              <ExpenseList
-                expenses={filteredExpenses}
-                onEdit={handleEdit}
-                onDelete={handleDeleteClick}
-                onTogglePaid={handleTogglePaid}
-              />
+              <ErrorBoundary fallbackLabel="Failed to render the expense list.">
+                <ExpenseList
+                  expenses={filteredExpenses}
+                  onEdit={handleEdit}
+                  onDelete={handleDeleteClick}
+                  onTogglePaid={handleTogglePaid}
+                />
+              </ErrorBoundary>
               {filteredExpenses.length === 0 && (
                 <div className="text-center py-10 px-4 text-muted-foreground">
                   {expenses.length > 0

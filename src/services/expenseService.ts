@@ -67,12 +67,19 @@ export const expenseService = {
         Array.isArray(data) ? "array" : typeof data
       );
 
-      return list.map((expense) => ({
-        ...expense,
-        amount: Number(expense.amount) || 0,
-        categoryId: expense.categoryId ?? expense.category?.id ?? 0,
-        paid: Boolean(expense.paid),
-      }));
+      return list
+        .filter((expense) => expense && expense.id != null)
+        .map((expense) => ({
+          ...expense,
+          id: Number(expense.id),
+          name: expense.name ?? '',
+          description: expense.description ?? '',
+          bank: expense.bank ?? '',
+          amount: Number(expense.amount) || 0,
+          categoryId: expense.categoryId ?? expense.category?.id ?? 0,
+          recurringId: expense.recurringId ?? null,
+          paid: Boolean(expense.paid),
+        }));
     } catch (error) {
       console.error(
         `[expenses] ${date} failed after ${Math.round(performance.now() - startedAt)}ms`,
