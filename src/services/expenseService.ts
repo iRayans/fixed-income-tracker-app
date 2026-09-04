@@ -108,9 +108,16 @@ export const expenseService = {
         `[expenses] ${date} failed after ${Math.round(performance.now() - startedAt)}ms`,
         error
       );
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        throw new Error(
+          `The server accepted the request but never finished sending the response for ${date} (timed out after 20s). The backend is likely failing mid-serialization for this month.`
+        );
+      }
       throw error;
+    } finally {
+      window.clearTimeout(timeoutId);
     }
-  },
+
 
 
   async updateExpensePaidStatus(id: number, paid: boolean): Promise<Expense> {
