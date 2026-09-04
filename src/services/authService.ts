@@ -34,7 +34,7 @@ interface UserData {
 export const authService = {
   async register(data: RegisterData): Promise<AuthResponse> {
     try {
-      const response = await fetch('http://192.168.0.4:8080/api/v1/auth/register', {
+      const response = await fetch('http://localhost:8080/api/v1/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ export const authService = {
 
   async login(data: LoginData): Promise<AuthResponse> {
     try {
-      const response = await fetch('http://192.168.0.4:8080/api/v1/auth/login', {
+      const response = await fetch('http://localhost:8080/api/v1/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -105,7 +105,7 @@ export const authService = {
 
     try {
       // Use any protected endpoint for token validation
-      const response = await fetch('http://192.168.0.4:8080/api/v1/auth', {
+      const response = await fetch('http://localhost:8080/api/v1/auth', {
         method: 'GET',
         headers: this.getAuthHeaders(),
       });
@@ -128,7 +128,7 @@ export const authService = {
   async getCurrentUser(): Promise<UserData | null> {
     try {
       // Get the current user data from the server
-      const response = await fetch('http://192.168.0.4:8080/api/v1/auth', {
+      const response = await fetch('http://localhost:8080/api/v1/auth', {
         method: 'GET',
         headers: this.getAuthHeaders(),
       });

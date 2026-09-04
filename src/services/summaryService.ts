@@ -11,7 +11,7 @@ interface SummaryData {
 export const summaryService = {
   async getSummary(date: string): Promise<SummaryData> {
     try {
-      const response = await fetch(`http://192.168.0.4:8080/api/v1/summary/${date}`, {
+      const response = await fetch(`http://localhost:8080/api/v1/summary/${date}`, {
         method: 'GET',
         headers: authService.getAuthHeaders(),
       });

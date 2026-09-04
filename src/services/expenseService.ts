@@ -44,7 +44,7 @@ export const expenseService = {
     const startedAt = performance.now();
     try {
       const response = await fetch(
-        `http://192.168.0.4:8080/api/v1/expenses/${date}`,
+        `http://localhost:8080/api/v1/expenses/${date}`,
         {
           method: "GET",
           headers: authService.getAuthHeaders(),
@@ -93,7 +93,7 @@ export const expenseService = {
   async updateExpensePaidStatus(id: number, paid: boolean): Promise<Expense> {
     try {
       const response = await fetch(
-        `http://192.168.0.4:8080/api/v1/expenses/${id}`,
+        `http://localhost:8080/api/v1/expenses/${id}`,
         {
           method: "PUT",
           headers: authService.getAuthHeaders(),
@@ -115,7 +115,7 @@ export const expenseService = {
   async updateExpense(id: number, expense: UpdateExpenseDto): Promise<Expense> {
     try {
       const response = await fetch(
-        `http://192.168.0.4:8080/api/v1/expenses/${id}`,
+        `http://localhost:8080/api/v1/expenses/${id}`,
         {
           method: "PUT",
           headers: authService.getAuthHeaders(),
@@ -137,7 +137,7 @@ export const expenseService = {
   async deleteExpense(id: number): Promise<void> {
     try {
       const response = await fetch(
-        `http://192.168.0.4:8080/api/v1/expenses/${id}`,
+        `http://localhost:8080/api/v1/expenses/${id}`,
         {
           method: "DELETE",
           headers: authService.getAuthHeaders(),
@@ -155,7 +155,7 @@ export const expenseService = {
 
   async createExpense(expense: CreateExpenseDto): Promise<Expense> {
     try {
-      const response = await fetch("http://192.168.0.4:8080/api/v1/expenses", {
+      const response = await fetch("http://localhost:8080/api/v1/expenses", {
         method: "POST",
         headers: authService.getAuthHeaders(),
         body: JSON.stringify(expense),
@@ -175,7 +175,7 @@ export const expenseService = {
   async getAvailableYears(): Promise<number[]> {
     try {
       const response = await fetch(
-        "http://192.168.0.4:8080/api/v1/expenses/years",
+        "http://localhost:8080/api/v1/expenses/years",
         {
           method: "GET",
           headers: authService.getAuthHeaders(),
@@ -196,7 +196,7 @@ export const expenseService = {
   async generateRecurringExpenses(yearMonth: string): Promise<void> {
     try {
       const response = await fetch(
-        'http://192.168.0.4:8080/api/v1/expenses/generate',
+        'http://localhost:8080/api/v1/expenses/generate',
         {
           method: "POST",
           body: JSON.stringify({ yearMonth }),
