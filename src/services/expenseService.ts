@@ -61,10 +61,38 @@ export const expenseService = {
         throw new Error(`Failed to fetch expenses (${response.status})`);
       }
 
-      // Read as text first: if the server never terminates the body, this is
-      // where it hangs — and the abort timeout turns it into a real error
-      // instead of an infinite loading state.
-      const raw = await response.text();
+      // Stream the body so we can see whether ANY bytes arrive. If the server
+      // flushes headers but never the body, chunks = 0. If it recurses forever
+      // while serializing, bytes grow without end (we bail at 5MB).
+      let raw = "";
+      if (response.body) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let chunks = 0;
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          chunks++;
+          raw += decoder.decode(value, { stream: true });
+          if (chunks <= 3 || chunks % 25 === 0) {
+            console.info(
+              `[expenses] ${date} chunk #${chunks}, total ${raw.length} chars`
+            );
+          }
+          if (raw.length > 5_000_000) {
+            reader.cancel();
+            throw new Error(
+              `The backend is streaming an endless response for ${date} (over 5MB). This is almost always infinite JSON recursion (Expense -> Category -> Expense) in the serializer.`
+            );
+          }
+        }
+        raw += decoder.decode();
+        console.info(
+          `[expenses] ${date} body complete: ${chunks} chunks, ${raw.length} chars`
+        );
+      } else {
+        raw = await response.text();
+      }
       console.info(
         `[expenses] ${date} body received: ${raw.length} chars in ${Math.round(performance.now() - startedAt)}ms`
       );
@@ -77,6 +105,7 @@ export const expenseService = {
           `Server returned an incomplete/invalid JSON response (${raw.length} chars). This usually means the backend failed while serializing this month's expenses.`
         );
       }
+
 
       const list: Expense[] = Array.isArray(data)
         ? data
