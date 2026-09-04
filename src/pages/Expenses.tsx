@@ -11,6 +11,7 @@ import { useExpenses } from '@/hooks/use-expenses';
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from 'lucide-react';
 import { ExpenseDialogManager } from '@/components/expenses/ExpenseDialogManager';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useSelectedMonth } from '@/hooks/use-selected-month';
 
 import { Expense } from '@/services/expenseService';
