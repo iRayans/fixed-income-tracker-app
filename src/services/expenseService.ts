@@ -42,20 +42,42 @@ export interface UpdateExpenseDto {
 export const expenseService = {
   async getExpenses(date: string): Promise<Expense[]> {
     const startedAt = performance.now();
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 20000);
     try {
+      console.info(`[expenses] ${date} requesting...`);
       const response = await fetch(
         `http://192.168.0.4:8080/api/v1/expenses/${date}`,
         {
           method: "GET",
           headers: authService.getAuthHeaders(),
+          signal: controller.signal,
         }
       );
+
+      console.info(`[expenses] ${date} headers received: ${response.status}`);
 
       if (!response.ok) {
         throw new Error(`Failed to fetch expenses (${response.status})`);
       }
 
-      const data = await response.json();
+      // Read as text first: if the server never terminates the body, this is
+      // where it hangs — and the abort timeout turns it into a real error
+      // instead of an infinite loading state.
+      const raw = await response.text();
+      console.info(
+        `[expenses] ${date} body received: ${raw.length} chars in ${Math.round(performance.now() - startedAt)}ms`
+      );
+
+      let data: any;
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        throw new Error(
+          `Server returned an incomplete/invalid JSON response (${raw.length} chars). This usually means the backend failed while serializing this month's expenses.`
+        );
+      }
+
       const list: Expense[] = Array.isArray(data)
         ? data
         : Array.isArray(data?.content)
@@ -66,6 +88,7 @@ export const expenseService = {
         `[expenses] ${date} -> ${list.length} items in ${Math.round(performance.now() - startedAt)}ms`,
         Array.isArray(data) ? "array" : typeof data
       );
+
 
       return list
         .filter((expense) => expense && expense.id != null)
