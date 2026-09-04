@@ -22,9 +22,9 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({
     <>
       {/* Mobile: compact cards */}
       <div className="md:hidden space-y-2 p-2">
-        {expenses.map((expense) => (
+        {expenses.map((expense, index) => (
           <ExpenseCardItem
-            key={expense.id}
+            key={`${expense.id}-${index}`}
             expense={expense}
             onEdit={onEdit}
             onDelete={onDelete}
@@ -48,9 +48,9 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {expenses.map((expense) => (
+            {expenses.map((expense, index) => (
               <ExpenseListItem
-                key={expense.id}
+                key={`${expense.id}-${index}`}
                 expense={expense}
                 onEdit={onEdit}
                 onDelete={onDelete}
